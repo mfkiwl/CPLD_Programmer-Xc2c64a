@@ -1,0 +1,82 @@
+##################################################
+#                                                #
+#  Pin Assignments for Digilent C-Mod C2 Module  #
+#                                                #
+##################################################
+
+#  The C-MOD Pin numbers are shown in the COMMENTS 
+#  e.g. CMOD-P35 is pin 35 of the module and is (usually) used for the Clock input
+
+# The following 3 CPLD pins have special on-chip Clock buffers
+# Usually uncomment one Clock line as required
+# Make sure use doesn't conflict with I/O use!
+NET "clock"  LOC = "p1"|IOSTANDARD=LVCMOS33;   # CMOD-P35 - GCK2, Global Clock input
+#NET "clock"  LOC = "p44"|IOSTANDARD=LVCMOS33;  # CMOD-P34 - GCK1, Global Clock input, May be used for I/O
+#NET "clock"  LOC = "p43"|IOSTANDARD=LVCMOS33;  # CMOD-P33 - GCK0, Global Clock input, May be used for I/O
+
+# System level constraints
+Net      Clock TNM_NET = Clock;
+Timespec TS_Clock = PERIOD Clock 1 us; # adjust to suit Clock
+
+# Convenient to allocate a Reset pin
+#NET "Reset" LOC = "p30"|IOSTANDARD=LVCMOS33; # CMOD-P18 - GSR, Global Set/Reset
+#Net "Reset" TIG; # No timing constraint on system reset
+
+# Pins in pin number order
+#
+# The pins below are located top-right (right to left)
+# This is convenient for Motor Stepper board
+#========================================================================
+NET "LEDS<0>" LOC = "p12"|IOSTANDARD=LVCMOS33; # CMOD-P1  - I/O
+NET "LEDS<1>" LOC = "p13"|IOSTANDARD=LVCMOS33; # CMOD-P2  - I/O
+NET "LEDS<2>" LOC = "p14"|IOSTANDARD=LVCMOS33; # CMOD-P3  - I/O
+NET "LEDS<3>" LOC = "p16"|IOSTANDARD=LVCMOS33; # CMOD-P4  - I/O
+#                                        # CMOD-P5  - N/C
+#                                        # CMOD-P6  - N/C
+#                                        # CMOD-P7  - N/C
+#                                        # CMOD-P8  - N/C
+
+# The pins below are convenient locations for led outputs (right to left)
+#========================================================================
+NET "LEDS<4>" LOC = "p18"|IOSTANDARD=LVCMOS33; # CMOD-P9  - I/O
+NET "LEDS<5>" LOC = "p19"|IOSTANDARD=LVCMOS33; # CMOD-P10 - I/O
+NET "LEDS<6>" LOC = "p20"|IOSTANDARD=LVCMOS33; # CMOD-P11 - I/O
+NET "LEDS<7>" LOC = "p21"|IOSTANDARD=LVCMOS33; # CMOD-P12 - I/O
+NET "LEDS<8>" LOC = "p22"|IOSTANDARD=LVCMOS33; # CMOD-P13 - I/O
+NET "LEDS<9>" LOC = "p23"|IOSTANDARD=LVCMOS33; # CMOD-P14 - I/O
+NET "LEDS<10>" LOC = "p27"|IOSTANDARD=LVCMOS33; # CMOD-P15 - I/O
+NET "LEDS<11>" LOC = "p28"|IOSTANDARD=LVCMOS33; # CMOD-P16 - I/O
+NET "LEDS<12>" LOC = "p29"|IOSTANDARD=LVCMOS33; # CMOD-P17 - I/O
+NET "LEDS<13>" LOC = "p30"|IOSTANDARD=LVCMOS33; # CMOD-P18 - I/O, GSR, Global Set/Reset
+
+#                                        # CMOD-P18 - GSR, Global Set/Reset - see above
+#                                        # CMOD-P19 - N/C
+#                                        # CMOD-P20 - Vcc
+#                                        # CMOD-P21 - Gnd
+
+# The pins below are convenient locations for switch inputs (left to right)
+#========================================================================
+NET "LEDS<14>" LOC = "p31"|IOSTANDARD=LVCMOS33; # CMOD-P22 - GTS2, Global Tristate control
+NET "LEDS<15>" LOC = "p32"|IOSTANDARD=LVCMOS33; # CMOD-P23 - GTS3, Global Tristate control
+NET "LEDS<16>" LOC = "p33"|IOSTANDARD=LVCMOS33; # CMOD-P24 - GTS0, Global Tristate control
+NET "LEDS<17>" LOC = "p34"|IOSTANDARD=LVCMOS33; # CMOD-P25 - GTS1, Global Tristate control
+NET "LEDS<18>" LOC = "p36"|IOSTANDARD=LVCMOS33; # CMOD-P26 - I/O
+NET "LEDS<19>" LOC = "p37"|IOSTANDARD=LVCMOS33; # CMOD-P27 - I/O
+NET "LEDS<20>" LOC = "p38"|IOSTANDARD=LVCMOS33; # CMOD-P28 - I/O
+NET "LEDS<21>" LOC = "p39"|IOSTANDARD=LVCMOS33; # CMOD-P29 - I/O
+NET "LEDS<22>" LOC = "p40"|IOSTANDARD=LVCMOS33; # CMOD-P30 - I/O
+NET "LEDS<23>" LOC = "p41"|IOSTANDARD=LVCMOS33; # CMOD-P31 - I/O
+NET "LEDS<24>" LOC = "p42"|IOSTANDARD=LVCMOS33; # CMOD-P32 - I/O
+NET "LEDS<25>" LOC = "p43"|IOSTANDARD=LVCMOS33; # CMOD-P33 - GCK0, Global Clock input, May be used for I/O
+NET "LEDS<26>" LOC = "p44"|IOSTANDARD=LVCMOS33; # CMOD-P34 - GCK1, Global Clock input, May be used for I/O
+
+#                                        # CMOD-P35 - I/O, GCK1, Global Clock input - see above
+
+# The pins below are located bottom-right (left to right)
+# This is convenient for Traffic board I/O
+#========================================================================
+NET "LEDS<27>" LOC = "p2"|IOSTANDARD=LVCMOS33;  # CMOD-P36 - I/O
+NET "LEDS<28>" LOC = "p3"|IOSTANDARD=LVCMOS33;  # CMOD-P37 - I/O
+NET "LEDS<29>" LOC = "p5"|IOSTANDARD=LVCMOS33;  # CMOD-P38 - I/O
+NET "LEDS<30>" LOC = "p6"|IOSTANDARD=LVCMOS33;  # CMOD-P39 - I/O
+NET "LEDS<31>" LOC = "p8"|IOSTANDARD=LVCMOS33;  # CMOD-P40 - I/O

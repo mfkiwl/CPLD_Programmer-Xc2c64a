@@ -1,0 +1,467 @@
+" XPLAOPT Version 9.99.99.99
+" Created on Fri Mar 10 10:25:09 2017
+" 53 Mcells, 53 PLApts, 6 Levels, 66 Fanins
+" XPLAOPT -run s -it b -i CPLD_Tester.blx -dev XC2C64A-7VQ44 -reg -xor a -mode 
+"         1 -th 28 -fi 32 -bfi 38 -pre keep -unused keeper -terminate keeper -no_output_files 
+MODULE CPLD_Tester
+
+	clock  pin 1 ; 
+ 	leds<0>  pin 12 ;  " 1 pt.
+ 	leds<10>  pin 27 ;  " 1 pt.
+ 	leds<11>  pin 28 ;  " 1 pt.
+ 	leds<12>  pin 29 ;  " 1 pt.
+ 	leds<13>  pin 30 ;  " 1 pt.
+ 	leds<14>  pin 31 ;  " 1 pt.
+ 	leds<15>  pin 32 ;  " 1 pt.
+ 	leds<16>  pin 33 ;  " 1 pt.
+ 	leds<17>  pin 34 ;  " 1 pt.
+ 	leds<18>  pin 36 ;  " 1 pt.
+ 	leds<19>  pin 37 ;  " 1 pt.
+ 	leds<1>  pin 13 ;  " 1 pt.
+ 	leds<20>  pin 38 ;  " 1 pt.
+ 	leds<21>  pin 39 ;  " 1 pt.
+ 	leds<22>  pin 40 ;  " 1 pt.
+ 	leds<23>  pin 41 ;  " 1 pt.
+ 	leds<24>  pin 42 ;  " 1 pt.
+ 	leds<25>  pin 43 ;  " 1 pt.
+ 	leds<26>  pin 44 ;  " 1 pt.
+ 	leds<27>  pin 2 ;  " 1 pt.
+ 	leds<28>  pin 3 ;  " 1 pt.
+ 	leds<29>  pin 5 ;  " 1 pt.
+ 	leds<2>  pin 14 ;  " 1 pt.
+ 	leds<30>  pin 6 ;  " 1 pt.
+ 	leds<31>  pin 8 ;  " 1 pt.
+ 	leds<3>  pin 16 ;  " 1 pt.
+ 	leds<4>  pin 18 ;  " 1 pt.
+ 	leds<5>  pin 19 ;  " 1 pt.
+ 	leds<6>  pin 20 ;  " 1 pt.
+ 	leds<7>  pin 21 ;  " 1 pt.
+ 	leds<8>  pin 22 ;  " 1 pt.
+ 	leds<9>  pin 23 ;  " 1 pt.
+ 
+
+	N_PZ_191  node istype 'collapse';  " 1 pt.
+ 	N_PZ_192  node istype 'collapse';  " 1 pt.
+ 	N_PZ_193  node istype 'collapse';  " 1 pt.
+ 	N_PZ_194  node istype 'collapse';  " 1 pt.
+ 	N_PZ_195  node istype 'collapse';  " 1 pt.
+ 	N_PZ_196  node istype 'collapse';  " 1 pt.
+ 	N_PZ_197  node istype 'collapse';  " 1 pt.
+ 	N_PZ_198  node istype 'collapse';  " 1 pt.
+ 	counter<0>  node ;  " 1 pt.
+ 	counter<1>  node ;  " 1 pt.
+ 	counter<2>  node ;  " 1 pt.
+ 	counter<3>  node ;  " 1 pt.
+ 	counter<4>  node ;  " 1 pt.
+ 	counter<5>  node ;  " 1 pt.
+ 	counter<6>  node ;  " 1 pt.
+ 	toggle  node ;  " 1 pt.
+ 	value<0>  node ;  " 1 pt.
+ 	value<10>  node ;  " 1 pt.
+ 	value<15>  node ;  " 1 pt.
+ 	value<17>  node ;  " 1 pt.
+ 	value<25>  node ;  " 1 pt.
+ 
+
+xpla property 'USER_SLEW_RATE leds<8> leds<24> leds<31> leds<9> leds<16> leds<14> leds<13> 
+	leds<12> leds<11> leds<10> leds<15> leds<23> leds<22> leds<21> leds<20> leds<19> leds<18> leds<17> 
+	leds<30> leds<29> leds<28> leds<27> leds<26> leds<25> leds<7> leds<6> leds<5> leds<4> leds<3> 
+	leds<2> leds<1> leds<0> '; 
+xpla property 'GLOBAL_CLK clock '; 
+xpla property 'unused_keeper'; 
+xpla property 'timespec  toggle.Q toggle.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q toggle.CE 188.000000'; 
+xpla property 'timespec  counter<2>.Q toggle.CE 188.000000'; 
+xpla property 'timespec  counter<3>.Q toggle.CE 188.000000'; 
+xpla property 'timespec  counter<4>.Q toggle.CE 188.000000'; 
+xpla property 'timespec  counter<5>.Q toggle.CE 188.000000'; 
+xpla property 'timespec  counter<0>.Q toggle.CE 188.000000'; 
+xpla property 'timespec  counter<6>.Q toggle.CE 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<8>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<8>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<8>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<8>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<8>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<8>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<8>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<24>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<24>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<24>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<24>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<24>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<24>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<24>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<31>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<31>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<31>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<31>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<31>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<31>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<31>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<9>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<9>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<9>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<9>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<9>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<9>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<9>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<16>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<16>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<16>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<16>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<16>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<16>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q counter<1>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q counter<1>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q counter<2>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q counter<2>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q counter<2>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q counter<3>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q counter<3>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q counter<3>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q counter<3>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q counter<4>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q counter<4>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q counter<4>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q counter<4>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q counter<4>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q counter<5>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q counter<5>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q counter<5>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q counter<5>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q counter<5>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q counter<5>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q counter<0>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q counter<6>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q counter<6>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q counter<6>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q counter<6>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q counter<6>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q counter<6>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q counter<6>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<14>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<14>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<14>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<14>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<14>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<14>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<14>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<13>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<13>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<13>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<13>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<13>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<13>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<13>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<12>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<12>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<12>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<12>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<12>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<12>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<12>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<11>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<11>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<11>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<11>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<11>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<11>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<11>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<10>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<10>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<10>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<10>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<10>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<10>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<10>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<15>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<15>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<15>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<15>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<15>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<15>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<23>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<23>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<23>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<23>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<23>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<23>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<23>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<22>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<22>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<22>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<22>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<22>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<22>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<22>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<21>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<21>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<21>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<21>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<21>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<21>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<21>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<20>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<20>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<20>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<20>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<20>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<20>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<20>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<19>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<19>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<19>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<19>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<19>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<19>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<19>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<18>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<18>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<18>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<18>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<18>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<18>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<18>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<17>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<17>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<17>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<17>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<17>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<17>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<17>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<30>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<30>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<30>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<30>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<30>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<30>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<30>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<29>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<29>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<29>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<29>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<29>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<29>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<29>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<28>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<28>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<28>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<28>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<28>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<28>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<28>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<27>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<27>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<27>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<27>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<27>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<27>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<27>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<26>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<26>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<26>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<26>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<26>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<26>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<26>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<25>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<25>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<25>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<25>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<25>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<25>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<25>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<7>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<7>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<7>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<7>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<7>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<7>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<7>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<6>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<6>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<6>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<6>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<6>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<6>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<6>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<5>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<5>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<5>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<5>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<5>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<5>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<5>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<4>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<4>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<4>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<4>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<4>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<4>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<4>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<3>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<3>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<3>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<3>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<3>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<3>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<3>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<2>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<2>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<2>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<2>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<2>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<2>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<2>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<1>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<1>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<1>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<1>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<1>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<1>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<1>.D 188.000000'; 
+xpla property 'timespec  counter<1>.Q leds<0>.D 188.000000'; 
+xpla property 'timespec  counter<2>.Q leds<0>.D 188.000000'; 
+xpla property 'timespec  counter<3>.Q leds<0>.D 188.000000'; 
+xpla property 'timespec  counter<4>.Q leds<0>.D 188.000000'; 
+xpla property 'timespec  counter<5>.Q leds<0>.D 188.000000'; 
+xpla property 'timespec  counter<0>.Q leds<0>.D 188.000000'; 
+xpla property 'timespec  counter<6>.Q leds<0>.D 188.000000'; 
+xpla property 'IOSTD clock 0 -1';
+xpla property 'IOSTD leds<8> 0 -1';
+xpla property 'IOSTD leds<24> 0 -1';
+xpla property 'IOSTD leds<31> 0 -1';
+xpla property 'IOSTD leds<9> 0 -1';
+xpla property 'IOSTD leds<16> 0 -1';
+xpla property 'IOSTD leds<14> 0 -1';
+xpla property 'IOSTD leds<13> 0 -1';
+xpla property 'IOSTD leds<12> 0 -1';
+xpla property 'IOSTD leds<11> 0 -1';
+xpla property 'IOSTD leds<10> 0 -1';
+xpla property 'IOSTD leds<15> 0 -1';
+xpla property 'IOSTD leds<23> 0 -1';
+xpla property 'IOSTD leds<22> 0 -1';
+xpla property 'IOSTD leds<21> 0 -1';
+xpla property 'IOSTD leds<20> 0 -1';
+xpla property 'IOSTD leds<19> 0 -1';
+xpla property 'IOSTD leds<18> 0 -1';
+xpla property 'IOSTD leds<17> 0 -1';
+xpla property 'IOSTD leds<30> 0 -1';
+xpla property 'IOSTD leds<29> 0 -1';
+xpla property 'IOSTD leds<28> 0 -1';
+xpla property 'IOSTD leds<27> 0 -1';
+xpla property 'IOSTD leds<26> 0 -1';
+xpla property 'IOSTD leds<25> 0 -1';
+xpla property 'IOSTD leds<7> 0 -1';
+xpla property 'IOSTD leds<6> 0 -1';
+xpla property 'IOSTD leds<5> 0 -1';
+xpla property 'IOSTD leds<4> 0 -1';
+xpla property 'IOSTD leds<3> 0 -1';
+xpla property 'IOSTD leds<2> 0 -1';
+xpla property 'IOSTD leds<1> 0 -1';
+xpla property 'IOSTD leds<0> 0 -1';
+EQUATIONS 
+
+ N_PZ_191 = !counter<5>.Q & !counter<6>.Q;		"--- [PT=1, FI=2, LVL=1] ---
+ N_PZ_192 = !counter<3>.Q & N_PZ_191;		"--- [PT=1, FI=2, LVL=2] ---
+ N_PZ_193 = !counter<4>.Q & N_PZ_192;		"--- [PT=1, FI=2, LVL=3] ---
+ N_PZ_194 = counter<0>.Q & counter<1>.Q;		"--- [PT=1, FI=2, LVL=1] ---
+ N_PZ_195 = !counter<2>.Q & N_PZ_193;		"--- [PT=1, FI=2, LVL=4] ---
+ N_PZ_196 = counter<2>.Q & N_PZ_194;		"--- [PT=1, FI=2, LVL=2] ---
+ N_PZ_197 = counter<3>.Q & N_PZ_196;		"--- [PT=1, FI=2, LVL=3] ---
+ N_PZ_198 = counter<1>.Q & N_PZ_195;		"--- [PT=1, FI=2, LVL=5] ---
+ counter<0>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ counter<0>.T = 1;
+ counter<1>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ counter<1>.T = counter<0>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ counter<2>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ counter<2>.T = N_PZ_194;		"--- [PT=1, FI=1, LVL=2] ---
+ counter<3>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ counter<3>.T = N_PZ_196;		"--- [PT=1, FI=1, LVL=3] ---
+ counter<4>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ counter<4>.T = N_PZ_197;		"--- [PT=1, FI=1, LVL=4] ---
+ counter<5>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ counter<5>.T = counter<4>.Q & N_PZ_197;		"--- [PT=1, FI=2, LVL=4] ---
+ counter<6>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ counter<6>.T = counter<4>.Q & counter<5>.Q & N_PZ_197
+    ;		"--- [PT=1, FI=3, LVL=4] ---
+ leds<0>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<0>.D = value<0>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<10>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<10>.D = value<10>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<11>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<11>.D = value<10>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<12>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<12>.D = value<10>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<13>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<13>.D = value<10>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<14>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<14>.D = value<10>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<15>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<15>.D = value<15>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<16>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<16>.D = value<15>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<17>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<17>.D = value<17>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<18>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<18>.D = value<17>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<19>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<19>.D = value<17>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<1>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<1>.D = value<0>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<20>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<20>.D = value<17>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<21>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<21>.D = value<17>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<22>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<22>.D = value<17>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<23>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<23>.D = value<17>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<24>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<24>.D = value<17>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<25>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<25>.D = value<25>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<26>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<26>.D = value<25>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<27>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<27>.D = value<25>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<28>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<28>.D = value<25>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<29>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<29>.D = value<25>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<2>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<2>.D = value<0>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<30>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<30>.D = value<25>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<31>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<31>.D = value<25>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<3>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<3>.D = value<0>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<4>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<4>.D = value<0>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<5>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<5>.D = value<0>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<6>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<6>.D = value<0>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<7>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<7>.D = value<0>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<8>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<8>.D = value<0>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<9>.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ leds<9>.D = value<10>.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ toggle.CLK = clock;		"--- [PT=1, FI=1, LVL=1] ---
+ toggle.T = !counter<0>.Q & !counter<1>.Q & N_PZ_195
+    ;		"--- [PT=1, FI=3, LVL=5] ---
+ value<0>.D = toggle.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ value<0>.LH = !counter<0>.Q & !counter<1>.Q & counter<2>.Q & N_PZ_193
+    ;		"--- [PT=1, FI=4, LVL=4] ---
+ value<10>.D = toggle.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ value<10>.LH = N_PZ_194 & N_PZ_195;		"--- [PT=1, FI=2, LVL=5] ---
+ value<15>.D = toggle.Q & N_PZ_198;		"--- [PT=1, FI=2, LVL=6] ---
+ value<15>.LH = N_PZ_198;		"--- [PT=1, FI=1, LVL=6] ---
+ value<17>.D = toggle.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ value<17>.LH = !counter<0>.Q & N_PZ_198;		"--- [PT=1, FI=2, LVL=6] ---
+ value<25>.D = toggle.Q;		"--- [PT=1, FI=1, LVL=1] ---
+ value<25>.LH = counter<0>.Q & !counter<1>.Q & N_PZ_195
+    ;		"--- [PT=1, FI=3, LVL=5] ---
+END

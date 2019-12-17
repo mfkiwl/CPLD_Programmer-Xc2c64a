@@ -1,0 +1,1019 @@
+assert111.........
+name = ddddddd..
+assert333.........
+NDEBUG is not defined
+__STDC__ is not defined
+__MSVC__ is defined
+XPLA_BORLANDC is defined
+
+---------------------
+|  D E F A U L T S  |
+---------------------
+max_pt=28, min_pt=3
+max_fi=32, min_fi=4
+
+-----------------
+|  H E A D E R  |
+-----------------
+#$ MODULE CPLD_Tester
+#$ PINS 5 "clock":1 "leds<8>":22 "leds<24>":42 "leds<31>":8 "leds<9>":23 
+#$ PINS 4 "leds<16>":33 "leds<14>":31 "leds<13>":30 "leds<12>":29 
+#$ PINS 4 "leds<11>":28 "leds<10>":27 "leds<15>":32 "leds<23>":41 
+#$ PINS 4 "leds<22>":40 "leds<21>":39 "leds<20>":38 "leds<19>":37 
+#$ PINS 5 "leds<18>":36 "leds<17>":34 "leds<30>":6 "leds<29>":5 "leds<28>":3 
+#$ PINS 5 "leds<27>":2 "leds<26>":44 "leds<25>":43 "leds<7>":21 "leds<6>":20 
+#$ PINS 5 "leds<5>":19 "leds<4>":18 "leds<3>":16 "leds<2>":14 "leds<1>":13 
+#$ PINS 1 "leds<0>":12 
+#$ NODES 5 "counter<1>" "counter<2>" "counter<3>" "counter<4>" "counter<5>" 
+#$ NODES 5 "counter<0>" "counter<6>" "toggle" "value<0>" "value<17>" 
+#$ NODES 3 "value<25>" "value<10>" "value<15>" 
+
+--------------------------------------
+|  P I N    T a b l e    [count=46]  |
+--------------------------------------
+ leds<26> value<25> leds<1> leds<31> leds<29> leds<4> leds<7> value<0> leds<10> 
+ leds<13> leds<16> value<15> leds<19> counter<2> leds<21> counter<5> leds<24> leds<27> 
+ leds<2> toggle leds<5> leds<11> value<10> leds<8> leds<14> leds<17> counter<0> 
+ counter<3> leds<22> counter<6> leds<25> leds<0> leds<30> leds<28> leds<3> leds<6> 
+ leds<9> leds<12> leds<15> value<17> counter<1> leds<20> clock leds<18> counter<4> 
+ leds<23>
+
+------------------------------------------
+|  P I N    E q n l i s t    [count=33]  |
+------------------------------------------
+clock (fi=0): 
+leds<8> (fi=2): (leds<8>.D/N_PZ_3, net=CPLD_Tester) (leds<8>.CLK/N_PZ_4, net=CPLD_Tester) 
+leds<24> (fi=2): (leds<24>.D/N_PZ_5, net=CPLD_Tester) (leds<24>.CLK/N_PZ_6, net=CPLD_Tester) 
+leds<31> (fi=2): (leds<31>.D/N_PZ_7, net=CPLD_Tester) (leds<31>.CLK/N_PZ_8, net=CPLD_Tester) 
+leds<9> (fi=2): (leds<9>.D/N_PZ_9, net=CPLD_Tester) (leds<9>.CLK/N_PZ_10, net=CPLD_Tester) 
+leds<16> (fi=2): (leds<16>.D/N_PZ_11, net=CPLD_Tester) (leds<16>.CLK/N_PZ_12, net=CPLD_Tester) 
+leds<14> (fi=2): (leds<14>.D/N_PZ_43, net=CPLD_Tester) (leds<14>.CLK/N_PZ_44, net=CPLD_Tester) 
+leds<13> (fi=2): (leds<13>.D/N_PZ_45, net=CPLD_Tester) (leds<13>.CLK/N_PZ_46, net=CPLD_Tester) 
+leds<12> (fi=2): (leds<12>.D/N_PZ_47, net=CPLD_Tester) (leds<12>.CLK/N_PZ_48, net=CPLD_Tester) 
+leds<11> (fi=2): (leds<11>.D/N_PZ_49, net=CPLD_Tester) (leds<11>.CLK/N_PZ_50, net=CPLD_Tester) 
+leds<10> (fi=2): (leds<10>.D/N_PZ_51, net=CPLD_Tester) (leds<10>.CLK/N_PZ_52, net=CPLD_Tester) 
+leds<15> (fi=2): (leds<15>.D/N_PZ_53, net=CPLD_Tester) (leds<15>.CLK/N_PZ_54, net=CPLD_Tester) 
+leds<23> (fi=2): (leds<23>.D/N_PZ_55, net=CPLD_Tester) (leds<23>.CLK/N_PZ_56, net=CPLD_Tester) 
+leds<22> (fi=2): (leds<22>.D/N_PZ_57, net=CPLD_Tester) (leds<22>.CLK/N_PZ_58, net=CPLD_Tester) 
+leds<21> (fi=2): (leds<21>.D/N_PZ_59, net=CPLD_Tester) (leds<21>.CLK/N_PZ_60, net=CPLD_Tester) 
+leds<20> (fi=2): (leds<20>.D/N_PZ_61, net=CPLD_Tester) (leds<20>.CLK/N_PZ_62, net=CPLD_Tester) 
+leds<19> (fi=2): (leds<19>.D/N_PZ_63, net=CPLD_Tester) (leds<19>.CLK/N_PZ_64, net=CPLD_Tester) 
+leds<18> (fi=2): (leds<18>.D/N_PZ_65, net=CPLD_Tester) (leds<18>.CLK/N_PZ_66, net=CPLD_Tester) 
+leds<17> (fi=2): (leds<17>.D/N_PZ_67, net=CPLD_Tester) (leds<17>.CLK/N_PZ_68, net=CPLD_Tester) 
+leds<30> (fi=2): (leds<30>.D/N_PZ_69, net=CPLD_Tester) (leds<30>.CLK/N_PZ_70, net=CPLD_Tester) 
+leds<29> (fi=2): (leds<29>.D/N_PZ_71, net=CPLD_Tester) (leds<29>.CLK/N_PZ_72, net=CPLD_Tester) 
+leds<28> (fi=2): (leds<28>.D/N_PZ_73, net=CPLD_Tester) (leds<28>.CLK/N_PZ_74, net=CPLD_Tester) 
+leds<27> (fi=2): (leds<27>.D/N_PZ_75, net=CPLD_Tester) (leds<27>.CLK/N_PZ_76, net=CPLD_Tester) 
+leds<26> (fi=2): (leds<26>.D/N_PZ_77, net=CPLD_Tester) (leds<26>.CLK/N_PZ_78, net=CPLD_Tester) 
+leds<25> (fi=2): (leds<25>.D/N_PZ_79, net=CPLD_Tester) (leds<25>.CLK/N_PZ_80, net=CPLD_Tester) 
+leds<7> (fi=2): (leds<7>.D/N_PZ_81, net=CPLD_Tester) (leds<7>.CLK/N_PZ_82, net=CPLD_Tester) 
+leds<6> (fi=2): (leds<6>.D/N_PZ_83, net=CPLD_Tester) (leds<6>.CLK/N_PZ_84, net=CPLD_Tester) 
+leds<5> (fi=2): (leds<5>.D/N_PZ_85, net=CPLD_Tester) (leds<5>.CLK/N_PZ_86, net=CPLD_Tester) 
+leds<4> (fi=2): (leds<4>.D/N_PZ_87, net=CPLD_Tester) (leds<4>.CLK/N_PZ_88, net=CPLD_Tester) 
+leds<3> (fi=2): (leds<3>.D/N_PZ_89, net=CPLD_Tester) (leds<3>.CLK/N_PZ_90, net=CPLD_Tester) 
+leds<2> (fi=2): (leds<2>.D/N_PZ_91, net=CPLD_Tester) (leds<2>.CLK/N_PZ_92, net=CPLD_Tester) 
+leds<1> (fi=2): (leds<1>.D/N_PZ_93, net=CPLD_Tester) (leds<1>.CLK/N_PZ_94, net=CPLD_Tester) 
+leds<0> (fi=2): (leds<0>.D/N_PZ_95, net=CPLD_Tester) (leds<0>.CLK/N_PZ_96, net=CPLD_Tester) 
+
+--------------------------------------------
+|  N O D E    E q n l i s t    [count=13]  |
+--------------------------------------------
+counter<1> (fi=2): counter<1>.CLK/N_PZ_15 counter<1>.T/N_PZ_136 
+counter<2> (fi=3): counter<2>.CLK/N_PZ_18 counter<2>.T/N_PZ_137 
+counter<3> (fi=4): counter<3>.CLK/N_PZ_21 counter<3>.T/N_PZ_138 
+counter<4> (fi=5): counter<4>.CLK/N_PZ_24 counter<4>.T/N_PZ_139 
+counter<5> (fi=6): counter<5>.CLK/N_PZ_27 counter<5>.T/N_PZ_140 
+counter<0> (fi=1): counter<0>.CLK/N_PZ_29 counter<0>.T/N_PZ_108 
+counter<6> (fi=7): counter<6>.CLK/N_PZ_32 counter<6>.T/N_PZ_141 
+toggle (fi=8): toggle.CLK/N_PZ_1 toggle.T/N_PZ_142 
+value<0> (fi=8): value<0>.D/N_PZ_33 value<0>.LH/N_PZ_34 
+value<17> (fi=8): value<17>.D/N_PZ_39 value<17>.LH/N_PZ_40 
+value<25> (fi=8): value<25>.D/N_PZ_41 value<25>.LH/N_PZ_42 
+value<10> (fi=8): value<10>.D/N_PZ_35 value<10>.LH/N_PZ_36 
+value<15> (fi=7): value<15>.D/N_PZ_37 value<15>.LH/N_PZ_38 
+
+---------------------------------
+|  D a t a   S t r u c t u r e  |
+---------------------------------
+PI ( 14) =  clock toggle.Q counter<0>.Q value<0>.Q value<10>.Q value<15>.Q value<17>.Q 
+            value<25>.Q counter<1>.Q counter<2>.Q counter<3>.Q counter<4>.Q 
+            counter<5>.Q counter<6>.Q
+
+PO ( 90) =  toggle.CLK leds<8>.D leds<8>.CLK leds<24>.D leds<24>.CLK leds<31>.D 
+            leds<31>.CLK leds<9>.D leds<9>.CLK leds<16>.D leds<16>.CLK counter<1>.CLK 
+            counter<2>.CLK counter<3>.CLK counter<4>.CLK counter<5>.CLK counter<0>.CLK 
+            counter<6>.CLK value<0>.D value<0>.LH value<10>.D value<10>.LH value<15>.D 
+            value<15>.LH value<17>.D value<17>.LH value<25>.D value<25>.LH leds<14>.D 
+            leds<14>.CLK leds<13>.D leds<13>.CLK leds<12>.D leds<12>.CLK leds<11>.D 
+            leds<11>.CLK leds<10>.D leds<10>.CLK leds<15>.D leds<15>.CLK leds<23>.D 
+            leds<23>.CLK leds<22>.D leds<22>.CLK leds<21>.D leds<21>.CLK leds<20>.D 
+            leds<20>.CLK leds<19>.D leds<19>.CLK leds<18>.D leds<18>.CLK leds<17>.D 
+            leds<17>.CLK leds<30>.D leds<30>.CLK leds<29>.D leds<29>.CLK leds<28>.D 
+            leds<28>.CLK leds<27>.D leds<27>.CLK leds<26>.D leds<26>.CLK leds<25>.D 
+            leds<25>.CLK leds<7>.D leds<7>.CLK leds<6>.D leds<6>.CLK leds<5>.D 
+            leds<5>.CLK leds<4>.D leds<4>.CLK leds<3>.D leds<3>.CLK leds<2>.D 
+            leds<2>.CLK leds<1>.D leds<1>.CLK leds<0>.D leds<0>.CLK counter<0>.T 
+            counter<1>.T counter<2>.T counter<3>.T counter<4>.T counter<5>.T 
+            counter<6>.T toggle.T
+
+INT = ( 90) N_PZ_1 N_PZ_3 N_PZ_4 N_PZ_5 N_PZ_6 N_PZ_7 N_PZ_8 N_PZ_9 N_PZ_10 N_PZ_11 
+            N_PZ_12 N_PZ_15 N_PZ_18 N_PZ_21 N_PZ_24 N_PZ_27 N_PZ_29 N_PZ_32 N_PZ_33 
+            N_PZ_34 N_PZ_35 N_PZ_36 N_PZ_37 N_PZ_38 N_PZ_39 N_PZ_40 N_PZ_41 N_PZ_42 
+            N_PZ_43 N_PZ_44 N_PZ_45 N_PZ_46 N_PZ_47 N_PZ_48 N_PZ_49 N_PZ_50 N_PZ_51 
+            N_PZ_52 N_PZ_53 N_PZ_54 N_PZ_55 N_PZ_56 N_PZ_57 N_PZ_58 N_PZ_59 N_PZ_60 
+            N_PZ_61 N_PZ_62 N_PZ_63 N_PZ_64 N_PZ_65 N_PZ_66 N_PZ_67 N_PZ_68 N_PZ_69 
+            N_PZ_70 N_PZ_71 N_PZ_72 N_PZ_73 N_PZ_74 N_PZ_75 N_PZ_76 N_PZ_77 N_PZ_78 
+            N_PZ_79 N_PZ_80 N_PZ_81 N_PZ_82 N_PZ_83 N_PZ_84 N_PZ_85 N_PZ_86 N_PZ_87 
+            N_PZ_88 N_PZ_89 N_PZ_90 N_PZ_91 N_PZ_92 N_PZ_93 N_PZ_94 N_PZ_95 N_PZ_96 
+            N_PZ_108 N_PZ_136 N_PZ_137 N_PZ_138 N_PZ_139 N_PZ_140 N_PZ_141 N_PZ_142
+
+PINT= (  0)
+
+AINT= ( 90) N_PZ_1 N_PZ_3 N_PZ_4 N_PZ_5 N_PZ_6 N_PZ_7 N_PZ_8 N_PZ_9 N_PZ_10 N_PZ_11 
+            N_PZ_12 N_PZ_15 N_PZ_18 N_PZ_21 N_PZ_24 N_PZ_27 N_PZ_29 N_PZ_32 N_PZ_33 
+            N_PZ_34 N_PZ_35 N_PZ_36 N_PZ_37 N_PZ_38 N_PZ_39 N_PZ_40 N_PZ_41 N_PZ_42 
+            N_PZ_43 N_PZ_44 N_PZ_45 N_PZ_46 N_PZ_47 N_PZ_48 N_PZ_49 N_PZ_50 N_PZ_51 
+            N_PZ_52 N_PZ_53 N_PZ_54 N_PZ_55 N_PZ_56 N_PZ_57 N_PZ_58 N_PZ_59 N_PZ_60 
+            N_PZ_61 N_PZ_62 N_PZ_63 N_PZ_64 N_PZ_65 N_PZ_66 N_PZ_67 N_PZ_68 N_PZ_69 
+            N_PZ_70 N_PZ_71 N_PZ_72 N_PZ_73 N_PZ_74 N_PZ_75 N_PZ_76 N_PZ_77 N_PZ_78 
+            N_PZ_79 N_PZ_80 N_PZ_81 N_PZ_82 N_PZ_83 N_PZ_84 N_PZ_85 N_PZ_86 N_PZ_87 
+            N_PZ_88 N_PZ_89 N_PZ_90 N_PZ_91 N_PZ_92 N_PZ_93 N_PZ_94 N_PZ_95 N_PZ_96 
+            N_PZ_108 N_PZ_136 N_PZ_137 N_PZ_138 N_PZ_139 N_PZ_140 N_PZ_141 N_PZ_142
+
+
+----------------------------
+|  D F S    N e t w o r k  |
+----------------------------
+clock N_PZ_1 toggle.CLK value<0>.Q N_PZ_3 leds<8>.D N_PZ_4 leds<8>.CLK value<17>.Q  
+N_PZ_5 leds<24>.D N_PZ_6 leds<24>.CLK value<25>.Q N_PZ_7 leds<31>.D N_PZ_8  
+leds<31>.CLK value<10>.Q N_PZ_9 leds<9>.D N_PZ_10 leds<9>.CLK value<15>.Q N_PZ_11  
+leds<16>.D N_PZ_12 leds<16>.CLK N_PZ_15 counter<1>.CLK N_PZ_18 counter<2>.CLK N_PZ_21  
+counter<3>.CLK N_PZ_24 counter<4>.CLK N_PZ_27 counter<5>.CLK N_PZ_29 counter<0>.CLK  
+N_PZ_32 counter<6>.CLK toggle.Q N_PZ_33 value<0>.D counter<0>.Q counter<1>.Q  
+counter<2>.Q counter<3>.Q counter<4>.Q counter<5>.Q counter<6>.Q N_PZ_34 value<0>.LH  
+N_PZ_35 value<10>.D N_PZ_36 value<10>.LH N_PZ_37 value<15>.D N_PZ_38 value<15>.LH  
+N_PZ_39 value<17>.D N_PZ_40 value<17>.LH N_PZ_41 value<25>.D N_PZ_42 value<25>.LH  
+N_PZ_43 leds<14>.D N_PZ_44 leds<14>.CLK N_PZ_45 leds<13>.D N_PZ_46 leds<13>.CLK  
+N_PZ_47 leds<12>.D N_PZ_48 leds<12>.CLK N_PZ_49 leds<11>.D N_PZ_50 leds<11>.CLK  
+N_PZ_51 leds<10>.D N_PZ_52 leds<10>.CLK N_PZ_53 leds<15>.D N_PZ_54 leds<15>.CLK  
+N_PZ_55 leds<23>.D N_PZ_56 leds<23>.CLK N_PZ_57 leds<22>.D N_PZ_58 leds<22>.CLK  
+N_PZ_59 leds<21>.D N_PZ_60 leds<21>.CLK N_PZ_61 leds<20>.D N_PZ_62 leds<20>.CLK  
+N_PZ_63 leds<19>.D N_PZ_64 leds<19>.CLK N_PZ_65 leds<18>.D N_PZ_66 leds<18>.CLK  
+N_PZ_67 leds<17>.D N_PZ_68 leds<17>.CLK N_PZ_69 leds<30>.D N_PZ_70 leds<30>.CLK  
+N_PZ_71 leds<29>.D N_PZ_72 leds<29>.CLK N_PZ_73 leds<28>.D N_PZ_74 leds<28>.CLK  
+N_PZ_75 leds<27>.D N_PZ_76 leds<27>.CLK N_PZ_77 leds<26>.D N_PZ_78 leds<26>.CLK  
+N_PZ_79 leds<25>.D N_PZ_80 leds<25>.CLK N_PZ_81 leds<7>.D N_PZ_82 leds<7>.CLK N_PZ_83  
+leds<6>.D N_PZ_84 leds<6>.CLK N_PZ_85 leds<5>.D N_PZ_86 leds<5>.CLK N_PZ_87 leds<4>.D  
+N_PZ_88 leds<4>.CLK N_PZ_89 leds<3>.D N_PZ_90 leds<3>.CLK N_PZ_91 leds<2>.D N_PZ_92  
+leds<2>.CLK N_PZ_93 leds<1>.D N_PZ_94 leds<1>.CLK N_PZ_95 leds<0>.D N_PZ_96  
+leds<0>.CLK N_PZ_108 counter<0>.T N_PZ_136 counter<1>.T N_PZ_137 counter<2>.T N_PZ_138  
+counter<3>.T N_PZ_139 counter<4>.T N_PZ_140 counter<5>.T N_PZ_141 counter<6>.T  
+N_PZ_142 toggle.T 
+
+                                  Short Name                 Collapsible
+          Name       Base   Ext   | TypePolOld pt/th fi/FI fo | min          Pair        pxapin
+         clock      clock         i   PI  -  -  -| -  -| - 40 -   -             -             -
+        N_PZ_1     N_PZ_1     -  z3 AINT  -  -  1|28  1|32  1 -   -    toggle.CLK             -
+        N_PZ_3     N_PZ_3     -  b4 AINT  -  -  1|28  1|32  1 -   -     leds<8>.D             -
+        N_PZ_4     N_PZ_4     -  c4 AINT  -  -  1|28  1|32  1 -   -   leds<8>.CLK             -
+        N_PZ_5     N_PZ_5     -  d4 AINT  -  -  1|28  1|32  1 -   -    leds<24>.D             -
+        N_PZ_6     N_PZ_6     -  e4 AINT  -  -  1|28  1|32  1 -   -  leds<24>.CLK             -
+        N_PZ_7     N_PZ_7     -  f4 AINT  -  -  1|28  1|32  1 -   -    leds<31>.D             -
+        N_PZ_8     N_PZ_8     -  g4 AINT  -  -  1|28  1|32  1 -   -  leds<31>.CLK             -
+        N_PZ_9     N_PZ_9     -  h4 AINT  -  -  1|28  1|32  1 -   -     leds<9>.D             -
+       N_PZ_10    N_PZ_10     -  i4 AINT  -  -  1|28  1|32  1 -   -   leds<9>.CLK             -
+       N_PZ_11    N_PZ_11     -  j4 AINT  -  -  1|28  1|32  1 -   -    leds<16>.D             -
+       N_PZ_12    N_PZ_12     -  k4 AINT  -  -  1|28  1|32  1 -   -  leds<16>.CLK             -
+       N_PZ_15    N_PZ_15     -  n4 AINT  -  -  1|28  1|32  1 -   -counter<1>.CLK             -
+       N_PZ_18    N_PZ_18     -  q4 AINT  -  -  1|28  1|32  1 -   -counter<2>.CLK             -
+       N_PZ_21    N_PZ_21     -  t4 AINT  -  -  1|28  1|32  1 -   -counter<3>.CLK             -
+       N_PZ_24    N_PZ_24     -  w4 AINT  -  -  1|28  1|32  1 -   -counter<4>.CLK             -
+       N_PZ_27    N_PZ_27     -  z4 AINT  -  -  1|28  1|32  1 -   -counter<5>.CLK             -
+       N_PZ_29    N_PZ_29     -  b5 AINT  -  -  1|28  1|32  1 -   -counter<0>.CLK             -
+       N_PZ_32    N_PZ_32     -  e5 AINT  -  -  1|28  1|32  1 -   -counter<6>.CLK             -
+       N_PZ_33    N_PZ_33     -  f5 AINT  -  -  1|28  1|32  1 -   -    value<0>.D             -
+       N_PZ_34    N_PZ_34     -  g5 AINT  -  -  1|28  7|32  1 -   -   value<0>.LH             -
+       N_PZ_35    N_PZ_35     -  h5 AINT  -  -  1|28  1|32  1 -   -   value<10>.D             -
+       N_PZ_36    N_PZ_36     -  i5 AINT  -  -  1|28  7|32  1 -   -  value<10>.LH             -
+       N_PZ_37    N_PZ_37     -  j5 AINT  -  -  1|28  7|32  1 -   -   value<15>.D             -
+       N_PZ_38    N_PZ_38     -  k5 AINT  -  -  1|28  6|32  1 -   -  value<15>.LH             -
+       N_PZ_39    N_PZ_39     -  l5 AINT  -  -  1|28  1|32  1 -   -   value<17>.D             -
+       N_PZ_40    N_PZ_40     -  m5 AINT  -  -  1|28  7|32  1 -   -  value<17>.LH             -
+       N_PZ_41    N_PZ_41     -  n5 AINT  -  -  1|28  1|32  1 -   -   value<25>.D             -
+       N_PZ_42    N_PZ_42     -  o5 AINT  -  -  1|28  7|32  1 -   -  value<25>.LH             -
+       N_PZ_43    N_PZ_43     -  p5 AINT  -  -  1|28  1|32  1 -   -    leds<14>.D             -
+       N_PZ_44    N_PZ_44     -  q5 AINT  -  -  1|28  1|32  1 -   -  leds<14>.CLK             -
+       N_PZ_45    N_PZ_45     -  r5 AINT  -  -  1|28  1|32  1 -   -    leds<13>.D             -
+       N_PZ_46    N_PZ_46     -  s5 AINT  -  -  1|28  1|32  1 -   -  leds<13>.CLK             -
+       N_PZ_47    N_PZ_47     -  t5 AINT  -  -  1|28  1|32  1 -   -    leds<12>.D             -
+       N_PZ_48    N_PZ_48     -  u5 AINT  -  -  1|28  1|32  1 -   -  leds<12>.CLK             -
+       N_PZ_49    N_PZ_49     -  v5 AINT  -  -  1|28  1|32  1 -   -    leds<11>.D             -
+       N_PZ_50    N_PZ_50     -  w5 AINT  -  -  1|28  1|32  1 -   -  leds<11>.CLK             -
+       N_PZ_51    N_PZ_51     -  x5 AINT  -  -  1|28  1|32  1 -   -    leds<10>.D             -
+       N_PZ_52    N_PZ_52     -  y5 AINT  -  -  1|28  1|32  1 -   -  leds<10>.CLK             -
+       N_PZ_53    N_PZ_53     -  z5 AINT  -  -  1|28  1|32  1 -   -    leds<15>.D             -
+       N_PZ_54    N_PZ_54     -  a6 AINT  -  -  1|28  1|32  1 -   -  leds<15>.CLK             -
+       N_PZ_55    N_PZ_55     -  b6 AINT  -  -  1|28  1|32  1 -   -    leds<23>.D             -
+       N_PZ_56    N_PZ_56     -  c6 AINT  -  -  1|28  1|32  1 -   -  leds<23>.CLK             -
+       N_PZ_57    N_PZ_57     -  d6 AINT  -  -  1|28  1|32  1 -   -    leds<22>.D             -
+       N_PZ_58    N_PZ_58     -  e6 AINT  -  -  1|28  1|32  1 -   -  leds<22>.CLK             -
+       N_PZ_59    N_PZ_59     -  f6 AINT  -  -  1|28  1|32  1 -   -    leds<21>.D             -
+       N_PZ_60    N_PZ_60     -  g6 AINT  -  -  1|28  1|32  1 -   -  leds<21>.CLK             -
+       N_PZ_61    N_PZ_61     -  h6 AINT  -  -  1|28  1|32  1 -   -    leds<20>.D             -
+       N_PZ_62    N_PZ_62     -  i6 AINT  -  -  1|28  1|32  1 -   -  leds<20>.CLK             -
+       N_PZ_63    N_PZ_63     -  j6 AINT  -  -  1|28  1|32  1 -   -    leds<19>.D             -
+       N_PZ_64    N_PZ_64     -  k6 AINT  -  -  1|28  1|32  1 -   -  leds<19>.CLK             -
+       N_PZ_65    N_PZ_65     -  l6 AINT  -  -  1|28  1|32  1 -   -    leds<18>.D             -
+       N_PZ_66    N_PZ_66     -  m6 AINT  -  -  1|28  1|32  1 -   -  leds<18>.CLK             -
+       N_PZ_67    N_PZ_67     -  n6 AINT  -  -  1|28  1|32  1 -   -    leds<17>.D             -
+       N_PZ_68    N_PZ_68     -  o6 AINT  -  -  1|28  1|32  1 -   -  leds<17>.CLK             -
+       N_PZ_69    N_PZ_69     -  p6 AINT  -  -  1|28  1|32  1 -   -    leds<30>.D             -
+       N_PZ_70    N_PZ_70     -  q6 AINT  -  -  1|28  1|32  1 -   -  leds<30>.CLK             -
+       N_PZ_71    N_PZ_71     -  r6 AINT  -  -  1|28  1|32  1 -   -    leds<29>.D             -
+       N_PZ_72    N_PZ_72     -  s6 AINT  -  -  1|28  1|32  1 -   -  leds<29>.CLK             -
+       N_PZ_73    N_PZ_73     -  t6 AINT  -  -  1|28  1|32  1 -   -    leds<28>.D             -
+       N_PZ_74    N_PZ_74     -  u6 AINT  -  -  1|28  1|32  1 -   -  leds<28>.CLK             -
+       N_PZ_75    N_PZ_75     -  v6 AINT  -  -  1|28  1|32  1 -   -    leds<27>.D             -
+       N_PZ_76    N_PZ_76     -  w6 AINT  -  -  1|28  1|32  1 -   -  leds<27>.CLK             -
+       N_PZ_77    N_PZ_77     -  x6 AINT  -  -  1|28  1|32  1 -   -    leds<26>.D             -
+       N_PZ_78    N_PZ_78     -  y6 AINT  -  -  1|28  1|32  1 -   -  leds<26>.CLK             -
+       N_PZ_79    N_PZ_79     -  z6 AINT  -  -  1|28  1|32  1 -   -    leds<25>.D             -
+       N_PZ_80    N_PZ_80     -  a7 AINT  -  -  1|28  1|32  1 -   -  leds<25>.CLK             -
+       N_PZ_81    N_PZ_81     -  b7 AINT  -  -  1|28  1|32  1 -   -     leds<7>.D             -
+       N_PZ_82    N_PZ_82     -  c7 AINT  -  -  1|28  1|32  1 -   -   leds<7>.CLK             -
+       N_PZ_83    N_PZ_83     -  d7 AINT  -  -  1|28  1|32  1 -   -     leds<6>.D             -
+       N_PZ_84    N_PZ_84     -  e7 AINT  -  -  1|28  1|32  1 -   -   leds<6>.CLK             -
+       N_PZ_85    N_PZ_85     -  f7 AINT  -  -  1|28  1|32  1 -   -     leds<5>.D             -
+       N_PZ_86    N_PZ_86     -  g7 AINT  -  -  1|28  1|32  1 -   -   leds<5>.CLK             -
+       N_PZ_87    N_PZ_87     -  h7 AINT  -  -  1|28  1|32  1 -   -     leds<4>.D             -
+       N_PZ_88    N_PZ_88     -  i7 AINT  -  -  1|28  1|32  1 -   -   leds<4>.CLK             -
+       N_PZ_89    N_PZ_89     -  j7 AINT  -  -  1|28  1|32  1 -   -     leds<3>.D             -
+       N_PZ_90    N_PZ_90     -  k7 AINT  -  -  1|28  1|32  1 -   -   leds<3>.CLK             -
+       N_PZ_91    N_PZ_91     -  l7 AINT  -  -  1|28  1|32  1 -   -     leds<2>.D             -
+       N_PZ_92    N_PZ_92     -  m7 AINT  -  -  1|28  1|32  1 -   -   leds<2>.CLK             -
+       N_PZ_93    N_PZ_93     -  n7 AINT  -  -  1|28  1|32  1 -   -     leds<1>.D             -
+       N_PZ_94    N_PZ_94     -  o7 AINT  -  -  1|28  1|32  1 -   -   leds<1>.CLK             -
+       N_PZ_95    N_PZ_95     -  p7 AINT  -  -  1|28  1|32  1 -   -     leds<0>.D             -
+       N_PZ_96    N_PZ_96     -  q7 AINT  -  -  1|28  1|32  1 -   -   leds<0>.CLK             -
+    toggle.CLK     toggle  .CLK  g0   PO  -  -  -| -  -| -  0 -   -        N_PZ_1        toggle
+     leds<8>.D    leds<8>    .D  i0   PO  -  -  -| -  -| -  0 -   -        N_PZ_3       leds<8>
+   leds<8>.CLK    leds<8>  .CLK  j0   PO  -  -  -| -  -| -  0 -   -        N_PZ_4       leds<8>
+    leds<24>.D   leds<24>    .D  k0   PO  -  -  -| -  -| -  0 -   -        N_PZ_5      leds<24>
+  leds<24>.CLK   leds<24>  .CLK  l0   PO  -  -  -| -  -| -  0 -   -        N_PZ_6      leds<24>
+    leds<31>.D   leds<31>    .D  m0   PO  -  -  -| -  -| -  0 -   -        N_PZ_7      leds<31>
+  leds<31>.CLK   leds<31>  .CLK  n0   PO  -  -  -| -  -| -  0 -   -        N_PZ_8      leds<31>
+     leds<9>.D    leds<9>    .D  o0   PO  -  -  -| -  -| -  0 -   -        N_PZ_9       leds<9>
+   leds<9>.CLK    leds<9>  .CLK  p0   PO  -  -  -| -  -| -  0 -   -       N_PZ_10       leds<9>
+    leds<16>.D   leds<16>    .D  q0   PO  -  -  -| -  -| -  0 -   -       N_PZ_11      leds<16>
+  leds<16>.CLK   leds<16>  .CLK  r0   PO  -  -  -| -  -| -  0 -   -       N_PZ_12      leds<16>
+counter<1>.CLK counter<1>  .CLK  u0   PO  -  -  -| -  -| -  0 -   -       N_PZ_15    counter<1>
+counter<2>.CLK counter<2>  .CLK  x0   PO  -  -  -| -  -| -  0 -   -       N_PZ_18    counter<2>
+counter<3>.CLK counter<3>  .CLK  a1   PO  -  -  -| -  -| -  0 -   -       N_PZ_21    counter<3>
+counter<4>.CLK counter<4>  .CLK  d1   PO  -  -  -| -  -| -  0 -   -       N_PZ_24    counter<4>
+counter<5>.CLK counter<5>  .CLK  g1   PO  -  -  -| -  -| -  0 -   -       N_PZ_27    counter<5>
+counter<0>.CLK counter<0>  .CLK  i1   PO  -  -  -| -  -| -  0 -   -       N_PZ_29    counter<0>
+counter<6>.CLK counter<6>  .CLK  l1   PO  -  -  -| -  -| -  0 -   -       N_PZ_32    counter<6>
+    value<0>.D   value<0>    .D  m1   PO  -  -  -| -  -| -  0 -   -       N_PZ_33      value<0>
+   value<0>.LH   value<0>   .LH  n1   PO  -  -  -| -  -| -  0 -   -       N_PZ_34      value<0>
+   value<10>.D  value<10>    .D  o1   PO  -  -  -| -  -| -  0 -   -       N_PZ_35     value<10>
+  value<10>.LH  value<10>   .LH  p1   PO  -  -  -| -  -| -  0 -   -       N_PZ_36     value<10>
+   value<15>.D  value<15>    .D  q1   PO  -  -  -| -  -| -  0 -   -       N_PZ_37     value<15>
+  value<15>.LH  value<15>   .LH  r1   PO  -  -  -| -  -| -  0 -   -       N_PZ_38     value<15>
+   value<17>.D  value<17>    .D  s1   PO  -  -  -| -  -| -  0 -   -       N_PZ_39     value<17>
+  value<17>.LH  value<17>   .LH  t1   PO  -  -  -| -  -| -  0 -   -       N_PZ_40     value<17>
+   value<25>.D  value<25>    .D  u1   PO  -  -  -| -  -| -  0 -   -       N_PZ_41     value<25>
+  value<25>.LH  value<25>   .LH  v1   PO  -  -  -| -  -| -  0 -   -       N_PZ_42     value<25>
+    leds<14>.D   leds<14>    .D  w1   PO  -  -  -| -  -| -  0 -   -       N_PZ_43      leds<14>
+  leds<14>.CLK   leds<14>  .CLK  x1   PO  -  -  -| -  -| -  0 -   -       N_PZ_44      leds<14>
+    leds<13>.D   leds<13>    .D  y1   PO  -  -  -| -  -| -  0 -   -       N_PZ_45      leds<13>
+  leds<13>.CLK   leds<13>  .CLK  z1   PO  -  -  -| -  -| -  0 -   -       N_PZ_46      leds<13>
+    leds<12>.D   leds<12>    .D  a2   PO  -  -  -| -  -| -  0 -   -       N_PZ_47      leds<12>
+  leds<12>.CLK   leds<12>  .CLK  b2   PO  -  -  -| -  -| -  0 -   -       N_PZ_48      leds<12>
+    leds<11>.D   leds<11>    .D  c2   PO  -  -  -| -  -| -  0 -   -       N_PZ_49      leds<11>
+  leds<11>.CLK   leds<11>  .CLK  d2   PO  -  -  -| -  -| -  0 -   -       N_PZ_50      leds<11>
+    leds<10>.D   leds<10>    .D  e2   PO  -  -  -| -  -| -  0 -   -       N_PZ_51      leds<10>
+  leds<10>.CLK   leds<10>  .CLK  f2   PO  -  -  -| -  -| -  0 -   -       N_PZ_52      leds<10>
+    leds<15>.D   leds<15>    .D  g2   PO  -  -  -| -  -| -  0 -   -       N_PZ_53      leds<15>
+  leds<15>.CLK   leds<15>  .CLK  h2   PO  -  -  -| -  -| -  0 -   -       N_PZ_54      leds<15>
+    leds<23>.D   leds<23>    .D  i2   PO  -  -  -| -  -| -  0 -   -       N_PZ_55      leds<23>
+  leds<23>.CLK   leds<23>  .CLK  j2   PO  -  -  -| -  -| -  0 -   -       N_PZ_56      leds<23>
+    leds<22>.D   leds<22>    .D  k2   PO  -  -  -| -  -| -  0 -   -       N_PZ_57      leds<22>
+  leds<22>.CLK   leds<22>  .CLK  l2   PO  -  -  -| -  -| -  0 -   -       N_PZ_58      leds<22>
+    leds<21>.D   leds<21>    .D  m2   PO  -  -  -| -  -| -  0 -   -       N_PZ_59      leds<21>
+  leds<21>.CLK   leds<21>  .CLK  n2   PO  -  -  -| -  -| -  0 -   -       N_PZ_60      leds<21>
+    leds<20>.D   leds<20>    .D  o2   PO  -  -  -| -  -| -  0 -   -       N_PZ_61      leds<20>
+  leds<20>.CLK   leds<20>  .CLK  p2   PO  -  -  -| -  -| -  0 -   -       N_PZ_62      leds<20>
+    leds<19>.D   leds<19>    .D  q2   PO  -  -  -| -  -| -  0 -   -       N_PZ_63      leds<19>
+  leds<19>.CLK   leds<19>  .CLK  r2   PO  -  -  -| -  -| -  0 -   -       N_PZ_64      leds<19>
+    leds<18>.D   leds<18>    .D  s2   PO  -  -  -| -  -| -  0 -   -       N_PZ_65      leds<18>
+  leds<18>.CLK   leds<18>  .CLK  t2   PO  -  -  -| -  -| -  0 -   -       N_PZ_66      leds<18>
+    leds<17>.D   leds<17>    .D  u2   PO  -  -  -| -  -| -  0 -   -       N_PZ_67      leds<17>
+  leds<17>.CLK   leds<17>  .CLK  v2   PO  -  -  -| -  -| -  0 -   -       N_PZ_68      leds<17>
+    leds<30>.D   leds<30>    .D  w2   PO  -  -  -| -  -| -  0 -   -       N_PZ_69      leds<30>
+  leds<30>.CLK   leds<30>  .CLK  x2   PO  -  -  -| -  -| -  0 -   -       N_PZ_70      leds<30>
+    leds<29>.D   leds<29>    .D  y2   PO  -  -  -| -  -| -  0 -   -       N_PZ_71      leds<29>
+  leds<29>.CLK   leds<29>  .CLK  z2   PO  -  -  -| -  -| -  0 -   -       N_PZ_72      leds<29>
+    leds<28>.D   leds<28>    .D  a3   PO  -  -  -| -  -| -  0 -   -       N_PZ_73      leds<28>
+  leds<28>.CLK   leds<28>  .CLK  b3   PO  -  -  -| -  -| -  0 -   -       N_PZ_74      leds<28>
+    leds<27>.D   leds<27>    .D  c3   PO  -  -  -| -  -| -  0 -   -       N_PZ_75      leds<27>
+  leds<27>.CLK   leds<27>  .CLK  d3   PO  -  -  -| -  -| -  0 -   -       N_PZ_76      leds<27>
+    leds<26>.D   leds<26>    .D  e3   PO  -  -  -| -  -| -  0 -   -       N_PZ_77      leds<26>
+  leds<26>.CLK   leds<26>  .CLK  f3   PO  -  -  -| -  -| -  0 -   -       N_PZ_78      leds<26>
+    leds<25>.D   leds<25>    .D  g3   PO  -  -  -| -  -| -  0 -   -       N_PZ_79      leds<25>
+  leds<25>.CLK   leds<25>  .CLK  h3   PO  -  -  -| -  -| -  0 -   -       N_PZ_80      leds<25>
+     leds<7>.D    leds<7>    .D  i3   PO  -  -  -| -  -| -  0 -   -       N_PZ_81       leds<7>
+   leds<7>.CLK    leds<7>  .CLK  j3   PO  -  -  -| -  -| -  0 -   -       N_PZ_82       leds<7>
+     leds<6>.D    leds<6>    .D  k3   PO  -  -  -| -  -| -  0 -   -       N_PZ_83       leds<6>
+   leds<6>.CLK    leds<6>  .CLK  l3   PO  -  -  -| -  -| -  0 -   -       N_PZ_84       leds<6>
+     leds<5>.D    leds<5>    .D  m3   PO  -  -  -| -  -| -  0 -   -       N_PZ_85       leds<5>
+   leds<5>.CLK    leds<5>  .CLK  n3   PO  -  -  -| -  -| -  0 -   -       N_PZ_86       leds<5>
+     leds<4>.D    leds<4>    .D  o3   PO  -  -  -| -  -| -  0 -   -       N_PZ_87       leds<4>
+   leds<4>.CLK    leds<4>  .CLK  p3   PO  -  -  -| -  -| -  0 -   -       N_PZ_88       leds<4>
+     leds<3>.D    leds<3>    .D  q3   PO  -  -  -| -  -| -  0 -   -       N_PZ_89       leds<3>
+   leds<3>.CLK    leds<3>  .CLK  r3   PO  -  -  -| -  -| -  0 -   -       N_PZ_90       leds<3>
+     leds<2>.D    leds<2>    .D  s3   PO  -  -  -| -  -| -  0 -   -       N_PZ_91       leds<2>
+   leds<2>.CLK    leds<2>  .CLK  t3   PO  -  -  -| -  -| -  0 -   -       N_PZ_92       leds<2>
+     leds<1>.D    leds<1>    .D  u3   PO  -  -  -| -  -| -  0 -   -       N_PZ_93       leds<1>
+   leds<1>.CLK    leds<1>  .CLK  v3   PO  -  -  -| -  -| -  0 -   -       N_PZ_94       leds<1>
+     leds<0>.D    leds<0>    .D  w3   PO  -  -  -| -  -| -  0 -   -       N_PZ_95       leds<0>
+   leds<0>.CLK    leds<0>  .CLK  x3   PO  -  -  -| -  -| -  0 -   -       N_PZ_96       leds<0>
+      toggle.Q     toggle    .Q  d8   PI  -  -  -| -  -| -  5 -   -             -             -
+  counter<0>.Q counter<0>    .Q  e8   PI  -  -  -| -  -| - 11 -   -             -             -
+    value<0>.Q   value<0>    .Q  f8   PI  -  -  -| -  -| -  9 -   -             -             -
+   value<10>.Q  value<10>    .Q  g8   PI  -  -  -| -  -| -  6 -   -             -             -
+   value<15>.Q  value<15>    .Q  h8   PI  -  -  -| -  -| -  2 -   -             -             -
+   value<17>.Q  value<17>    .Q  i8   PI  -  -  -| -  -| -  8 -   -             -             -
+   value<25>.Q  value<25>    .Q  j8   PI  -  -  -| -  -| -  7 -   -             -             -
+  counter<1>.Q counter<1>    .Q  k8   PI  -  -  -| -  -| - 12 -   -             -             -
+  counter<2>.Q counter<2>    .Q  l8   PI  -  -  -| -  -| - 11 -   -             -             -
+  counter<3>.Q counter<3>    .Q  m8   PI  -  -  -| -  -| - 10 -   -             -             -
+  counter<4>.Q counter<4>    .Q  n8   PI  -  -  -| -  -| -  9 -   -             -             -
+  counter<5>.Q counter<5>    .Q  o8   PI  -  -  -| -  -| -  8 -   -             -             -
+  counter<6>.Q counter<6>    .Q  p8   PI  -  -  -| -  -| -  7 -   -             -             -
+      N_PZ_108   N_PZ_108     - o11 AINT  -  -  1|28  0|32  1 -   -  counter<0>.T             -
+      N_PZ_136   N_PZ_136     - q12 AINT  -  -  1|28  1|32  1 -   -  counter<1>.T             -
+      N_PZ_137   N_PZ_137     - r12 AINT  -  -  1|28  2|32  1 -   -  counter<2>.T             -
+      N_PZ_138   N_PZ_138     - s12 AINT  -  -  1|28  3|32  1 -   -  counter<3>.T             -
+      N_PZ_139   N_PZ_139     - t12 AINT  -  -  1|28  4|32  1 -   -  counter<4>.T             -
+      N_PZ_140   N_PZ_140     - u12 AINT  -  -  1|28  5|32  1 -   -  counter<5>.T             -
+      N_PZ_141   N_PZ_141     - v12 AINT  -  -  1|28  6|32  1 -   -  counter<6>.T             -
+  counter<0>.T counter<0>    .T  a9   PO  -  -  -| -  -| -  0 -   -      N_PZ_108    counter<0>
+  counter<1>.T counter<1>    .T d11   PO  -  -  -| -  -| -  0 -   -      N_PZ_136    counter<1>
+  counter<2>.T counter<2>    .T e11   PO  -  -  -| -  -| -  0 -   -      N_PZ_137    counter<2>
+  counter<3>.T counter<3>    .T f11   PO  -  -  -| -  -| -  0 -   -      N_PZ_138    counter<3>
+  counter<4>.T counter<4>    .T g11   PO  -  -  -| -  -| -  0 -   -      N_PZ_139    counter<4>
+  counter<5>.T counter<5>    .T h11   PO  -  -  -| -  -| -  0 -   -      N_PZ_140    counter<5>
+  counter<6>.T counter<6>    .T i11   PO  -  -  -| -  -| -  0 -   -      N_PZ_141    counter<6>
+      N_PZ_142   N_PZ_142     - x12 AINT  -  -  1|28  7|32  1 -   -      toggle.T             -
+      toggle.T     toggle    .T w12   PO  -  -  -| -  -| -  0 -   -      N_PZ_142        toggle
+
+--------------------------------------------------------
+|  PinCnt = 33, NodeCnt = 13, Total = 46, TotalPt = 90 |
+--------------------------------------------------------
+clock,net=CPLD_Tester: PI
+  <--0-- 
+  --40--> (N_PZ_1, CPLD_Tester) (N_PZ_4, CPLD_Tester) (N_PZ_6, CPLD_Tester)  
+          (N_PZ_8, CPLD_Tester) (N_PZ_10, CPLD_Tester) (N_PZ_12, CPLD_Tester)  
+          (N_PZ_15, CPLD_Tester) (N_PZ_18, CPLD_Tester) (N_PZ_21, CPLD_Tester)  
+          (N_PZ_24, CPLD_Tester) (N_PZ_27, CPLD_Tester) (N_PZ_29, CPLD_Tester)  
+          (N_PZ_32, CPLD_Tester) (N_PZ_44, CPLD_Tester) (N_PZ_46, CPLD_Tester)  
+          (N_PZ_48, CPLD_Tester) (N_PZ_50, CPLD_Tester) (N_PZ_52, CPLD_Tester)  
+          (N_PZ_54, CPLD_Tester) (N_PZ_56, CPLD_Tester) (N_PZ_58, CPLD_Tester)  
+          (N_PZ_60, CPLD_Tester) (N_PZ_62, CPLD_Tester) (N_PZ_64, CPLD_Tester)  
+          (N_PZ_66, CPLD_Tester) (N_PZ_68, CPLD_Tester) (N_PZ_70, CPLD_Tester)  
+          (N_PZ_72, CPLD_Tester) (N_PZ_74, CPLD_Tester) (N_PZ_76, CPLD_Tester)  
+          (N_PZ_78, CPLD_Tester) (N_PZ_80, CPLD_Tester) (N_PZ_82, CPLD_Tester)  
+          (N_PZ_84, CPLD_Tester) (N_PZ_86, CPLD_Tester) (N_PZ_88, CPLD_Tester)  
+          (N_PZ_90, CPLD_Tester) (N_PZ_92, CPLD_Tester) (N_PZ_94, CPLD_Tester)  
+          (N_PZ_96, CPLD_Tester) 
+N_PZ_1,net=CPLD_Tester: PINT ( toggle.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (toggle.CLK, CPLD_Tester) 
+N_PZ_3,net=CPLD_Tester: PINT ( leds<8>.D )
+  <--1--  (value<0>.Q, CPLD_Tester)
+  --1--> (leds<8>.D, CPLD_Tester) 
+N_PZ_4,net=CPLD_Tester: PINT ( leds<8>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<8>.CLK, CPLD_Tester) 
+N_PZ_5,net=CPLD_Tester: PINT ( leds<24>.D )
+  <--1--  (value<17>.Q, CPLD_Tester)
+  --1--> (leds<24>.D, CPLD_Tester) 
+N_PZ_6,net=CPLD_Tester: PINT ( leds<24>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<24>.CLK, CPLD_Tester) 
+N_PZ_7,net=CPLD_Tester: PINT ( leds<31>.D )
+  <--1--  (value<25>.Q, CPLD_Tester)
+  --1--> (leds<31>.D, CPLD_Tester) 
+N_PZ_8,net=CPLD_Tester: PINT ( leds<31>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<31>.CLK, CPLD_Tester) 
+N_PZ_9,net=CPLD_Tester: PINT ( leds<9>.D )
+  <--1--  (value<10>.Q, CPLD_Tester)
+  --1--> (leds<9>.D, CPLD_Tester) 
+N_PZ_10,net=CPLD_Tester: PINT ( leds<9>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<9>.CLK, CPLD_Tester) 
+N_PZ_11,net=CPLD_Tester: PINT ( leds<16>.D )
+  <--1--  (value<15>.Q, CPLD_Tester)
+  --1--> (leds<16>.D, CPLD_Tester) 
+N_PZ_12,net=CPLD_Tester: PINT ( leds<16>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<16>.CLK, CPLD_Tester) 
+N_PZ_15,net=CPLD_Tester: PINT ( counter<1>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (counter<1>.CLK, CPLD_Tester) 
+N_PZ_18,net=CPLD_Tester: PINT ( counter<2>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (counter<2>.CLK, CPLD_Tester) 
+N_PZ_21,net=CPLD_Tester: PINT ( counter<3>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (counter<3>.CLK, CPLD_Tester) 
+N_PZ_24,net=CPLD_Tester: PINT ( counter<4>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (counter<4>.CLK, CPLD_Tester) 
+N_PZ_27,net=CPLD_Tester: PINT ( counter<5>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (counter<5>.CLK, CPLD_Tester) 
+N_PZ_29,net=CPLD_Tester: PINT ( counter<0>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (counter<0>.CLK, CPLD_Tester) 
+N_PZ_32,net=CPLD_Tester: PINT ( counter<6>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (counter<6>.CLK, CPLD_Tester) 
+N_PZ_33,net=CPLD_Tester: PINT ( value<0>.D )
+  <--1--  (toggle.Q, CPLD_Tester)
+  --1--> (value<0>.D, CPLD_Tester) 
+N_PZ_34,net=CPLD_Tester: PINT ( value<0>.LH )
+  <--7--  (counter<0>.Q, CPLD_Tester) (counter<1>.Q, CPLD_Tester) 
+          (counter<2>.Q, CPLD_Tester) (counter<3>.Q, CPLD_Tester) 
+          (counter<4>.Q, CPLD_Tester) (counter<5>.Q, CPLD_Tester) 
+          (counter<6>.Q, CPLD_Tester)
+  --1--> (value<0>.LH, CPLD_Tester) 
+N_PZ_35,net=CPLD_Tester: PINT ( value<10>.D )
+  <--1--  (toggle.Q, CPLD_Tester)
+  --1--> (value<10>.D, CPLD_Tester) 
+N_PZ_36,net=CPLD_Tester: PINT ( value<10>.LH )
+  <--7--  (counter<0>.Q, CPLD_Tester) (counter<1>.Q, CPLD_Tester) 
+          (counter<2>.Q, CPLD_Tester) (counter<3>.Q, CPLD_Tester) 
+          (counter<4>.Q, CPLD_Tester) (counter<5>.Q, CPLD_Tester) 
+          (counter<6>.Q, CPLD_Tester)
+  --1--> (value<10>.LH, CPLD_Tester) 
+N_PZ_37,net=CPLD_Tester: PINT ( value<15>.D )
+  <--7--  (toggle.Q, CPLD_Tester) (counter<1>.Q, CPLD_Tester) 
+          (counter<2>.Q, CPLD_Tester) (counter<3>.Q, CPLD_Tester) 
+          (counter<4>.Q, CPLD_Tester) (counter<5>.Q, CPLD_Tester) 
+          (counter<6>.Q, CPLD_Tester)
+  --1--> (value<15>.D, CPLD_Tester) 
+N_PZ_38,net=CPLD_Tester: PINT ( value<15>.LH )
+  <--6--  (counter<1>.Q, CPLD_Tester) (counter<2>.Q, CPLD_Tester) 
+          (counter<3>.Q, CPLD_Tester) (counter<4>.Q, CPLD_Tester) 
+          (counter<5>.Q, CPLD_Tester) (counter<6>.Q, CPLD_Tester)
+  --1--> (value<15>.LH, CPLD_Tester) 
+N_PZ_39,net=CPLD_Tester: PINT ( value<17>.D )
+  <--1--  (toggle.Q, CPLD_Tester)
+  --1--> (value<17>.D, CPLD_Tester) 
+N_PZ_40,net=CPLD_Tester: PINT ( value<17>.LH )
+  <--7--  (counter<0>.Q, CPLD_Tester) (counter<1>.Q, CPLD_Tester) 
+          (counter<2>.Q, CPLD_Tester) (counter<3>.Q, CPLD_Tester) 
+          (counter<4>.Q, CPLD_Tester) (counter<5>.Q, CPLD_Tester) 
+          (counter<6>.Q, CPLD_Tester)
+  --1--> (value<17>.LH, CPLD_Tester) 
+N_PZ_41,net=CPLD_Tester: PINT ( value<25>.D )
+  <--1--  (toggle.Q, CPLD_Tester)
+  --1--> (value<25>.D, CPLD_Tester) 
+N_PZ_42,net=CPLD_Tester: PINT ( value<25>.LH )
+  <--7--  (counter<0>.Q, CPLD_Tester) (counter<1>.Q, CPLD_Tester) 
+          (counter<2>.Q, CPLD_Tester) (counter<3>.Q, CPLD_Tester) 
+          (counter<4>.Q, CPLD_Tester) (counter<5>.Q, CPLD_Tester) 
+          (counter<6>.Q, CPLD_Tester)
+  --1--> (value<25>.LH, CPLD_Tester) 
+N_PZ_43,net=CPLD_Tester: PINT ( leds<14>.D )
+  <--1--  (value<10>.Q, CPLD_Tester)
+  --1--> (leds<14>.D, CPLD_Tester) 
+N_PZ_44,net=CPLD_Tester: PINT ( leds<14>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<14>.CLK, CPLD_Tester) 
+N_PZ_45,net=CPLD_Tester: PINT ( leds<13>.D )
+  <--1--  (value<10>.Q, CPLD_Tester)
+  --1--> (leds<13>.D, CPLD_Tester) 
+N_PZ_46,net=CPLD_Tester: PINT ( leds<13>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<13>.CLK, CPLD_Tester) 
+N_PZ_47,net=CPLD_Tester: PINT ( leds<12>.D )
+  <--1--  (value<10>.Q, CPLD_Tester)
+  --1--> (leds<12>.D, CPLD_Tester) 
+N_PZ_48,net=CPLD_Tester: PINT ( leds<12>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<12>.CLK, CPLD_Tester) 
+N_PZ_49,net=CPLD_Tester: PINT ( leds<11>.D )
+  <--1--  (value<10>.Q, CPLD_Tester)
+  --1--> (leds<11>.D, CPLD_Tester) 
+N_PZ_50,net=CPLD_Tester: PINT ( leds<11>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<11>.CLK, CPLD_Tester) 
+N_PZ_51,net=CPLD_Tester: PINT ( leds<10>.D )
+  <--1--  (value<10>.Q, CPLD_Tester)
+  --1--> (leds<10>.D, CPLD_Tester) 
+N_PZ_52,net=CPLD_Tester: PINT ( leds<10>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<10>.CLK, CPLD_Tester) 
+N_PZ_53,net=CPLD_Tester: PINT ( leds<15>.D )
+  <--1--  (value<15>.Q, CPLD_Tester)
+  --1--> (leds<15>.D, CPLD_Tester) 
+N_PZ_54,net=CPLD_Tester: PINT ( leds<15>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<15>.CLK, CPLD_Tester) 
+N_PZ_55,net=CPLD_Tester: PINT ( leds<23>.D )
+  <--1--  (value<17>.Q, CPLD_Tester)
+  --1--> (leds<23>.D, CPLD_Tester) 
+N_PZ_56,net=CPLD_Tester: PINT ( leds<23>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<23>.CLK, CPLD_Tester) 
+N_PZ_57,net=CPLD_Tester: PINT ( leds<22>.D )
+  <--1--  (value<17>.Q, CPLD_Tester)
+  --1--> (leds<22>.D, CPLD_Tester) 
+N_PZ_58,net=CPLD_Tester: PINT ( leds<22>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<22>.CLK, CPLD_Tester) 
+N_PZ_59,net=CPLD_Tester: PINT ( leds<21>.D )
+  <--1--  (value<17>.Q, CPLD_Tester)
+  --1--> (leds<21>.D, CPLD_Tester) 
+N_PZ_60,net=CPLD_Tester: PINT ( leds<21>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<21>.CLK, CPLD_Tester) 
+N_PZ_61,net=CPLD_Tester: PINT ( leds<20>.D )
+  <--1--  (value<17>.Q, CPLD_Tester)
+  --1--> (leds<20>.D, CPLD_Tester) 
+N_PZ_62,net=CPLD_Tester: PINT ( leds<20>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<20>.CLK, CPLD_Tester) 
+N_PZ_63,net=CPLD_Tester: PINT ( leds<19>.D )
+  <--1--  (value<17>.Q, CPLD_Tester)
+  --1--> (leds<19>.D, CPLD_Tester) 
+N_PZ_64,net=CPLD_Tester: PINT ( leds<19>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<19>.CLK, CPLD_Tester) 
+N_PZ_65,net=CPLD_Tester: PINT ( leds<18>.D )
+  <--1--  (value<17>.Q, CPLD_Tester)
+  --1--> (leds<18>.D, CPLD_Tester) 
+N_PZ_66,net=CPLD_Tester: PINT ( leds<18>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<18>.CLK, CPLD_Tester) 
+N_PZ_67,net=CPLD_Tester: PINT ( leds<17>.D )
+  <--1--  (value<17>.Q, CPLD_Tester)
+  --1--> (leds<17>.D, CPLD_Tester) 
+N_PZ_68,net=CPLD_Tester: PINT ( leds<17>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<17>.CLK, CPLD_Tester) 
+N_PZ_69,net=CPLD_Tester: PINT ( leds<30>.D )
+  <--1--  (value<25>.Q, CPLD_Tester)
+  --1--> (leds<30>.D, CPLD_Tester) 
+N_PZ_70,net=CPLD_Tester: PINT ( leds<30>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<30>.CLK, CPLD_Tester) 
+N_PZ_71,net=CPLD_Tester: PINT ( leds<29>.D )
+  <--1--  (value<25>.Q, CPLD_Tester)
+  --1--> (leds<29>.D, CPLD_Tester) 
+N_PZ_72,net=CPLD_Tester: PINT ( leds<29>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<29>.CLK, CPLD_Tester) 
+N_PZ_73,net=CPLD_Tester: PINT ( leds<28>.D )
+  <--1--  (value<25>.Q, CPLD_Tester)
+  --1--> (leds<28>.D, CPLD_Tester) 
+N_PZ_74,net=CPLD_Tester: PINT ( leds<28>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<28>.CLK, CPLD_Tester) 
+N_PZ_75,net=CPLD_Tester: PINT ( leds<27>.D )
+  <--1--  (value<25>.Q, CPLD_Tester)
+  --1--> (leds<27>.D, CPLD_Tester) 
+N_PZ_76,net=CPLD_Tester: PINT ( leds<27>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<27>.CLK, CPLD_Tester) 
+N_PZ_77,net=CPLD_Tester: PINT ( leds<26>.D )
+  <--1--  (value<25>.Q, CPLD_Tester)
+  --1--> (leds<26>.D, CPLD_Tester) 
+N_PZ_78,net=CPLD_Tester: PINT ( leds<26>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<26>.CLK, CPLD_Tester) 
+N_PZ_79,net=CPLD_Tester: PINT ( leds<25>.D )
+  <--1--  (value<25>.Q, CPLD_Tester)
+  --1--> (leds<25>.D, CPLD_Tester) 
+N_PZ_80,net=CPLD_Tester: PINT ( leds<25>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<25>.CLK, CPLD_Tester) 
+N_PZ_81,net=CPLD_Tester: PINT ( leds<7>.D )
+  <--1--  (value<0>.Q, CPLD_Tester)
+  --1--> (leds<7>.D, CPLD_Tester) 
+N_PZ_82,net=CPLD_Tester: PINT ( leds<7>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<7>.CLK, CPLD_Tester) 
+N_PZ_83,net=CPLD_Tester: PINT ( leds<6>.D )
+  <--1--  (value<0>.Q, CPLD_Tester)
+  --1--> (leds<6>.D, CPLD_Tester) 
+N_PZ_84,net=CPLD_Tester: PINT ( leds<6>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<6>.CLK, CPLD_Tester) 
+N_PZ_85,net=CPLD_Tester: PINT ( leds<5>.D )
+  <--1--  (value<0>.Q, CPLD_Tester)
+  --1--> (leds<5>.D, CPLD_Tester) 
+N_PZ_86,net=CPLD_Tester: PINT ( leds<5>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<5>.CLK, CPLD_Tester) 
+N_PZ_87,net=CPLD_Tester: PINT ( leds<4>.D )
+  <--1--  (value<0>.Q, CPLD_Tester)
+  --1--> (leds<4>.D, CPLD_Tester) 
+N_PZ_88,net=CPLD_Tester: PINT ( leds<4>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<4>.CLK, CPLD_Tester) 
+N_PZ_89,net=CPLD_Tester: PINT ( leds<3>.D )
+  <--1--  (value<0>.Q, CPLD_Tester)
+  --1--> (leds<3>.D, CPLD_Tester) 
+N_PZ_90,net=CPLD_Tester: PINT ( leds<3>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<3>.CLK, CPLD_Tester) 
+N_PZ_91,net=CPLD_Tester: PINT ( leds<2>.D )
+  <--1--  (value<0>.Q, CPLD_Tester)
+  --1--> (leds<2>.D, CPLD_Tester) 
+N_PZ_92,net=CPLD_Tester: PINT ( leds<2>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<2>.CLK, CPLD_Tester) 
+N_PZ_93,net=CPLD_Tester: PINT ( leds<1>.D )
+  <--1--  (value<0>.Q, CPLD_Tester)
+  --1--> (leds<1>.D, CPLD_Tester) 
+N_PZ_94,net=CPLD_Tester: PINT ( leds<1>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<1>.CLK, CPLD_Tester) 
+N_PZ_95,net=CPLD_Tester: PINT ( leds<0>.D )
+  <--1--  (value<0>.Q, CPLD_Tester)
+  --1--> (leds<0>.D, CPLD_Tester) 
+N_PZ_96,net=CPLD_Tester: PINT ( leds<0>.CLK )
+  <--1--  (clock, CPLD_Tester)
+  --1--> (leds<0>.CLK, CPLD_Tester) 
+toggle.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_1, CPLD_Tester)
+  --0--> 
+leds<8>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_3, CPLD_Tester)
+  --0--> 
+leds<8>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_4, CPLD_Tester)
+  --0--> 
+leds<24>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_5, CPLD_Tester)
+  --0--> 
+leds<24>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_6, CPLD_Tester)
+  --0--> 
+leds<31>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_7, CPLD_Tester)
+  --0--> 
+leds<31>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_8, CPLD_Tester)
+  --0--> 
+leds<9>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_9, CPLD_Tester)
+  --0--> 
+leds<9>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_10, CPLD_Tester)
+  --0--> 
+leds<16>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_11, CPLD_Tester)
+  --0--> 
+leds<16>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_12, CPLD_Tester)
+  --0--> 
+counter<1>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_15, CPLD_Tester)
+  --0--> 
+counter<2>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_18, CPLD_Tester)
+  --0--> 
+counter<3>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_21, CPLD_Tester)
+  --0--> 
+counter<4>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_24, CPLD_Tester)
+  --0--> 
+counter<5>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_27, CPLD_Tester)
+  --0--> 
+counter<0>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_29, CPLD_Tester)
+  --0--> 
+counter<6>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_32, CPLD_Tester)
+  --0--> 
+value<0>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_33, CPLD_Tester)
+  --0--> 
+value<0>.LH,net=CPLD_Tester: PO
+  <--1--  (N_PZ_34, CPLD_Tester)
+  --0--> 
+value<10>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_35, CPLD_Tester)
+  --0--> 
+value<10>.LH,net=CPLD_Tester: PO
+  <--1--  (N_PZ_36, CPLD_Tester)
+  --0--> 
+value<15>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_37, CPLD_Tester)
+  --0--> 
+value<15>.LH,net=CPLD_Tester: PO
+  <--1--  (N_PZ_38, CPLD_Tester)
+  --0--> 
+value<17>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_39, CPLD_Tester)
+  --0--> 
+value<17>.LH,net=CPLD_Tester: PO
+  <--1--  (N_PZ_40, CPLD_Tester)
+  --0--> 
+value<25>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_41, CPLD_Tester)
+  --0--> 
+value<25>.LH,net=CPLD_Tester: PO
+  <--1--  (N_PZ_42, CPLD_Tester)
+  --0--> 
+leds<14>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_43, CPLD_Tester)
+  --0--> 
+leds<14>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_44, CPLD_Tester)
+  --0--> 
+leds<13>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_45, CPLD_Tester)
+  --0--> 
+leds<13>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_46, CPLD_Tester)
+  --0--> 
+leds<12>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_47, CPLD_Tester)
+  --0--> 
+leds<12>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_48, CPLD_Tester)
+  --0--> 
+leds<11>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_49, CPLD_Tester)
+  --0--> 
+leds<11>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_50, CPLD_Tester)
+  --0--> 
+leds<10>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_51, CPLD_Tester)
+  --0--> 
+leds<10>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_52, CPLD_Tester)
+  --0--> 
+leds<15>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_53, CPLD_Tester)
+  --0--> 
+leds<15>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_54, CPLD_Tester)
+  --0--> 
+leds<23>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_55, CPLD_Tester)
+  --0--> 
+leds<23>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_56, CPLD_Tester)
+  --0--> 
+leds<22>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_57, CPLD_Tester)
+  --0--> 
+leds<22>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_58, CPLD_Tester)
+  --0--> 
+leds<21>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_59, CPLD_Tester)
+  --0--> 
+leds<21>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_60, CPLD_Tester)
+  --0--> 
+leds<20>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_61, CPLD_Tester)
+  --0--> 
+leds<20>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_62, CPLD_Tester)
+  --0--> 
+leds<19>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_63, CPLD_Tester)
+  --0--> 
+leds<19>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_64, CPLD_Tester)
+  --0--> 
+leds<18>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_65, CPLD_Tester)
+  --0--> 
+leds<18>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_66, CPLD_Tester)
+  --0--> 
+leds<17>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_67, CPLD_Tester)
+  --0--> 
+leds<17>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_68, CPLD_Tester)
+  --0--> 
+leds<30>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_69, CPLD_Tester)
+  --0--> 
+leds<30>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_70, CPLD_Tester)
+  --0--> 
+leds<29>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_71, CPLD_Tester)
+  --0--> 
+leds<29>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_72, CPLD_Tester)
+  --0--> 
+leds<28>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_73, CPLD_Tester)
+  --0--> 
+leds<28>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_74, CPLD_Tester)
+  --0--> 
+leds<27>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_75, CPLD_Tester)
+  --0--> 
+leds<27>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_76, CPLD_Tester)
+  --0--> 
+leds<26>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_77, CPLD_Tester)
+  --0--> 
+leds<26>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_78, CPLD_Tester)
+  --0--> 
+leds<25>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_79, CPLD_Tester)
+  --0--> 
+leds<25>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_80, CPLD_Tester)
+  --0--> 
+leds<7>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_81, CPLD_Tester)
+  --0--> 
+leds<7>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_82, CPLD_Tester)
+  --0--> 
+leds<6>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_83, CPLD_Tester)
+  --0--> 
+leds<6>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_84, CPLD_Tester)
+  --0--> 
+leds<5>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_85, CPLD_Tester)
+  --0--> 
+leds<5>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_86, CPLD_Tester)
+  --0--> 
+leds<4>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_87, CPLD_Tester)
+  --0--> 
+leds<4>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_88, CPLD_Tester)
+  --0--> 
+leds<3>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_89, CPLD_Tester)
+  --0--> 
+leds<3>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_90, CPLD_Tester)
+  --0--> 
+leds<2>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_91, CPLD_Tester)
+  --0--> 
+leds<2>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_92, CPLD_Tester)
+  --0--> 
+leds<1>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_93, CPLD_Tester)
+  --0--> 
+leds<1>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_94, CPLD_Tester)
+  --0--> 
+leds<0>.D,net=CPLD_Tester: PO
+  <--1--  (N_PZ_95, CPLD_Tester)
+  --0--> 
+leds<0>.CLK,net=CPLD_Tester: PO
+  <--1--  (N_PZ_96, CPLD_Tester)
+  --0--> 
+toggle.Q,net=CPLD_Tester: PI
+  <--0-- 
+  --5--> (N_PZ_33, CPLD_Tester) (N_PZ_35, CPLD_Tester) (N_PZ_39, CPLD_Tester)  
+         (N_PZ_41, CPLD_Tester) (N_PZ_37, CPLD_Tester) 
+counter<0>.Q,net=CPLD_Tester: PI
+  <--0-- 
+  --11--> (N_PZ_136, CPLD_Tester) (N_PZ_34, CPLD_Tester) (N_PZ_137, CPLD_Tester)  
+          (N_PZ_142, CPLD_Tester) (N_PZ_36, CPLD_Tester) (N_PZ_42, CPLD_Tester)  
+          (N_PZ_40, CPLD_Tester) (N_PZ_138, CPLD_Tester) (N_PZ_139, CPLD_Tester)  
+          (N_PZ_140, CPLD_Tester) (N_PZ_141, CPLD_Tester) 
+value<0>.Q,net=CPLD_Tester: PI
+  <--0-- 
+  --9--> (N_PZ_3, CPLD_Tester) (N_PZ_81, CPLD_Tester) (N_PZ_83, CPLD_Tester)  
+         (N_PZ_85, CPLD_Tester) (N_PZ_87, CPLD_Tester) (N_PZ_89, CPLD_Tester)  
+         (N_PZ_91, CPLD_Tester) (N_PZ_93, CPLD_Tester) (N_PZ_95, CPLD_Tester) 
+value<10>.Q,net=CPLD_Tester: PI
+  <--0-- 
+  --6--> (N_PZ_9, CPLD_Tester) (N_PZ_43, CPLD_Tester) (N_PZ_45, CPLD_Tester)  
+         (N_PZ_47, CPLD_Tester) (N_PZ_49, CPLD_Tester) (N_PZ_51, CPLD_Tester) 
+value<15>.Q,net=CPLD_Tester: PI
+  <--0-- 
+  --2--> (N_PZ_11, CPLD_Tester) (N_PZ_53, CPLD_Tester) 
+value<17>.Q,net=CPLD_Tester: PI
+  <--0-- 
+  --8--> (N_PZ_5, CPLD_Tester) (N_PZ_55, CPLD_Tester) (N_PZ_57, CPLD_Tester)  
+         (N_PZ_59, CPLD_Tester) (N_PZ_61, CPLD_Tester) (N_PZ_63, CPLD_Tester)  
+         (N_PZ_65, CPLD_Tester) (N_PZ_67, CPLD_Tester) 
+value<25>.Q,net=CPLD_Tester: PI
+  <--0-- 
+  --7--> (N_PZ_7, CPLD_Tester) (N_PZ_69, CPLD_Tester) (N_PZ_71, CPLD_Tester)  
+         (N_PZ_73, CPLD_Tester) (N_PZ_75, CPLD_Tester) (N_PZ_77, CPLD_Tester)  
+         (N_PZ_79, CPLD_Tester) 
+counter<1>.Q,net=CPLD_Tester: PI
+  <--0-- 
+  --12--> (N_PZ_34, CPLD_Tester) (N_PZ_137, CPLD_Tester) (N_PZ_142, CPLD_Tester)  
+          (N_PZ_36, CPLD_Tester) (N_PZ_42, CPLD_Tester) (N_PZ_37, CPLD_Tester)  
+          (N_PZ_38, CPLD_Tester) (N_PZ_40, CPLD_Tester) (N_PZ_138, CPLD_Tester)  
+          (N_PZ_139, CPLD_Tester) (N_PZ_140, CPLD_Tester) (N_PZ_141, CPLD_Tester) 
+counter<2>.Q,net=CPLD_Tester: PI
+  <--0-- 
+  --11--> (N_PZ_34, CPLD_Tester) (N_PZ_142, CPLD_Tester) (N_PZ_36, CPLD_Tester)  
+          (N_PZ_42, CPLD_Tester) (N_PZ_37, CPLD_Tester) (N_PZ_38, CPLD_Tester)  
+          (N_PZ_40, CPLD_Tester) (N_PZ_138, CPLD_Tester) (N_PZ_139, CPLD_Tester)  
+          (N_PZ_140, CPLD_Tester) (N_PZ_141, CPLD_Tester) 
+counter<3>.Q,net=CPLD_Tester: PI
+  <--0-- 
+  --10--> (N_PZ_34, CPLD_Tester) (N_PZ_142, CPLD_Tester) (N_PZ_36, CPLD_Tester)  
+          (N_PZ_42, CPLD_Tester) (N_PZ_37, CPLD_Tester) (N_PZ_38, CPLD_Tester)  
+          (N_PZ_40, CPLD_Tester) (N_PZ_139, CPLD_Tester) (N_PZ_140, CPLD_Tester)  
+          (N_PZ_141, CPLD_Tester) 
+counter<4>.Q,net=CPLD_Tester: PI
+  <--0-- 
+  --9--> (N_PZ_34, CPLD_Tester) (N_PZ_142, CPLD_Tester) (N_PZ_36, CPLD_Tester)  
+         (N_PZ_42, CPLD_Tester) (N_PZ_37, CPLD_Tester) (N_PZ_38, CPLD_Tester)  
+         (N_PZ_40, CPLD_Tester) (N_PZ_140, CPLD_Tester) (N_PZ_141, CPLD_Tester) 
+counter<5>.Q,net=CPLD_Tester: PI
+  <--0-- 
+  --8--> (N_PZ_34, CPLD_Tester) (N_PZ_142, CPLD_Tester) (N_PZ_36, CPLD_Tester)  
+         (N_PZ_42, CPLD_Tester) (N_PZ_37, CPLD_Tester) (N_PZ_38, CPLD_Tester)  
+         (N_PZ_40, CPLD_Tester) (N_PZ_141, CPLD_Tester) 
+counter<6>.Q,net=CPLD_Tester: PI
+  <--0-- 
+  --7--> (N_PZ_34, CPLD_Tester) (N_PZ_142, CPLD_Tester) (N_PZ_36, CPLD_Tester)  
+         (N_PZ_42, CPLD_Tester) (N_PZ_37, CPLD_Tester) (N_PZ_38, CPLD_Tester)  
+         (N_PZ_40, CPLD_Tester) 
+N_PZ_108,net=CPLD_Tester: PINT ( counter<0>.T )
+  <--0-- 
+  --1--> (counter<0>.T, CPLD_Tester) 
+N_PZ_136,net=CPLD_Tester: PINT ( counter<1>.T )
+  <--1--  (counter<0>.Q, CPLD_Tester)
+  --1--> (counter<1>.T, CPLD_Tester) 
+N_PZ_137,net=CPLD_Tester: PINT ( counter<2>.T )
+  <--2--  (counter<0>.Q, CPLD_Tester) (counter<1>.Q, CPLD_Tester)
+  --1--> (counter<2>.T, CPLD_Tester) 
+N_PZ_138,net=CPLD_Tester: PINT ( counter<3>.T )
+  <--3--  (counter<0>.Q, CPLD_Tester) (counter<1>.Q, CPLD_Tester) 
+          (counter<2>.Q, CPLD_Tester)
+  --1--> (counter<3>.T, CPLD_Tester) 
+N_PZ_139,net=CPLD_Tester: PINT ( counter<4>.T )
+  <--4--  (counter<0>.Q, CPLD_Tester) (counter<1>.Q, CPLD_Tester) 
+          (counter<2>.Q, CPLD_Tester) (counter<3>.Q, CPLD_Tester)
+  --1--> (counter<4>.T, CPLD_Tester) 
+N_PZ_140,net=CPLD_Tester: PINT ( counter<5>.T )
+  <--5--  (counter<0>.Q, CPLD_Tester) (counter<1>.Q, CPLD_Tester) 
+          (counter<2>.Q, CPLD_Tester) (counter<3>.Q, CPLD_Tester) 
+          (counter<4>.Q, CPLD_Tester)
+  --1--> (counter<5>.T, CPLD_Tester) 
+N_PZ_141,net=CPLD_Tester: PINT ( counter<6>.T )
+  <--6--  (counter<0>.Q, CPLD_Tester) (counter<1>.Q, CPLD_Tester) 
+          (counter<2>.Q, CPLD_Tester) (counter<3>.Q, CPLD_Tester) 
+          (counter<4>.Q, CPLD_Tester) (counter<5>.Q, CPLD_Tester)
+  --1--> (counter<6>.T, CPLD_Tester) 
+counter<0>.T,net=CPLD_Tester: PO
+  <--1--  (N_PZ_108, CPLD_Tester)
+  --0--> 
+counter<1>.T,net=CPLD_Tester: PO
+  <--1--  (N_PZ_136, CPLD_Tester)
+  --0--> 
+counter<2>.T,net=CPLD_Tester: PO
+  <--1--  (N_PZ_137, CPLD_Tester)
+  --0--> 
+counter<3>.T,net=CPLD_Tester: PO
+  <--1--  (N_PZ_138, CPLD_Tester)
+  --0--> 
+counter<4>.T,net=CPLD_Tester: PO
+  <--1--  (N_PZ_139, CPLD_Tester)
+  --0--> 
+counter<5>.T,net=CPLD_Tester: PO
+  <--1--  (N_PZ_140, CPLD_Tester)
+  --0--> 
+counter<6>.T,net=CPLD_Tester: PO
+  <--1--  (N_PZ_141, CPLD_Tester)
+  --0--> 
+N_PZ_142,net=CPLD_Tester: PINT ( toggle.T )
+  <--7--  (counter<0>.Q, CPLD_Tester) (counter<1>.Q, CPLD_Tester) 
+          (counter<2>.Q, CPLD_Tester) (counter<3>.Q, CPLD_Tester) 
+          (counter<4>.Q, CPLD_Tester) (counter<5>.Q, CPLD_Tester) 
+          (counter<6>.Q, CPLD_Tester)
+  --1--> (toggle.T, CPLD_Tester) 
+toggle.T,net=CPLD_Tester: PO
+  <--1--  (N_PZ_142, CPLD_Tester)
+  --0--> 
