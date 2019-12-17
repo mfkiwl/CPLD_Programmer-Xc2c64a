@@ -1,2 +1,2 @@
 # Commandline Code
-Mostly for testing Xilinx IMPACT softare at the command line.
+Mostly for testing Xilinx IMPACT software at the command line.
