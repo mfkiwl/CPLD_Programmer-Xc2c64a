@@ -19,13 +19,13 @@
 using namespace USBDM;
 
 /// Maximum number of bits to shift in/out in a single command
-static constexpr unsigned MAX_BITS  = 2048;
+static constexpr unsigned MAX_BITS     = 2048;
 
 /// Maximum number of bytes to shift in/out in a single command
-static constexpr unsigned MAX_BYTES = (MAX_BITS+7)/8;
+static constexpr unsigned MAX_BYTES    = (MAX_BITS+7)/8;
 
 /// Maximum string length
-static constexpr unsigned MAX_STRING  = 100;
+static constexpr unsigned MAX_STRING   = 100;
 
 /// Command codes
 enum Command {
@@ -122,7 +122,8 @@ static void printBits(const char* title, unsigned size, const uint8_t *buff) {
    console.resetFormat();
 }
 
-using StatusLED = GpioD<7>;
+//using StatusLED = GpioD<7>;
+using StatusLED = GpioA<2>;
 
 class JtagInterface {
 
@@ -229,22 +230,22 @@ public:
 
 class Xsvf {
    // Current JTAG state
-   Xstate      currentState            = Reset;
+   Xstate      currentState = Reset;
 
    // State to move to after XSIR, XSIR2 (either IR_Pause or Idle)
-   Xstate      endir_state            = Xstate::Idle;
+   Xstate      endir_state = Xstate::Idle;
 
    // State to move to after XSDR, XSDRE, XSDRTDO, XSDRTDOE (either DR_Pause or Idle)
-   Xstate      enddr_state            = Xstate::Idle;
+   Xstate      enddr_state = Xstate::Idle;
 
    // Time to remain in Run-test-idle state
-   uint32_t    run_test_time          = 0;
+   uint32_t    run_test_time = 0;
 
    // Number of times to retry TDO tests
-   uint32_t    repeat_count           = 32;
+   uint32_t    repeat_count = 32;
 
    // Size for XSDR, XSDRTDO commands
-   uint32_t    xsdr_size              = 0;
+   uint32_t    xsdr_size = 0;
 
    // TDI Buffer [xsdr_size] - Data to shift in
    uint8_t     tdi_value[MAX_BYTES];
@@ -262,12 +263,12 @@ class Xsvf {
    unsigned    byteCounter = 0;
 
    // Error message
-   const char *error       = nullptr;
+   const char *error = nullptr;
 
 private:
 
    // Size of xsvf_data
-   unsigned    xsvf_data_size;
+   unsigned   xsvf_data_size;
 
    // Data to program to device
    const uint8_t *xsvf_data;
@@ -282,12 +283,15 @@ private:
     */
    void shiftIn(unsigned size, uint8_t *tdi_value, bool exit_shift_state) {
 
+      usbdm_assert((currentState == IR_Shift) || (currentState == DR_Shift), "Illegal state for shift operation");
+
       unsigned sizeInBytes = (size+7)/8;
+
       // Start at Least Significant bit
       uint8_t mask = 0b1;
+
       // Start at Least Significant byte
       tdi_value += sizeInBytes-1;
-      usbdm_assert((currentState == IR_Shift) || (currentState == DR_Shift), "Illegal state for shift operation");
 
       JtagInterface::setTMS(0);
       while(size-->0) {
@@ -323,14 +327,17 @@ private:
     */
    bool shiftIn(unsigned size, uint8_t *tdi_value, uint8_t *tdo_value, uint8_t *tdo_mask, bool exit_shift_state) {
 
+      usbdm_assert((currentState == IR_Shift) || (currentState == DR_Shift), "Illegal state for shift operation");
+
       unsigned sizeInBytes = (size+7)/8;
+
       // Start at Least Significant bit
       uint8_t mask = 0b1;
+
       // Start at Least Significant byte
       tdi_value += sizeInBytes-1;
       tdo_value += sizeInBytes-1;
       tdo_mask  += sizeInBytes-1;
-      usbdm_assert((currentState == IR_Shift) || (currentState == DR_Shift), "Illegal state for shift operation");
 
       JtagInterface::setTMS(0);
       while(size-->0) {
@@ -374,13 +381,16 @@ private:
     */
    bool shiftIn(unsigned size, uint8_t *tdi_value, uint8_t *tdo_value, bool exit_shift_state) {
 
+      usbdm_assert((currentState == IR_Shift) || (currentState == DR_Shift), "Illegal state for shift operation");
+
       unsigned sizeInBytes = (size+7)/8;
+
       // Start at Least Significant bit
       uint8_t mask = 0b1;
+
       // Start at Least Significant byte
       tdi_value += sizeInBytes-1;
       tdo_value += sizeInBytes-1;
-      usbdm_assert((currentState == IR_Shift) || (currentState == DR_Shift), "Illegal state for shift operation");
 
       JtagInterface::setTMS(0);
       while(size-->0) {
@@ -999,9 +1009,16 @@ int main() {
    console.writeln("Starting");
 
    Xsvf xsvf{sizeof(xsvf_data), xsvf_data};
-   unsigned blinkDelay = 1000;
+
+   // Set up for fail - Fast blinking
+   unsigned blinkDelay = 50;
    if (xsvf.playAll()) {
-      blinkDelay = 200;
+      // Success - Slow blinking
+      blinkDelay = 500;
+      console.writeln("Programming successful");
+   }
+   else {
+      console.writeln("Programming failed");
    }
 
    for(;;) {
