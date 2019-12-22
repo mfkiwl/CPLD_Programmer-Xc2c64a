@@ -200,7 +200,7 @@ public:
    static constexpr bool mapPinsOnEnable = true;
 
    //! Frequency of OSC Clock or Crystal
-   static constexpr uint32_t osc_clock = 8000000UL;
+   static constexpr uint32_t osc_clock = 16000000UL;
 
    //! Frequency of 32K OSC Clock or Crystal (if applicable)
    static constexpr uint32_t osc32k_clock = 0UL;
@@ -321,12 +321,12 @@ public:
 
    //! Oscillator control register
    static constexpr uint32_t cr =
-      RTC_CR_OSCE(1) | // Enables 32kHz oscillator [RTC_32K]
+      RTC_CR_OSCE(0) | // Enables 32kHz oscillator [RTC_32K]
       RTC_CR_CLKO(0) | // Disables RTC 32kHz Clock Output
       RTC_CR_UM(0)   | // Update Mode
       RTC_CR_SUP(0)  | // Supervisor access
       RTC_CR_WPE(0)  | // Wakeup Pin Enable
-      RTC_CR_SCP(2);   // RTC Oscillator load capacitance
+      RTC_CR_SCP(0);   // RTC Oscillator load capacitance
 
    //! RTC Time Compensation Register
    static constexpr uint32_t tcr =
@@ -1037,7 +1037,7 @@ public:
          SIM_SOPT2_PLLFLLSEL(1)|      // PLL/FLL clock select
    #endif
    #ifdef SIM_SOPT2_RTCCLKOUTSEL
-         SIM_SOPT2_RTCCLKOUTSEL(1) |  // RTC clock out select
+         SIM_SOPT2_RTCCLKOUTSEL(0) |  // RTC clock out select
    #endif
          SIM_SOPT2_CLKOUTSEL(2);      // CLKOUT pin clock source select
 
@@ -2028,13 +2028,13 @@ public:
 
          //      Signal                 Pin                                  portInfo    gpioAddress     gpioBit  PCR value
          /*   0: RESET_b              = RESET_b (p34)                  */  { NoPortInfo, 0,         FIXED_NO_PCR, 0 },
-         /*   1: JTAG_TCLK            = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
-         /*   2: SWD_CLK              = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
+         /*   1: JTAG_TCLK            = PTA0 (p22)                     */  { PortAInfo,  GPIOA_BasePtr,  0,       PORT_PCR_MUX(7)|defaultPcrValue  },
+         /*   2: SWD_CLK              = PTA0 (p22)                     */  { PortAInfo,  GPIOA_BasePtr,  0,       PORT_PCR_MUX(7)|defaultPcrValue  },
          /*   3: JTAG_TDI             = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
          /*   4: JTAG_TDO             = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
          /*   5: TRACE_SWO            = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
-         /*   6: JTAG_TMS             = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
-         /*   7: SWD_DIO              = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
+         /*   6: JTAG_TMS             = PTA3 (p25)                     */  { PortAInfo,  GPIOA_BasePtr,  3,       PORT_PCR_MUX(7)|defaultPcrValue  },
+         /*   7: SWD_DIO              = PTA3 (p25)                     */  { PortAInfo,  GPIOA_BasePtr,  3,       PORT_PCR_MUX(7)|defaultPcrValue  },
          /*   8: NMI_b                = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
          /*   9: JTAG_TRST_b          = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
    };
@@ -2045,13 +2045,24 @@ public:
     * @param pcrValue PCR value controlling pin options
     */
    static void initPCRs(uint32_t pcrValue=defaultPcrValue) {
-      (void)pcrValue;
+#ifdef PCC_PCCn_CGC_MASK
+      PCC->PCC_PORTA = PCC_PCCn_CGC_MASK;
+#else
+      enablePortClocks(PORTA_CLOCK_MASK);
+#endif
+      PORTA->GPCLR = pcrValue|PORT_PCR_MUX(7)|PORT_GPCLR_GPWE(0x0009UL);
    }
 
    /**
     * Resets pins used by peripheral
     */
    static void clearPCRs() {
+#ifdef PCC_PCCn_CGC_MASK
+      PCC->PCC_PORTA = PCC_PCCn_CGC_MASK;
+#else
+      enablePortClocks(PORTA_CLOCK_MASK);
+#endif
+      PORTA->GPCLR = PORT_PCR_MUX(0)|PORT_GPCLR_GPWE(0x9U);
    }
 
 };
@@ -4387,8 +4398,8 @@ public:
    static constexpr PinInfo  info[] = {
 
          //      Signal                 Pin                                  portInfo    gpioAddress     gpioBit  PCR value
-         /*   0: UART0_TX             = PTB17 (p40)                    */  { PortBInfo,  GPIOB_BasePtr,  17,      PORT_PCR_MUX(3)|defaultPcrValue  },
-         /*   1: UART0_RX             = PTB16 (p39)                    */  { PortBInfo,  GPIOB_BasePtr,  16,      PORT_PCR_MUX(3)|defaultPcrValue  },
+         /*   0: UART0_TX             = PTA2 (p24)                     */  { PortAInfo,  GPIOA_BasePtr,  2,       PORT_PCR_MUX(2)|defaultPcrValue  },
+         /*   1: UART0_RX             = PTA1 (p23)                     */  { PortAInfo,  GPIOA_BasePtr,  1,       PORT_PCR_MUX(2)|defaultPcrValue  },
          /*   2: UART0_RTS_b          = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
          /*   3: UART0_CTS_b          = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
          /*   4: UART0_COL_b          = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
@@ -4401,11 +4412,11 @@ public:
     */
    static void initPCRs(uint32_t pcrValue=defaultPcrValue) {
 #ifdef PCC_PCCn_CGC_MASK
-      PCC->PCC_PORTB = PCC_PCCn_CGC_MASK;
+      PCC->PCC_PORTA = PCC_PCCn_CGC_MASK;
 #else
-      enablePortClocks(PORTB_CLOCK_MASK);
+      enablePortClocks(PORTA_CLOCK_MASK);
 #endif
-      PORTB->GPCHR = pcrValue|PORT_PCR_MUX(3)|PORT_GPCHR_GPWE(0x0003UL);
+      PORTA->GPCLR = pcrValue|PORT_PCR_MUX(2)|PORT_GPCLR_GPWE(0x0006UL);
    }
 
    /**
@@ -4413,11 +4424,11 @@ public:
     */
    static void clearPCRs() {
 #ifdef PCC_PCCn_CGC_MASK
-      PCC->PCC_PORTB = PCC_PCCn_CGC_MASK;
+      PCC->PCC_PORTA = PCC_PCCn_CGC_MASK;
 #else
-      enablePortClocks(PORTB_CLOCK_MASK);
+      enablePortClocks(PORTA_CLOCK_MASK);
 #endif
-      PORTB->GPCHR = PORT_PCR_MUX(0)|PORT_GPCHR_GPWE(0x3U);
+      PORTA->GPCLR = PORT_PCR_MUX(0)|PORT_GPCLR_GPWE(0x6U);
    }
 
 };
@@ -5039,22 +5050,22 @@ using Gpio_p38             = const USBDM::GpioB<3>;
  *  ADC0_DP3                 | ADC0_DP3/ADC0_SE3                           | p11                       | -       
  *  ADC0_SE23                | ADC0_SE23/CMP1_IN3                          | p18                       | -       
  *  EXTAL32                  | EXTAL32                                     | p20                       | -       
- *  PTA0                     | -                                           | p22                       | -       
- *  PTA1                     | -                                           | p23                       | -       
- *  PTA2                     | -                                           | p24                       | -       
- *  PTA3                     | -                                           | p25                       | -       
+ *  PTA0                     | JTAG_TCLK/SWD_CLK                           | p22                       | SWD_CLK       
+ *  PTA1                     | UART0_RX                                    | p23                       | DBG_Rx       
+ *  PTA2                     | UART0_TX                                    | p24                       | DBG_Tx       
+ *  PTA3                     | JTAG_TMS/SWD_DIO                            | p25                       | SWD_DIO       
  *  PTA4                     | -                                           | p26                       | -       
  *  PTA5                     | -                                           | p27                       | -       
  *  PTA12                    | -                                           | p28                       | -       
  *  PTA13                    | -                                           | p29                       | -       
- *  PTA18                    | EXTAL0                                      | p32                       | Reserved (EXTAL0)       
- *  PTA19                    | XTAL0                                       | p33                       | Reserved (XTAL0)       
+ *  PTA18                    | EXTAL0                                      | p32                       | Crystal       
+ *  PTA19                    | XTAL0                                       | p33                       | Crystal       
  *  PTB0                     | GPIOB_0/LLWU_P5                             | p35                       | TMS       
  *  PTB1                     | GPIOB_1                                     | p36                       | TDI       
  *  PTB2                     | GPIOB_2                                     | p37                       | TDO       
  *  PTB3                     | GPIOB_3                                     | p38                       | TCK       
- *  PTB16                    | UART0_RX                                    | p39                       | USB Serial Rx       
- *  PTB17                    | UART0_TX                                    | p40                       | USB Serial Tx       
+ *  PTB16                    | -                                           | p39                       | -       
+ *  PTB17                    | -                                           | p40                       | -       
  *  PTB18                    | -                                           | p41                       | -       
  *  PTB19                    | -                                           | p42                       | -       
  *  PTC0                     | -                                           | p43                       | -       
@@ -5079,9 +5090,9 @@ using Gpio_p38             = const USBDM::GpioB<3>;
  *  PTD7                     | -                                           | p64                       | -       
  *  PTE0                     | -                                           | p1                        | -       
  *  PTE1                     | -                                           | p2                        | -       
- *  RESET_b                  | RESET_b                                     | p34                       | -       
- *  USB0_DM                  | USB0_DM                                     | p6                        | -       
- *  USB0_DP                  | USB0_DP                                     | p5                        | -       
+ *  RESET_b                  | RESET_b                                     | p34                       | Reset       
+ *  USB0_DM                  | USB0_DM                                     | p6                        | USB_DM       
+ *  USB0_DP                  | USB0_DP                                     | p5                        | USB_DP       
  *  VBAT                     | VBAT                                        | p21                       | -       
  *  VDD1                     | VDD1                                        | p3                        | -       
  *  VDD2                     | VDD2                                        | p30                       | -       
@@ -5090,7 +5101,7 @@ using Gpio_p38             = const USBDM::GpioB<3>;
  *  VOUT33                   | VOUT33                                      | p7                        | -       
  *  VREFH                    | VREFH                                       | p14                       | -       
  *  VREFL                    | VREFL                                       | p15                       | -       
- *  VREF_OUT                 | VREF_OUT/CMP1_IN5/CMP0_IN5                  | p17                       | -       
+ *  VREF_OUT                 | VREF_OUT/CMP1_IN5/CMP0_IN5                  | p17                       | Vref output       
  *  VREGIN                   | VREGIN                                      | p8                        | -       
  *  VSS1                     | VSS1                                        | p4                        | -       
  *  VSS2                     | VSS2                                        | p31                       | -       
@@ -5107,8 +5118,8 @@ using Gpio_p38             = const USBDM::GpioB<3>;
  *  PTE1                     | -                                           | p2                        | -       
  *  VDD1                     | VDD1                                        | p3                        | -       
  *  VSS1                     | VSS1                                        | p4                        | -       
- *  USB0_DP                  | USB0_DP                                     | p5                        | -       
- *  USB0_DM                  | USB0_DM                                     | p6                        | -       
+ *  USB0_DP                  | USB0_DP                                     | p5                        | USB_DP       
+ *  USB0_DM                  | USB0_DM                                     | p6                        | USB_DM       
  *  VOUT33                   | VOUT33                                      | p7                        | -       
  *  VREGIN                   | VREGIN                                      | p8                        | -       
  *  ADC0_DP0                 | ADC0_DP0/ADC0_SE0                           | p9                        | -       
@@ -5119,30 +5130,30 @@ using Gpio_p38             = const USBDM::GpioB<3>;
  *  VREFH                    | VREFH                                       | p14                       | -       
  *  VREFL                    | VREFL                                       | p15                       | -       
  *  VSSA                     | VSSA                                        | p16                       | -       
- *  VREF_OUT                 | VREF_OUT/CMP1_IN5/CMP0_IN5                  | p17                       | -       
+ *  VREF_OUT                 | VREF_OUT/CMP1_IN5/CMP0_IN5                  | p17                       | Vref output       
  *  ADC0_SE23                | ADC0_SE23/CMP1_IN3                          | p18                       | -       
  *  XTAL32                   | XTAL32                                      | p19                       | -       
  *  EXTAL32                  | EXTAL32                                     | p20                       | -       
  *  VBAT                     | VBAT                                        | p21                       | -       
- *  PTA0                     | -                                           | p22                       | -       
- *  PTA1                     | -                                           | p23                       | -       
- *  PTA2                     | -                                           | p24                       | -       
- *  PTA3                     | -                                           | p25                       | -       
+ *  PTA0                     | JTAG_TCLK/SWD_CLK                           | p22                       | SWD_CLK       
+ *  PTA1                     | UART0_RX                                    | p23                       | DBG_Rx       
+ *  PTA2                     | UART0_TX                                    | p24                       | DBG_Tx       
+ *  PTA3                     | JTAG_TMS/SWD_DIO                            | p25                       | SWD_DIO       
  *  PTA4                     | -                                           | p26                       | -       
  *  PTA5                     | -                                           | p27                       | -       
  *  PTA12                    | -                                           | p28                       | -       
  *  PTA13                    | -                                           | p29                       | -       
  *  VDD2                     | VDD2                                        | p30                       | -       
  *  VSS2                     | VSS2                                        | p31                       | -       
- *  PTA18                    | EXTAL0                                      | p32                       | Reserved (EXTAL0)       
- *  PTA19                    | XTAL0                                       | p33                       | Reserved (XTAL0)       
- *  RESET_b                  | RESET_b                                     | p34                       | -       
+ *  PTA18                    | EXTAL0                                      | p32                       | Crystal       
+ *  PTA19                    | XTAL0                                       | p33                       | Crystal       
+ *  RESET_b                  | RESET_b                                     | p34                       | Reset       
  *  PTB0                     | GPIOB_0/LLWU_P5                             | p35                       | TMS       
  *  PTB1                     | GPIOB_1                                     | p36                       | TDI       
  *  PTB2                     | GPIOB_2                                     | p37                       | TDO       
  *  PTB3                     | GPIOB_3                                     | p38                       | TCK       
- *  PTB16                    | UART0_RX                                    | p39                       | USB Serial Rx       
- *  PTB17                    | UART0_TX                                    | p40                       | USB Serial Tx       
+ *  PTB16                    | -                                           | p39                       | -       
+ *  PTB17                    | -                                           | p40                       | -       
  *  PTB18                    | -                                           | p41                       | -       
  *  PTB19                    | -                                           | p42                       | -       
  *  PTC0                     | -                                           | p43                       | -       
@@ -5180,17 +5191,19 @@ using Gpio_p38             = const USBDM::GpioB<3>;
  *  ADC0_DP3                 | ADC0_DP3/ADC0_SE3                           | p11                       | -       
  *  PTC1                     | ADC0_SE15/TSI0_CH14                         | p44                       | Vref       
  *  ADC0_SE23                | ADC0_SE23/CMP1_IN3                          | p18                       | -       
- *  PTA18                    | EXTAL0                                      | p32                       | Reserved (EXTAL0)       
+ *  PTA18                    | EXTAL0                                      | p32                       | Crystal       
  *  EXTAL32                  | EXTAL32                                     | p20                       | -       
  *  PTB0                     | GPIOB_0/LLWU_P5                             | p35                       | TMS       
  *  PTB1                     | GPIOB_1                                     | p36                       | TDI       
  *  PTB2                     | GPIOB_2                                     | p37                       | TDO       
  *  PTB3                     | GPIOB_3                                     | p38                       | TCK       
- *  RESET_b                  | RESET_b                                     | p34                       | -       
- *  PTB16                    | UART0_RX                                    | p39                       | USB Serial Rx       
- *  PTB17                    | UART0_TX                                    | p40                       | USB Serial Tx       
- *  USB0_DM                  | USB0_DM                                     | p6                        | -       
- *  USB0_DP                  | USB0_DP                                     | p5                        | -       
+ *  PTA0                     | JTAG_TCLK/SWD_CLK                           | p22                       | SWD_CLK       
+ *  PTA3                     | JTAG_TMS/SWD_DIO                            | p25                       | SWD_DIO       
+ *  RESET_b                  | RESET_b                                     | p34                       | Reset       
+ *  PTA1                     | UART0_RX                                    | p23                       | DBG_Rx       
+ *  PTA2                     | UART0_TX                                    | p24                       | DBG_Tx       
+ *  USB0_DM                  | USB0_DM                                     | p6                        | USB_DM       
+ *  USB0_DP                  | USB0_DP                                     | p5                        | USB_DP       
  *  VBAT                     | VBAT                                        | p21                       | -       
  *  VDD1                     | VDD1                                        | p3                        | -       
  *  VDD2                     | VDD2                                        | p30                       | -       
@@ -5199,13 +5212,13 @@ using Gpio_p38             = const USBDM::GpioB<3>;
  *  VOUT33                   | VOUT33                                      | p7                        | -       
  *  VREFH                    | VREFH                                       | p14                       | -       
  *  VREFL                    | VREFL                                       | p15                       | -       
- *  VREF_OUT                 | VREF_OUT/CMP1_IN5/CMP0_IN5                  | p17                       | -       
+ *  VREF_OUT                 | VREF_OUT/CMP1_IN5/CMP0_IN5                  | p17                       | Vref output       
  *  VREGIN                   | VREGIN                                      | p8                        | -       
  *  VSS1                     | VSS1                                        | p4                        | -       
  *  VSS2                     | VSS2                                        | p31                       | -       
  *  VSS3                     | VSS3                                        | p47                       | -       
  *  VSSA                     | VSSA                                        | p16                       | -       
- *  PTA19                    | XTAL0                                       | p33                       | Reserved (XTAL0)       
+ *  PTA19                    | XTAL0                                       | p33                       | Crystal       
  *  XTAL32                   | XTAL32                                      | p19                       | -       
  *
  */

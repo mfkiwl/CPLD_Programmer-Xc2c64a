@@ -161,8 +161,6 @@ enum Cmp0Input {
    Cmp0Input_Cmp0Dac    = Cmp0Input_7, //!< CMP0 6-bit internal DAC reference
 
    // Mapped inputs
-   Cmp0Input_Ptc8       = Cmp0Input_2,  //!< Mapped pin PTC8
-   Cmp0Input_Ptc9       = Cmp0Input_3,  //!< Mapped pin PTC9
    Cmp0Input_VrefOut    = Cmp0Input_5,  //!< Fixed pin  VREF_OUT
 
 };

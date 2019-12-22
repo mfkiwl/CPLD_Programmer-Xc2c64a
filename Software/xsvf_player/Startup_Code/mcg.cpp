@@ -63,13 +63,13 @@ namespace USBDM {
          McgInfo::ClockMode_PEE,
 
          //! Control Register 1 - Excluding CLKS, IREFS
-         MCG_C1_FRDIV(3)   | // FRDIV    FLL External Reference Divider
+         MCG_C1_FRDIV(4)   | // FRDIV    FLL External Reference Divider
          MCG_C1_IRCLKEN(1) | // IRCLEN   Internal Reference Clock Enable
          MCG_C1_IREFSTEN(0), // IREFSTEN Internal Reference Stop Enable
 
          //! Control Register 2 - Excluding LP
          MCG_C2_LOCRE0(0) | // LOCRE0  Loss of Clock Reset Enable
-         MCG_C2_RANGE0(1) | // RANGE   Frequency Range Select
+         MCG_C2_RANGE0(2) | // RANGE   Frequency Range Select
          MCG_C2_HGO0(0)   | // HGO     High Gain Oscillator Select
          MCG_C2_EREFS0(1) | // EREFS   External Reference Select
          MCG_C2_IRCS(1),    // IRCS    Internal Reference Clock Select
@@ -81,7 +81,7 @@ namespace USBDM {
          //! Control Register 5
          MCG_C5_PLLCLKEN0(0)  | // PLLCLKEN0 PLL Clock Enable
          MCG_C5_PLLSTEN0(0)   | // PLLSTEN0  PLL Stop Enable
-         MCG_C5_PRDIV0(1),     // PRDIV0    PLL External Reference Divider
+         MCG_C5_PRDIV0(3),     // PRDIV0    PLL External Reference Divider
 
          //! Control Register 6 - Excluding PLLS
          MCG_C6_LOLIE0(0) | // LOLIE0 Loss of Lock interrupt Enable
@@ -102,10 +102,10 @@ namespace USBDM {
       {  // ClockConfig_BLPE_4MHz (ClockMode_BLPE)
          
          //! SIM CLKDIV1 System Clock Divider Register 1
-         SIM_CLKDIV1_OUTDIV4(7)|  // Flash clock
+         SIM_CLKDIV1_OUTDIV4(15)|  // Flash clock
          SIM_CLKDIV1_OUTDIV3(0)|  // FlexBus clock
-         SIM_CLKDIV1_OUTDIV2(1)|  // Bus clock
-         SIM_CLKDIV1_OUTDIV1(1),  // Core/system clock
+         SIM_CLKDIV1_OUTDIV2(3)|  // Bus clock
+         SIM_CLKDIV1_OUTDIV1(3),  // Core/system clock
 
    #ifdef SIM_CLKDIV3_PLLFLLDIV
          //! SIM CLKDIV3 System Clock Divider Register 3
@@ -119,13 +119,13 @@ namespace USBDM {
          McgInfo::ClockMode_BLPE,
 
          //! Control Register 1 - Excluding CLKS, IREFS
-         MCG_C1_FRDIV(3)   | // FRDIV    FLL External Reference Divider
+         MCG_C1_FRDIV(4)   | // FRDIV    FLL External Reference Divider
          MCG_C1_IRCLKEN(1) | // IRCLEN   Internal Reference Clock Enable
          MCG_C1_IREFSTEN(0), // IREFSTEN Internal Reference Stop Enable
 
          //! Control Register 2 - Excluding LP
          MCG_C2_LOCRE0(0) | // LOCRE0  Loss of Clock Reset Enable
-         MCG_C2_RANGE0(1) | // RANGE   Frequency Range Select
+         MCG_C2_RANGE0(2) | // RANGE   Frequency Range Select
          MCG_C2_HGO0(0)   | // HGO     High Gain Oscillator Select
          MCG_C2_EREFS0(1) | // EREFS   External Reference Select
          MCG_C2_IRCS(1),    // IRCS    Internal Reference Clock Select
@@ -175,13 +175,13 @@ namespace USBDM {
          McgInfo::ClockMode_FEE,
 
          //! Control Register 1 - Excluding CLKS, IREFS
-         MCG_C1_FRDIV(3)   | // FRDIV    FLL External Reference Divider
+         MCG_C1_FRDIV(4)   | // FRDIV    FLL External Reference Divider
          MCG_C1_IRCLKEN(1) | // IRCLEN   Internal Reference Clock Enable
          MCG_C1_IREFSTEN(0), // IREFSTEN Internal Reference Stop Enable
 
          //! Control Register 2 - Excluding LP
          MCG_C2_LOCRE0(0) | // LOCRE0  Loss of Clock Reset Enable
-         MCG_C2_RANGE0(1) | // RANGE   Frequency Range Select
+         MCG_C2_RANGE0(2) | // RANGE   Frequency Range Select
          MCG_C2_HGO0(0)   | // HGO     High Gain Oscillator Select
          MCG_C2_EREFS0(1) | // EREFS   External Reference Select
          MCG_C2_IRCS(1),    // IRCS    Internal Reference Clock Select

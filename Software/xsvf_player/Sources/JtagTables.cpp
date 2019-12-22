@@ -25,6 +25,34 @@ const Transition fullTapTransitions[16][16] = {
    /* IR_Update  */ {{DR_Select,   1}, {Idle,        0}, {DR_Select,   1}, {Illegal,    -1}, {DR_Select,   1}, {Illegal,    -1}, {DR_Select,   1}, {Illegal,    -1}, {Illegal,    -1}, {Illegal,    -1}, {Illegal,    -1}, {Illegal,    -1}, {Illegal,    -1}, {DR_Select,   1}, {Illegal,    -1}, {Illegal,    -1}, },
 };
 
+/**
+ * This is the TMS value to move from one state to another.
+ * It incorporates:
+ *  - Single transitions between directly connected states
+ *  - Transition sequence between stable-states.
+ *  - Useful transition sequences IDLE->SHIFT_DR, IDLE->SHIFT_IR
+ *
+ * 0 => TMS = 0; 1 => TMS = 1; -1 => illegal transition
+ */
+const int8_t tapTransitions[16][16] = {
+   // -From-     To->Reset      Idle       DR_Select  DR_Capture DR_Shift   DR_Exit1   DR_Pause   DR_Exit2   DR_Update  IR_Select  IR_Capture IR_Shift   IR_Exit1   IR_Pause   IR_Exit2   IR_Update  
+   /* Reset      */ { 1,         0,        -1,        -1,        -1,        -1,         0,        -1,        -1,        -1,        -1,        -1,        -1,         0,        -1,        -1,        },
+   /* Idle       */ { 1,         0,         1,        -1,         1,        -1,         1,        -1,        -1,        -1,        -1,         1,        -1,         1,        -1,        -1,        },
+   /* DR_Select  */ { 1,        -1,        -1,         0,         0,        -1,         0,        -1,        -1,         1,        -1,         1,        -1,         1,        -1,        -1,        },
+   /* DR_Capture */ {-1,        -1,        -1,        -1,         0,         1,         1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,        },
+   /* DR_Shift   */ {-1,         1,        -1,        -1,         0,         1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,        },
+   /* DR_Exit1   */ {-1,         1,        -1,        -1,        -1,        -1,         0,        -1,         1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,        },
+   /* DR_Pause   */ { 1,         1,        -1,        -1,        -1,        -1,         1,         1,        -1,        -1,        -1,         1,        -1,         1,        -1,        -1,        },
+   /* DR_Exit2   */ { 1,         1,        -1,        -1,         0,        -1,         1,        -1,         1,        -1,        -1,         1,        -1,         1,        -1,        -1,        },
+   /* DR_Update  */ { 1,         0,         1,        -1,        -1,        -1,         1,        -1,        -1,        -1,        -1,         1,        -1,         1,        -1,        -1,        },
+   /* IR_Select  */ { 1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,         0,         0,        -1,         0,        -1,        -1,        },
+   /* IR_Capture */ {-1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,         0,         1,         1,        -1,        -1,        },
+   /* IR_Shift   */ {-1,         1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,         0,         1,        -1,        -1,        -1,        },
+   /* IR_Exit1   */ {-1,         1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,         0,        -1,         1,        },
+   /* IR_Pause   */ { 1,         1,        -1,        -1,         1,        -1,         1,        -1,        -1,        -1,        -1,        -1,        -1,         1,         1,        -1,        },
+   /* IR_Exit2   */ { 1,         1,        -1,        -1,         1,        -1,         1,        -1,        -1,        -1,        -1,         0,        -1,         1,        -1,         1,        },
+   /* IR_Update  */ { 1,         0,         1,        -1,         1,        -1,         1,        -1,        -1,        -1,        -1,        -1,        -1,         1,        -1,        -1,        },
+};
 
 /**
  * State table for JTAG state machine

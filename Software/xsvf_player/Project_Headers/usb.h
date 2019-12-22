@@ -980,6 +980,8 @@ bool UsbBase_T<Info, EP0_SIZE>::handleTokenComplete(UsbStat usbStat) {
    return true;
 }
 
+static_assert(Usb0Info::irqHandlerInstalled);
+
 /**
  * Handler for USB Bus reset\n
  * Re-initialises the interface
