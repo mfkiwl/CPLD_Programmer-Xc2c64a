@@ -89,8 +89,80 @@ GenerateClassCluster=0
 DocumentUniqueId=UJCTJXKC
 
 [GeneratedDocument1]
-DocumentPath=Project Outputs for CPLD_Programmer\Design Rule Check - CPLD_Programmer.html
+DocumentPath=Project Outputs for CPLD_Programmer\Bill of Materials-CPLD_Programmer.xls
 DItemRevisionGUID=
+
+[GeneratedDocument2]
+DocumentPath=Project Outputs for CPLD_Programmer\CPLD_Programmer-SMT-RoundHoles.TXT
+DItemRevisionGUID=
+
+[GeneratedDocument3]
+DocumentPath=Project Outputs for CPLD_Programmer\CPLD_Programmer-SMT-SlotHoles.TXT
+DItemRevisionGUID=
+
+[GeneratedDocument4]
+DocumentPath=Project Outputs for CPLD_Programmer\CPLD_Programmer-SMT.DRR
+DItemRevisionGUID=
+
+[GeneratedDocument5]
+DocumentPath=Project Outputs for CPLD_Programmer\CPLD_Programmer-SMT.EXTREP
+DItemRevisionGUID=
+
+[GeneratedDocument6]
+DocumentPath=Project Outputs for CPLD_Programmer\CPLD_Programmer-SMT.GBL
+DItemRevisionGUID=
+
+[GeneratedDocument7]
+DocumentPath=Project Outputs for CPLD_Programmer\CPLD_Programmer-SMT.GBO
+DItemRevisionGUID=
+
+[GeneratedDocument8]
+DocumentPath=Project Outputs for CPLD_Programmer\CPLD_Programmer-SMT.GBS
+DItemRevisionGUID=
+
+[GeneratedDocument9]
+DocumentPath=Project Outputs for CPLD_Programmer\CPLD_Programmer-SMT.GKO
+DItemRevisionGUID=
+
+[GeneratedDocument10]
+DocumentPath=Project Outputs for CPLD_Programmer\CPLD_Programmer-SMT.GTL
+DItemRevisionGUID=
+
+[GeneratedDocument11]
+DocumentPath=Project Outputs for CPLD_Programmer\CPLD_Programmer-SMT.GTO
+DItemRevisionGUID=
+
+[GeneratedDocument12]
+DocumentPath=Project Outputs for CPLD_Programmer\CPLD_Programmer-SMT.GTS
+DItemRevisionGUID=
+
+[GeneratedDocument13]
+DocumentPath=Project Outputs for CPLD_Programmer\CPLD_Programmer-SMT.LDP
+DItemRevisionGUID=
+
+[GeneratedDocument14]
+DocumentPath=Project Outputs for CPLD_Programmer\CPLD_Programmer-SMT.REP
+DItemRevisionGUID=
+
+[GeneratedDocument15]
+DocumentPath=Project Outputs for CPLD_Programmer\CPLD_Programmer-SMT.RUL
+DItemRevisionGUID=
+
+[GeneratedDocument16]
+DocumentPath=Project Outputs for CPLD_Programmer\Design Rule Check - CPLD_Programmer-SMT.html
+DItemRevisionGUID=
+
+[GeneratedDocument17]
+DocumentPath=Project Outputs for CPLD_Programmer\Pick Place for CPLD_Programmer-SMT.csv
+DItemRevisionGUID=
+
+[Parameter1]
+Name=ProjectDescription
+Value=CPLD Programmer
+
+[Parameter2]
+Name=ProjectRevision
+Value=V2
 
 [Configuration1]
 Name=Default Configuration
