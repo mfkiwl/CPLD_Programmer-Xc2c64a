@@ -131,30 +131,16 @@ const char *getXstateName(Xstate state) {
    return (name);
 }
 
-/**
- * Print buffer contents in binary
- *
- * @param title Title to prefix each line
- * @param size	Size of buffer
- * @param buff	Buffer to print
- */
-static void printBits(const char* title, unsigned size, const uint8_t *buff) {
-   unsigned index = 0;
-   size = (size+7)/8;
-   bool doHeader = true;
-   while(size-->0) {
-      if (doHeader) {
-         printf("%s=%04X:", title, index);
-      }
-      index+= 8;
-      printf("%02X", *buff++);
-      doHeader = (index%256) == 0;
-      if (doHeader) {
-         printf("\n");
-      }
-   }
-   printf("\n");
-}
+//static constexpr uint8_t Ex_Idle        = 0x00;
+//static constexpr uint8_t Ex_DR_Pause    = 0x01;
+//static constexpr uint8_t Ex_IR_Pause    = 0x01;
+static constexpr uint8_t IDCODE_COMMAND = 0x01;
+static constexpr uint8_t BYPASS_COMMAND = 0xFF;
+static constexpr uint8_t ENABLE_COMMAND = 0xE8;
+static constexpr uint8_t ERASE_COMMAND  = 0xED;
+static constexpr uint8_t INIT_COMMAND   = 0xF0;
+static constexpr uint8_t CONLD_COMMAND  = 0xC0;
+static constexpr uint8_t VERIFY_COMMAND = 0xEE;
 
 class JtagInterface {
 
@@ -236,7 +222,8 @@ public:
 };
 
 class Xsvf {
-   FILE *fp;
+   FILE *fp_input;
+   FILE *fp_output;
 
    // Current JTAG state
    Xstate      currentState            = Reset;
@@ -275,6 +262,33 @@ class Xsvf {
    const char *error       = nullptr;
 
 private:
+   /**
+    * Print buffer contents in binary
+    *
+    * @param title Title to prefix each line
+    * @param size Size of buffer
+    * @param buff Buffer to print
+    */
+   void printBits(const char* title, unsigned numBits, const uint8_t *buff) {
+      unsigned size = (numBits+7)/8;
+      unsigned index = 8*size;
+      bool doHeader = true;
+      unsigned byteCount = 0;
+      while(size-->0) {
+         if (doHeader) {
+            fprintf(fp_output, "   /* %-10s %4d:*/ ", title, (index>numBits)?numBits:index);
+         }
+         index -= 8;
+         fprintf(fp_output, "0x%02X, ", *buff++);
+         doHeader = (++byteCount == 8);
+         if (doHeader) {
+            byteCount = 0;
+            fprintf(fp_output, "\n");
+         }
+      }
+      fprintf(fp_output, "\n");
+   }
+
    /**
     * Shift in value
     * Assumes in DR_Shift or IR_Shift state
@@ -332,7 +346,7 @@ private:
       }
       return true;
    }
-   
+
 public:
    /**
     * Get error string
@@ -364,9 +378,8 @@ public:
     *
     * @param to State to move to
     */
-   void moveTo(Xstate to) {
-      printf("moveTo(%s)\n", getXstateName(to));
-
+   void moveTo(Xstate to, bool doPrint) {
+//      fprintf(fp_output, "moveTo(%s) ", getXstateName(to));
       if (to == Reset) {
          // Force SM to reset state
          // TMS=1, 5*TCK
@@ -387,13 +400,15 @@ public:
       do {
          int8_t tms = tapTransitions[currentState][to];
          if (tms<0) {
-            fflush(stdout);
-            fprintf(stderr, "%s -> %s - ", getXstateName(currentState), getXstateName(to));
+            fprintf(fp_output, "// %s -> %s - ", getXstateName(currentState), getXstateName(to));
             assert(tms>=0);
          }
          JtagInterface::setTMS(tms);
          JtagInterface::clockTCK();
          currentState = calculateNextState(tms);
+         if (doPrint) {
+            fprintf(fp_output, "-%s", getXstateName(currentState));
+         }
       } while(currentState != to);
    }
 
@@ -403,24 +418,24 @@ public:
     * @param from Starting state
     * @param to   Ending state
     */
-   static void printTransition(Xstate from, Xstate to) {
-      printf(getXstateName(from));
+   void printTransition(Xstate from, Xstate to) {
+      fprintf(fp_output, getXstateName(from));
       Xstate currentState = from;
       do {
          Xstate last = currentState;
          int8_t tms = tapTransitions[currentState][to];
          if (tms < 0) {
-            printf("(Failed)\n");
+            fprintf(fp_output, "(Failed)\n");
             return;
          }
          currentState = stateTable[currentState][tms];
-         printf("->{%s,%d}", getXstateName(currentState),tms?'1':'0');
+         fprintf(fp_output, "->{%s,%d}", getXstateName(currentState),tms?'1':'0');
          if ((currentState == last) && (currentState != to)) {
-            printf("(Failed - loop)\n");
+            fprintf(fp_output, "(Failed - loop)\n");
             return;
          }
       } while (currentState != to);
-      printf("\n");
+      fprintf(fp_output, "\n");
    }
 
    /**
@@ -433,7 +448,7 @@ public:
          return XCOMPLETE;
       }
       byteCounter++;
-      return fgetc(fp);
+      return fgetc(fp_input);
    }
 
    /**
@@ -443,15 +458,12 @@ public:
     * @param count   Number if bits (rounded up to multiple of 8)
     * @param buff    Buffer for data
     */
-   void getBits(unsigned count, uint8_t buff[MAX_BYTES], const char* title = nullptr) {
+   void getBits(unsigned count, uint8_t buff[MAX_BYTES]) {
       unsigned byteCount = (count+7)/8;
       assert(byteCount <= MAX_BYTES);
       unsigned index = 0;
       while(byteCount-->0) {
          buff[index++] = get();
-      }
-      if (title != nullptr) {
-         printBits(title, count, buff);
       }
    }
 
@@ -521,12 +533,12 @@ public:
       uint32_t value;
       Command command = (Command)get1Byte();
 
-      //      printf("Command = %s", getCommandName(command));
-      printf("%s: ", getXstateName(currentState));
-      			
+      fprintf(fp_output, "   /* %-10s      */", getXstateName(currentState));
+//      fprintf(fp_output, "   /* %10d      */", byteCounter);
+
       switch(command) {
          case XCOMPLETE   :
-            printf("XCOMPLETE\n");
+            fprintf(fp_output, " XCOMPLETE,\n");
             return true;
 
          case XREPEAT :
@@ -538,7 +550,7 @@ public:
              * NOT IMPLEMENTED - IGNORED
              */
             repeat_count = get1Byte();
-            printf("XREPEAT(%d)\n", repeat_count);
+            fprintf(fp_output, " XREPEAT, %d,\n", repeat_count);
             break;
 
          case XSETSDRMASKS :
@@ -578,7 +590,7 @@ public:
              * If no prior XRUNTEST command exists, then the XSVF interpreter assumes an initial XRUNTEST number of zero.
              */
             run_test_time = get4Bytes();
-            printf("XRUNTEST(%d cycle/ms)\n", run_test_time);
+            fprintf(fp_output, " XRUNTEST, BYTES32(%d), // cycle/ms\n", run_test_time);
             break;
 
          case XSDRSIZE :
@@ -588,7 +600,7 @@ public:
              * Specifies the length of all XSDR/XSDRTDO records that follow.
              */
             xsdr_size = get4Bytes();
-            printf("XSDRSIZE(%d)\n", xsdr_size);
+            fprintf(fp_output, " XSDRSIZE, BYTES32(%d),\n", xsdr_size);
             break;
 
          case XTDOMASK :
@@ -597,8 +609,9 @@ public:
              *
              * Set TDO mask
              */
-            printf("XTDOMASK(%d)\n", xsdr_size);
-            getBits(xsdr_size, tdo_mask, "tdo_mask");
+            fprintf(fp_output, " XTDOMASK, // (%d bits)\n", xsdr_size);
+            getBits(xsdr_size, tdo_mask);
+            printBits("tdo_mask", xsdr_size, tdo_mask);
             break;
 
          case XSTATE :
@@ -612,8 +625,8 @@ public:
              */
          {
             Xstate state = static_cast<Xstate>(get1Byte());
-            printf("XSTATE(%s)\n", getXstateName(state));
-            moveTo(state);
+            fprintf(fp_output, " XSTATE, %s,\n", getXstateName(state));
+            moveTo(state, false);
          }
             break;
 
@@ -624,8 +637,9 @@ public:
              * Set the XSIR end state to Run-Test/Idle or Pause-IR.
              * The default is Run-Test/Idle.
              */
-            endir_state = get1Byte()?IR_Pause:Idle;
-            printf("XENDIR(%s)\n", getXstateName(endir_state));
+            value = get1Byte();
+            endir_state = value?IR_Pause:Idle;
+            fprintf(fp_output, " XENDIR, %s,\n", value?"Ex_IR_Pause":"Ex_Idle");
             break;
 
          case XENDDR :
@@ -635,8 +649,9 @@ public:
              * Set the XSDR and XSDRTDO end state to Run-Test/Idle or Pause-DR.
              * The default is Run-Test/Idle.
              */
-            enddr_state = get1Byte()?DR_Pause:Idle;
-            printf("XENDDR(%s)\n", getXstateName(endir_state));
+            value = get1Byte();
+            enddr_state = value?DR_Pause:Idle;
+            fprintf(fp_output, " XENDDR, %s,\n", value?"Ex_DR_Pause":"Ex_Idle");
             break;
 
          case XCOMMENT :
@@ -645,7 +660,7 @@ public:
              *
              * The XCOMMENT command specifies an arbitrary length character string that ends with a zero byte.
              */
-            printf("XCOMMENT(%s)\n", getString());
+            fprintf(fp_output, " XCOMMENT(%s)\n", getString());
             break;
 
          case XWAIT :
@@ -663,10 +678,10 @@ public:
             // Time to spend in wait_state
             uint32_t    wait_time  = get4Bytes();
 
-            printf("XWAIT(%s, %s, %d)\n", getXstateName(wait_state), getXstateName(end_state), wait_time);
-            moveTo(wait_state);
-            JtagInterface::waitUS(wait_time);
-            moveTo(end_state);
+            fprintf(fp_output, " XWAIT, %s, %s, BYTES32(%d), // ", getXstateName(wait_state), getXstateName(end_state), wait_time);
+            moveTo(wait_state, true);
+            moveTo(end_state,  true);
+            fprintf(fp_output, "\n");
          }
             break;
 
@@ -679,19 +694,35 @@ public:
              * last specified XENDIR state.
              */
             value = get1Byte();
-            printf("XSIR(%d) -> %s\n", value, getXstateName(endir_state));
-            getBits(value, tdi_value, "tdi_value");
-            moveTo(IR_Shift);
+            fprintf(fp_output, " XSIR, %d, // ", value);
+            moveTo(IR_Shift, true);
+            getBits(value, tdi_value);
             shiftIn(value, tdi_value, true);
             if (run_test_time != 0) {
-               moveTo(Idle);
+               moveTo(Idle, true);
                JtagInterface::waitFor(run_test_time);
             }
             else {
-               moveTo(endir_state);
+               moveTo(endir_state, true);
                if (endir_state == IR_Pause) {
                   assert((currentState == IR_Pause));
                }
+            }
+            fprintf(fp_output, "\n");
+            if (value == 8) {
+               switch(tdi_value[0]) {
+                  case IDCODE_COMMAND : fprintf(fp_output, "   /*                 */ IDCODE_COMMAND,\n");       break;
+                  case BYPASS_COMMAND : fprintf(fp_output, "   /*                 */ BYPASS_COMMAND,\n");       break;
+                  case ENABLE_COMMAND : fprintf(fp_output, "   /*                 */ ENABLE_COMMAND,\n");       break;
+                  case ERASE_COMMAND  : fprintf(fp_output, "   /*                 */ ERASE_COMMAND,\n");        break;
+                  case INIT_COMMAND   : fprintf(fp_output, "   /*                 */ INIT_COMMAND,\n");         break;
+                  case CONLD_COMMAND  : fprintf(fp_output, "   /*                 */ CONLD_COMMAND,\n");        break;
+                  case VERIFY_COMMAND : fprintf(fp_output, "   /*                 */ VERIFY_COMMAND,\n");       break;
+                  default             : fprintf(fp_output, "   /*                 */ 0x%2X,\n", tdi_value[0]);  break;
+               }
+            }
+            else {
+               printBits("tdi_value", value, tdi_value);
             }
             break;
 
@@ -704,16 +735,17 @@ public:
              * last specified XENDIR state.
              */
             value = get2Bytes();
-            printf("XSIR2(%d) -> %s\n", value, getXstateName(endir_state));
-            getBits(value, tdi_value, "tdi_value");
-            moveTo(IR_Shift);
+            fprintf(fp_output, " XSIR2(%d) -> %s", value, getXstateName(endir_state));
+            getBits(value, tdi_value);
+            printBits("tdi_value", value, tdi_value);
+            moveTo(IR_Shift, true);
             shiftIn(value, tdi_value, true);
             if (run_test_time != 0) {
-               moveTo(Idle);
+               moveTo(Idle, true);
                JtagInterface::waitFor(run_test_time);
             }
             else {
-               moveTo(endir_state);
+               moveTo(endir_state, true);
             }
             break;
 
@@ -725,17 +757,18 @@ public:
              * XSDRTDO instruction against the TDO value that was shifted out (use the TDOMask that was
              * generated by the last XTDOMASK instruction). Length comes from the XSDRSIZE instruction.
              */
-            printf("XSDR(%d) -> %s\n", xsdr_size, getXstateName(endir_state));
-            getBits(xsdr_size, tdi_value, "tdi_value");
+            fprintf(fp_output, " XSDR(%d) -> %s\n", xsdr_size, getXstateName(endir_state));
+            getBits(xsdr_size, tdi_value);
+            printBits("tdi_value", xsdr_size, tdi_value);
 
-            moveTo(DR_Shift);
+            moveTo(DR_Shift, true);
             shiftIn(xsdr_size, tdi_value, tdo_value, tdo_mask, true);
             if (run_test_time != 0) {
-               moveTo(Idle);
+               moveTo(Idle, true);
                JtagInterface::waitFor(run_test_time);
             }
             else {
-               moveTo(endir_state);
+               moveTo(endir_state, true);
             }
 
             break;
@@ -756,21 +789,24 @@ public:
              * The TDOExpected Value is used in all successive XSDR instructions until the next XSDR
              * instruction is given.
              */
-            printf("XSDRTDO(%d) -> %s\n", xsdr_size, getXstateName(enddr_state));
-            getBits(xsdr_size, tdi_value, "tdi_value");
-            getBits(xsdr_size, tdo_value, "tdo_value");
-            moveTo(DR_Shift);
+            fprintf(fp_output, " XSDRTDO, // (%d bits)", xsdr_size);
+            getBits(xsdr_size, tdi_value);
+            getBits(xsdr_size, tdo_value);
+            moveTo(DR_Shift, true);
             if (!shiftIn(xsdr_size, tdi_value, tdo_value, tdo_mask, true)) {
                error = "Unexpected TDO value";
                return true;
             }
             if (run_test_time != 0) {
-               moveTo(Idle);
+               moveTo(Idle, true);
                JtagInterface::waitFor(run_test_time);
             }
             else {
-               moveTo(enddr_state);
+               moveTo(enddr_state, true);
             }
+            fprintf(fp_output, "\n");
+            printBits("tdi_value", xsdr_size, tdi_value);
+            printBits("tdo_value", xsdr_size, tdo_value);
             break;
 
          case XSDRB :
@@ -780,9 +816,10 @@ public:
              * Go to the shift-DR state and shift in the TDI value. Continue to stay in the shift-DR state at the end
              * of the operation. No comparison of TDO value with the last specified TDOExpected is performed.
              */
-            printf("XSDRB(%d)\n", xsdr_size);
-            getBits(xsdr_size, tdi_value, "tdi_value");
-            moveTo(DR_Shift);
+            fprintf(fp_output, " XSDRB(%d)\n", xsdr_size);
+            getBits(xsdr_size, tdi_value);
+            printBits("tdi_value", xsdr_size, tdi_value);
+            moveTo(DR_Shift, true);
             shiftIn(xsdr_size, tdi_value, false);
             break;
 
@@ -793,8 +830,9 @@ public:
              * Shift in the TDI value. Continue to stay in the shift-DR state at the end of the operation. No
              * comparison of TDO value with the last specified TDOExpected is performed.
              */
-            printf("XSDRC(%d)\n", xsdr_size);
-            getBits(xsdr_size, tdi_value, "tdi_value");
+            fprintf(fp_output, " XSDRC(%d)\n", xsdr_size);
+            getBits(xsdr_size, tdi_value);
+            printBits("tdi_value", xsdr_size, tdi_value);
             shiftIn(xsdr_size, tdi_value, false);
             break;
 
@@ -805,11 +843,12 @@ public:
              * Shift in the TDI value. At the end of the operation, go to the XENDDR state. No comparison of
              * TDO value with the last specified TDOExpected is performed.
              */
-            printf("XSDRE(%d)\n", xsdr_size);
+            fprintf(fp_output, " XSDRE(%d)\n", xsdr_size);
             assert(currentState==DR_Shift);
-            getBits(xsdr_size, tdi_value, "tdi_value");
+            getBits(xsdr_size, tdi_value);
+            printBits("tdi_value", xsdr_size, tdi_value);
             shiftIn(xsdr_size, tdi_value, true);
-            moveTo(enddr_state);
+            moveTo(enddr_state, true);
             break;
 
          case XSDRTDOB :
@@ -823,10 +862,13 @@ public:
              * TDOExpected, the programming is stopped with an error message. At the end of the
              * operations, continue to stay in the SHIFT-DR state.
              */
-            printf("XSDRTDOB(%d)\n", xsdr_size);
-            getBits(xsdr_size, tdi_value, "tdi_value");
-            getBits(xsdr_size, tdo_value, "tdo_value");
-            moveTo(DR_Shift);
+            fprintf(fp_output, " XSDRTDOB(%d)\n", xsdr_size);
+            getBits(xsdr_size, tdi_value);
+            printBits("tdi_value", xsdr_size, tdi_value);
+            getBits(xsdr_size, tdo_value);
+            printBits("tdo_value", xsdr_size, tdo_value);
+
+            moveTo(DR_Shift, true);
             if (!shiftIn(xsdr_size, tdi_value, tdo_value, false)) {
                error = "TDO not matched";
                return true;
@@ -843,9 +885,11 @@ public:
              * If the TDO value does not match TDOExpected, stop the programming operation with an error
              * message. At the end of the operation, continue to stay in the SHIFT-DR state.
              */
-            printf("XSDRTDOC(%d)\n", xsdr_size);
-            getBits(xsdr_size, tdi_value, "tdi_value");
-            getBits(xsdr_size, tdo_value, "tdo_value");
+            fprintf(fp_output, " XSDRTDOC(%d)\n", xsdr_size);
+            getBits(xsdr_size, tdi_value);
+            printBits("tdi_value", xsdr_size, tdi_value);
+            getBits(xsdr_size, tdo_value);
+            printBits("tdo_value", xsdr_size, tdo_value);
             assert(currentState==DR_Shift);
             if (!shiftIn(xsdr_size, tdi_value, tdo_value, false)) {
                error = "TDO not matched";
@@ -863,15 +907,17 @@ public:
              * If the TDO value does not match the TDOExpected, stop the programming operations with an
              * error message. At the end of the operation, go to the XENDDR state.
              */
-            printf("XSDRTDOC(%d)\n", xsdr_size);
-            getBits(xsdr_size, tdi_value, "tdi_value");
-            getBits(xsdr_size, tdo_value, "tdo_value");
+            fprintf(fp_output, " XSDRTDOC(%d)\n", xsdr_size);
+            getBits(xsdr_size, tdi_value);
+            printBits("tdi_value", xsdr_size, tdi_value);
+            getBits(xsdr_size, tdo_value);
+            printBits("tdo_value", xsdr_size, tdo_value);
             assert(currentState==DR_Shift);
             if (!shiftIn(xsdr_size, tdi_value, tdo_value, true)) {
                error = "TDO not matched";
                return true;
             }
-            moveTo(enddr_state);
+            moveTo(enddr_state, true);
             break;
 
          default :
@@ -886,31 +932,116 @@ public:
     * Parse XSVF sequence
     */
    void parseAll() {
+      static const char *header =
+            "#include <stdint.h>\n"
+            "#include \"XSVF_Data.h\"\n"
+            "#include \"JtagTables.h\"\n"
+            "\n"
+            "/// Command codes               \n"
+            "enum Command {                  \n"
+            "   XCOMPLETE    = 0x00,         \n"
+            "   XTDOMASK     = 0x01,         \n"
+            "   XSIR         = 0x02,         \n"
+            "   XSDR         = 0x03,         \n"
+            "   XRUNTEST     = 0x04,         \n"
+            "   XREPEAT      = 0x07,         \n"
+            "   XSDRSIZE     = 0x08,         \n"
+            "   XSDRTDO      = 0x09,         \n"
+            "   XSETSDRMASKS = 0x0a,         \n"
+            "   XSDRINC      = 0x0b,         \n"
+            "   XSDRB        = 0x0c,         \n"
+            "   XSDRC        = 0x0d,         \n"
+            "   XSDRE        = 0x0e,         \n"
+            "   XSDRTDOB     = 0x0f,         \n"
+            "   XSDRTDOC     = 0x10,         \n"
+            "   XSDRTDOE     = 0x11,         \n"
+            "   XSTATE       = 0x12,         \n"
+            "   XENDIR       = 0x13,         \n"
+            "   XENDDR       = 0x14,         \n"
+            "   XSIR2        = 0x15,         \n"
+            "   XCOMMENT     = 0x16,         \n"
+            "   XWAIT        = 0x17,         \n"
+            "};                              \n"
+            "\n"
+            "#define BYTES32(x) (0xFF&((x)>>24)),(0xFF&((x)>>16)),(0xFF&((x)>>8)),(0xFF&(x))\n"
+            "   \n"
+            "   static constexpr uint8_t Ex_Idle        = 0x00;\n"
+            "   static constexpr uint8_t Ex_DR_Pause    = 0x01;\n"
+            "   static constexpr uint8_t Ex_IR_Pause    = 0x01;\n"
+            "   static constexpr uint8_t IDCODE_COMMAND = 0x01;\n"
+            "   static constexpr uint8_t BYPASS_COMMAND = 0xFF;\n"
+            "   static constexpr uint8_t ENABLE_COMMAND = 0xE8;\n"
+            "   static constexpr uint8_t ERASE_COMMAND  = 0xED;\n"
+            "   static constexpr uint8_t INIT_COMMAND   = 0xF0;\n"
+            "   static constexpr uint8_t CONLD_COMMAND  = 0xC0;\n"
+            "   static constexpr uint8_t VERIFY_COMMAND = 0xEE;\n"
+            "   \n"
+            "   const uint8_t xsvf_data[] = {\n"
+            ;
+
+      static const char *trailer =
+            "};";
+
+      fprintf(fp_output, header);
 
       bool complete = false;
       while (!complete) {
          complete = parse();
       }
       const char *errorMessage = getError();
-      printf("Processed %d bytes\n", byteCounter);
+      fprintf(fp_output, "// Processed %d bytes\n", byteCounter);
       if (errorMessage != nullptr) {
-         printf("Error = %s", errorMessage);
+         fprintf(fp_output, "// Error = %s", errorMessage);
       }
       // Move to EOF
       get();
-      if (!feof(fp)) {
-         printf("Not at end-of-file\n");
+      if (!feof(fp_input)) {
+         fprintf(fp_output, "// Not at end-of-file !!\n");
       }
+      fprintf(fp_output, trailer);
    }
 
    /**
     * Constructor
     */
    Xsvf(const char *fileName) {
-      fp = fopen("test.xsvf", "rb");
-      assert(fp != nullptr);
+
+      fp_input = fopen("CPLD_Tester.xsvf", "rb");
+      assert(fp_input != nullptr);
+      fp_output = fopen("XSVF_Data.cpp", "wt");
+      assert(fp_output != nullptr);
+      fprintf(fp_output, "// Created from : \'%s\'\n\n", fileName);
+
+      fseek(fp_input, 0L, SEEK_END);
+      unsigned long size = ftell(fp_input);
+      rewind(fp_input);
+
       JtagInterface::enable();
-      moveTo(Reset);
+      FILE *of = fopen("XSVF_Data.h", "wt");
+      fprintf(of,
+            "/*\n"
+            " * XSVF_Data2.h\n"
+            " *\n"
+            " *  Created on: 16 Dec 2019\n"
+            " *      Author: podonoghue\n"
+            " */\n"
+            "\n"
+            "#ifndef SOURCES_XSVF_DATA_H_\n"
+            "#define SOURCES_XSVF_DATA_H_\n"
+            "\n"
+            "#include <stdint.h>\n"
+            "\n"
+            "extern const uint8_t xsvf_data[%lu];\n"
+            "\n"
+            "#endif /* SOURCES_XSVF_DATA_H_ */\n",
+            size
+      );
+      fclose(of);
+   }
+
+   ~Xsvf() {
+      fclose(fp_input);
+      fclose(fp_output);
    }
 
 };
@@ -976,8 +1107,10 @@ static void listPaths() {
 #endif
 
 int main() {
+   const char *filename = "cpld_tester.xsvf";
+   Xsvf xsvf(filename);
 
-   Xsvf xsvf("test.xsvf");
+
    xsvf.parseAll();
 
    return 0;

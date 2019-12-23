@@ -19,7 +19,182 @@ using namespace USBDM;
 
 using StatusLED = GpioD<7>;
 
-//#define BYTES32(x) (0xFF&((x)>>24)),(0xFF&((x)>>16)),(0xFF&((x)>>8)),(0xFF&(x))
+bool execute(unsigned xsvd_size, uint8_t *xsvf_data, uint32_t &result) {
+
+   XsvfPlayer_Array xsvf(xsvd_size, xsvf_data);
+   if (xsvf.playAll()) {
+      uint8_t const *idcodeBuff = xsvf.getTdoBuff();
+
+      result = (idcodeBuff[0]<<24)+(idcodeBuff[1]<<16)+(idcodeBuff[2]<<8)+idcodeBuff[3];
+      return true;
+   }
+   else {
+      console.write("Failed to execute XSVF, rc = ").writeln(xsvf.getError());
+      return false;
+   }
+}
+
+bool readIdcode(uint32_t &idcode) {
+
+#define BYTES32(x) (0xFF&((x)>>24)),(0xFF&((x)>>16)),(0xFF&((x)>>8)),(0xFF&(x))
+
+   static constexpr uint8_t IDCODE_COMMAND = 0x01;
+   static constexpr uint8_t BYPASS_COMMAND = 0xFF;
+   static constexpr uint8_t ENABLE_COMMAND = 0xE8;
+   static constexpr uint8_t ERASE_COMMAND  = 0xED;
+   static constexpr uint8_t INIT_COMMAND   = 0xF0;
+   static constexpr uint8_t CONLD_COMMAND  = 0xC0;
+   static constexpr uint8_t INIT_COMMAND   = 0xED;
+   static constexpr uint8_t VERIFY_COMMAND = 0xEE;
+
+   static const uint8_t xsvf_verify[] = {
+         XREPEAT,          0,           // No repeats
+         XENDIR,           false,       // Set exit to IDLE state (XSIR)
+         XENDDR,           false,       // Set exit to IDLE state (XSDR_TDO_CAPTURE)
+         XRUNTEST,         BYTES32(0),  // Disable XRUNTEST
+         XSTATE,           Reset,       // Reset target
+         XSTATE,           Idle,        // Move to IDLE state
+
+         // Confirm IDCODE
+         // IR(8)<-1, DR(32)&0x0FFF8FFF =? 0xF6E5F093 =>IDLE
+         XSIR,             8,  IDCODE_COMMAND,    // Select IDCODE register (Register #1) -> IDLE
+         XSDRSIZE,         BYTES32(32),
+         XTDOMASK,         BYTES32(0x0FFF8FFF),
+         XSDRTDO,          BYTES32(0x00000000), BYTES32(0xF6E5F093),
+
+         // Check read/write protect
+         // IR(8)<-0xFF,->01, =>IDLE
+         XSIR,             8,     BYPASS_COMMAND,  // Select BYPASS register/Get read/write protect?
+
+         // Verify
+         // IR(8)<-EE =>IR_Pause;
+         XENDIR,           true,                    // Set exit to IR_Pause state (XSIR)
+         XSIR,             8,     VERIFY_COMMAND,   // IR = 0xED, -> IR_Pause
+         XSDR,             7,     0x00,
+         XENDIR,           false,         // Set exit to IDLE state (XSIR)
+         //IRPAUSE-IREXIT2-IRUPDATE-DRSELECT-DRCAPTURE-DREXIT1-DRPAUSE
+         XSTATE,           IR_Exit2,      // -> IR_Exit2
+         XSTATE,           IR_Update,     // -> IR_Update
+         XSTATE,           DR_Select,     // -> DR_Select
+         XSTATE,           DR_Capture,    // -> DR_Capture
+         XSTATE,           DR_Exit1,      // -> DR_Exit1
+         XSTATE,           DR_Pause,      // -> DR_Pause
+         XSTATE,           Idle,          // -> ... Idle
+         XWAIT,            Idle, Idle, BYTES32(100),
+
+         //SDR 7 TDI (70) SMASK (7f) ;
+         //RUNTEST 100 TCK;
+         //SDR 274 TDI   (03ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff)
+         //        SMASK (03ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff)
+         //        TDO   (03ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff)
+         //        MASK (/03ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff) ;
+
+   };
+
+   static const uint8_t xsvf_erase[] = {
+         XREPEAT,          0,           // No repeats
+         XENDIR,           false,       // Set exit to IDLE state (XSIR)
+         XENDDR,           false,       // Set exit to IDLE state (XSDR_TDO_CAPTURE)
+         XRUNTEST,         BYTES32(0),  // Disable XRUNTEST
+         XSTATE,           Reset,       // Reset target
+         XSTATE,           Idle,        // Move to IDLE state
+
+         // Confirm IDCODE
+         // IR(8)<-1, DR(32)&0x0FFF8FFF =? 0xF6E5F093 =>IDLE
+         XSIR,             8,  IDCODE_COMMAND,    // Select IDCODE register (Register #1) -> IDLE
+         XSDRSIZE,         BYTES32(32),
+         XTDOMASK,         BYTES32(0x0FFF8FFF),
+         XSDRTDO,          BYTES32(0x00000000), BYTES32(0xF6E5F093),
+
+         // Check read/write protect
+         // IR(8)<-0xFF,->01, =>IDLE
+         XSIR,             8,     BYPASS_COMMAND,  // Select BYPASS register/Get read/write protect?
+
+         // Enable erase
+         // IR(8)<-0xE8 => IDLE
+         XSIR,             8,     ENABLE_COMMAND,   // Select Enable
+
+         // Erase
+         // IR(8)<-ED =>IR_Pause
+         XENDIR,           true,                   // Set exit to IR_Pause state (XSIR)
+         XSIR,             8,     ERASE_COMMAND,   // IR = 0xED, -> IR_Pause
+
+         XENDIR,           false,         // Set exit to IDLE state (XSIR)
+         // Standard path: IRPAUSE-IREXIT2-IRUPDATE-DRSELECT-DRCAPTURE-DREXIT1-DRPAUSE
+         XSTATE,           IR_Exit2,      // -> IR_Exit2
+         XSTATE,           IR_Update,     // -> IR_Update
+         XSTATE,           DR_Select,     // -> DR_Select
+         XSTATE,           DR_Capture,    // -> DR_Capture
+         XSTATE,           DR_Exit1,      // -> DR_Exit1
+         XSTATE,           DR_Pause,      // -> DR_Pause
+
+         XWAIT,            DR_Pause, DR_Pause, BYTES32(20),
+
+         // Standard path: DRPAUSE-DREXIT2-DRUPDATE-IDLE
+         XSTATE,           DR_Exit2,      // -> DR_Exit2
+         XSTATE,           DR_Update,     // -> DR_Update
+         XSTATE,           Idle,          // -> Idle
+
+         XWAIT,            Idle, Idle, BYTES32(100000),
+
+         // Standard path:  IDLE-DRSELECT-DRCAPTURE-DREXIT1-DRPAUSE
+         XSTATE,           DR_Select,     // -> DR_Select
+         XSTATE,           DR_Capture,    // -> DR_Capture
+         XSTATE,           DR_Exit1,      // -> DR_Exit1
+         XSTATE,           DR_Pause,      // -> DR_Pause
+
+         XWAIT,            DR_Pause, DR_Pause, BYTES32(5000),
+         XWAIT,            Idle,     Idle,     BYTES32(1),
+
+         // Init
+         // IR(8)<-F0 =>IR_Pause
+         XENDIR,           true,          // Set exit to IR_Pause state (XSIR)
+         XSIR,             8,     0xF0,   // IR = 0xF0, -> IR_Pause
+         XSTATE,           IR_Exit2,      // -> IR_Exit2
+         XSTATE,           IR_Update,     // -> IR_Update
+         XSTATE,           Idle,          // -> Idle
+         XWAIT,            Idle, Idle, BYTES32(20),
+
+         // Init
+         // IR(8)<-F0 =>IR_Pause
+         XENDIR,           true,          // Set exit to IR_Pause state (XSIR)
+         XSIR,             8,     INIT_COMMAND,   // IR = 0xF0, -> IR_Pause
+         XSTATE,           IR_Exit2,      // -> IR_Exit2
+         XSTATE,           IR_Update,     // -> IR_Update
+         XSTATE,           DR_Select,     // -> DR_Select
+         XSTATE,           DR_Capture,    // -> DR_Capture
+         XSTATE,           DR_Exit1,      // -> DR_Exit1
+         XSTATE,           DR_Update,     // -> DR_Update
+         XSTATE,           Idle,          // -> Idle
+         XWAIT,            Idle, Idle, BYTES32(800),
+
+         // Conld ?
+         // IR(8)<-C0 =>Idle
+         XENDIR,           false,                     // Set exit to IDLE state (XSIR)
+         XSIR,             8,     CONLD_COMMAND,      // IR = 0xC0, -> Idle
+         XWAIT,            Idle,  Idle, BYTES32(100),
+
+         // Conld ?
+         // IR(8)<-C0 =>Idle
+         XENDIR,           false,                     // Set exit to IDLE state (XSIR)
+         XSIR,             8,     CONLD_COMMAND,      // IR = 0xC0, -> Idle
+         XWAIT,            Idle,  Idle, BYTES32(100),
+
+         XCOMPLETE,
+   };
+
+   XsvfPlayer_Array xsvf(sizeof(debug_message), debug_message);
+if (xsvf.playAll()) {
+   uint8_t const *idcodeBuff = xsvf.getTdoBuff();
+
+   idcode = (idcodeBuff[0]<<24)+(idcodeBuff[1]<<16)+(idcodeBuff[2]<<8)+idcodeBuff[3];
+   return true;
+}
+else {
+   console.write("Failed to execute XSVF sequence, rc = ").writeln(xsvf.getError());
+   return false;
+}
+}
 
 /**
  * Read IDCODE from CPLD
@@ -29,19 +204,108 @@ using StatusLED = GpioD<7>;
  * @return false  => Success. IDCODE has value
  * @return true   => Failed to read IDCODE
  */
-bool readIdcode(uint32_t &idcode) {
+bool readIdcodeX(uint32_t &idcode) {
+
+   #define BYTES32(x) (0xFF&((x)>>24)),(0xFF&((x)>>16)),(0xFF&((x)>>8)),(0xFF&(x))
+
    static const uint8_t idcode_message[] = {
-         XSTATE,           Reset,
-         XSTATE,           Idle,       // Move to IDLE state
+         XREPEAT,          0,          // No repeats
          XENDIR,           false,      // Set exit to IDLE state (XSIR)
          XENDDR,           false,      // Set exit to IDLE state (XSDR_TDO_CAPTURE)
-         XSIR,             8,     1,   // Select IDCODE register (Register #1)
+         XSTATE,           Reset,      // Reset target
+         XSTATE,           Idle,       // Move to IDLE state
+
+         // Read IDCODE
+         XSIR,             8,     1,   // Select IDCODE register (Register #1) -> IDLE
          XSDR_TDO_CAPTURE, 32,    0,   // Read IDCODE register
+         XSTATE,           Idle,
          XSTATE,           Reset,
+
          XCOMPLETE,
    };
 
+//   static const uint8_t erase_message[] = {
+//         XREPEAT,          0,           // No repeats
+//         XENDIR,           false,       // Set exit to IDLE state (XSIR)
+//         XENDDR,           false,       // Set exit to IDLE state (XSDR_TDO_CAPTURE)
+//         XRUNTEST,         BYTES32(0),  // Disable XRUNTEST
+//         XSTATE,           Reset,       // Reset target
+//         XSTATE,           Idle,        // Move to IDLE state
+//
+//         // Confirm IDCODE, IR(8)<-1, DR(32)&0x0FFF8FFF =? 0xF6E5F093
+//         XSIR,             8,     1,    // Select IDCODE register (Register #1) -> IDLE
+//         XSDRSIZE,         BYTES32(32),
+//         XTDOMASK,         BYTES32(0x0FFF8FFF),
+//         XSDRTDO,          BYTES32(0x00000000), BYTES32(0xF6E5F093),
+//
+//         // IR(8)<-0xFF,->01,
+//         XSIR,             8,     0xFF,   // Select BYPASS register/Get read/write protect?
+//
+//         // IR = 0xE8 -> IDLE
+//         XSIR,             8,     0xE8,   // IR = 0xE8, -> Idle
+//
+//         // IR = 0xED -> IR_Pause
+//         XENDIR,           true,          // Set exit to IR_Pause state (XSIR)
+//         XSIR,             8,     0xED,   // IR = 0xED, -> IR_Pause
+//
+//         XENDIR,           false,         // Set exit to IDLE state (XSIR)
+//         XSTATE,           IR_Exit2,      // -> IR_Exit2
+//         XSTATE,           IR_Update,     // -> IR_Update
+//         XSTATE,           DR_Select,     // -> DR_Select
+//         XSTATE,           DR_Capture,    // -> DR_Capture
+//         XSTATE,           DR_Exit1,      // -> DR_Exit1
+//         XSTATE,           DR_Pause,      // -> DR_Pause
+//         XWAIT,            DR_Pause, DR_Pause, BYTES32(20),
+//         XSTATE,           DR_Exit2,      // -> DR_Exit2
+//         XSTATE,           DR_Update,     // -> DR_Update
+//         XSTATE,           Idle,          // -> Idle
+//         XWAIT,            Idle, Idle, BYTES32(100000),
+//         XSTATE,           Idle,          // -> Idle
+//         XSTATE,           Idle,          // -> Idle
+//
+//         XSTATE,           DR_Select,     // -> DR_Select
+//         XSTATE,           DR_Capture,    // -> DR_Capture
+//         XSTATE,           DR_Exit1,      // -> DR_Exit1
+//         XSTATE,           DR_Pause,      // -> DR_Pause
+//         XWAIT,            DR_Pause, DR_Pause, BYTES32(5000),
+//         XWAIT,            Idle,     Idle,     BYTES32(1),
+//
+//         XENDIR,           true,          // Set exit to IR_Pause state (XSIR)
+//         XSIR,             8,     0xF0,   // IR = 0xF0, -> IR_Pause
+//         XSTATE,           IR_Exit2,      // -> IR_Exit2
+//         XSTATE,           IR_Update,     // -> IR_Update
+//         XSTATE,           Idle,          // -> Idle
+//         XWAIT,            Idle, Idle, BYTES32(20),
+//
+//         XSIR,             8,     0xF0,   // IR = 0xF0, -> IR_Pause
+//         XSTATE,           IR_Exit2,      // -> IR_Exit2
+//         XSTATE,           IR_Update,     // -> IR_Update
+//         XSTATE,           DR_Select,     // -> DR_Select
+//         XSTATE,           DR_Capture,    // -> DR_Capture
+//         XSTATE,           DR_Exit1,      // -> DR_Exit1
+//         XSTATE,           DR_Update,     // -> DR_Update
+//         XSTATE,           Idle,          // -> Idle
+//         XWAIT,            Idle, Idle, BYTES32(800),
+//
+//         XENDIR,           false,         // Set exit to IDLE state (XSIR)
+//         XSIR,             8,     0xC0,   // IR = 0xC0, -> Idle
+//         XWAIT,            Idle,  Idle, BYTES32(100),
+//         XSIR,             8,     0xC0,   // IR = 0xC0, -> Idle
+//         XWAIT,            Idle,  Idle, BYTES32(100),
+//         XSIR,             8,     0xE8,   // IR = 0xE8, -> Idle
+//
+//         XSTATE,           Idle,          // -> Idle
+//
+//         // Read IDCODE
+//         XSIR,             8,     1,      // Select IDCODE register (Register #1)
+//         XSDR_TDO_CAPTURE, 32,    0,      // Read IDCODE register
+//         XSTATE,           Idle,
+//
+//         XCOMPLETE,
+//   };
+
    XsvfPlayer_Array xsvf(sizeof(idcode_message), idcode_message);
+//   XsvfPlayer_Array xsvf(sizeof(erase_message), erase_message);
    if (xsvf.playAll()) {
       uint8_t const *idcodeBuff = xsvf.getTdoBuff();
 
@@ -160,7 +424,6 @@ static void writeCommandMessage(UsbCommandMessage &message) {
    console.WRITELN();
 }
 
-
 int main() {
 
    console.writeln("Starting");
@@ -223,6 +486,21 @@ int main() {
                }
                console.writeln("Target Vref present");
                break;
+            case UsbCommand_XSVF_execute:
+               if (!JtagInterface::checkVref()) {
+                  response.status = UsbCommandStatus_Failed;
+                  console.writeln("No target Vref");
+                  break;
+               }
+               if (!execute(command.byteLength, command.data, response.result)) {
+                  response.status = UsbCommandStatus_Failed;
+                  break;
+               }
+               response.byteLength = 4;
+               responseSize        = sizeof(ResponseIdentifyMessage);
+               console.write("Result = 0x").writeln(response.result, Radix_16);
+               break;
+
             case UsbCommand_XSVF:
                if (!JtagInterface::checkVref()) {
                   response.status = UsbCommandStatus_Failed;

@@ -82,6 +82,16 @@ public:
    const char *readIdcode(uint32_t &idcode);
 
    /**
+    * Execute short XSVF block (debug tests)
+    *
+    * @param result  Result read from target
+    *
+    * @return nullptr   => success
+    * @return !=nullptr => failed, error message
+    */
+   const char *executeXsvf(uint32_t &result);
+
+   /**
     * Check target Vref is present
     *
     * @return nullptr   => success

@@ -174,6 +174,53 @@ void XsvfPlayer::shiftOut(unsigned size, bool tdi_value, uint8_t *tdo_value, boo
  * Assumes in DR_Shift or IR_Shift state
  *
  * @param size             Number of bits to shift
+ * @param tdi_value        Buffer for TDI value to shift in
+ * @param tdo_value        Buffer for TDO value shifted out
+ * @param exit_shift_state Whether to exit IR/DR_Shift at end of shift
+ */
+void XsvfPlayer::shiftInOut(unsigned size, uint8_t *tdi_value, uint8_t *tdo_value, bool exit_shift_state) {
+
+   usbdm_assert((currentState == IR_Shift) || (currentState == DR_Shift), "Illegal state for shift operation");
+
+   unsigned sizeInBytes = (size+7)/8;
+
+   // Start at Least Significant bit
+   uint8_t mask = 0b1;
+
+   // Start at Least Significant byte
+   tdo_value += sizeInBytes-1;
+
+   JtagInterface::setTMS(0);
+   while(size-->0) {
+      if (mask == 0b1) {
+         *tdo_value = 0;
+      }
+      if (size == 0) {
+         // Last bit - move to
+         JtagInterface::setTMS(exit_shift_state);
+      }
+      JtagInterface::setTDI(*tdi_value&mask);
+      JtagInterface::clockTCK();
+      if (JtagInterface::getTDO()) {
+         *tdo_value |= mask;
+      }
+      mask <<= 1;
+      if (mask == 0) {
+         mask = 0b1;
+         tdi_value--;
+         tdo_value--;
+      }
+   }
+   if (exit_shift_state) {
+      currentState = (currentState==IR_Shift)?IR_Exit1:DR_Exit1;
+   }
+}
+
+/**
+ * Shift in value
+ * Assumes in DR_Shift or IR_Shift state
+ *
+ * @param size             Number of bits to shift
  * @param tdi_value        TDI value to shift in
  * @param exit_shift_state Whether to exit IR/DR_Shift at end of shift
  */
@@ -579,7 +626,9 @@ bool XsvfPlayer::play() {
          console.WRITE("XSIR(").WRITE(value).WRITE(") -> ").WRITELN(getXstateName(endir_state));
          getBits(value, tdi_value, "tdi_value");
          moveTo(IR_Shift);
-         shiftIn(value, tdi_value, true);
+         shiftInOut(value, tdi_value, tdo_value, true);
+
+//         shiftIn(value, tdi_value, true);
          if (run_test_time != 0) {
             moveTo(Idle);
             JtagInterface::waitFor(run_test_time);

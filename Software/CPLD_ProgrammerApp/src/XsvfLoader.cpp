@@ -178,7 +178,7 @@ const char *XsvfLoader::readIdcode(uint32_t &idcode) {
 
    int rc = libusb_init(NULL);
    if (rc < 0) {
-      return "sendSxvfFile - Libusb failed initialisation";
+      return "readIdcode - Libusb failed initialisation";
    }
    do {
       device = findDevice();
@@ -233,6 +233,75 @@ const char *XsvfLoader::readIdcode(uint32_t &idcode) {
    libusb_exit(nullptr);
    return errorMessage;
 }
+
+///**
+// * Execute short XSVF block (debug tests)
+// *
+// * @param result  Result read from target
+// *
+// * @return nullptr   => success
+// * @return !=nullptr => failed, error message
+// */
+//const char *XsvfLoader::executeXsvf(uint32_t &result) {
+//   const char *errorMessage = nullptr;
+//
+//   int rc = libusb_init(NULL);
+//   if (rc < 0) {
+//      return "sendSxvfFile - Libusb failed initialisation";
+//   }
+//   do {
+//      device = findDevice();
+//      if (device == nullptr) {
+//         errorMessage = "Programmer not found";
+//         break;
+//      }
+//
+//      UsbCommandIdentifyMessage  command = {
+//            /* command      */ UsbCommand_Identify,
+//            /* byteLength   */ 0,
+//      };
+//
+//      int bytesSent = 0;
+//      int rc = libusb_bulk_transfer(device, EP_OUT, (uint8_t*)&command, sizeof(command), &bytesSent, 10000);
+//      if (rc < 0) {
+//         errorMessage = libusb_error_name(rc);
+//         break;
+//      }
+//      if ((unsigned)bytesSent != sizeof(command)) {
+//         errorMessage = "readIdcode - Incomplete transmission";
+//         break;
+//      }
+//
+//      ResponseIdentifyMessage response = {};
+//
+//      int bytesReceived = 0;
+//      rc = libusb_bulk_transfer(device, EP_IN, (uint8_t*)&response, sizeof(response), &bytesReceived, 10000);
+//      if (rc < 0) {
+//         errorMessage = libusb_error_name(rc);
+//         break;
+//      }
+//      if ((unsigned)bytesReceived < sizeof(response)) {
+//         errorMessage = "readIdcode - Incomplete reception";
+//         break;
+//      }
+//      if (response.status != UsbCommandStatus_OK) {
+//         errorMessage = "readIdcode - Operation failed on device";
+//         break;
+//      }
+//      fprintf(stderr, "IDCODE = 0x%08X\n", response.idcode);
+//      fflush(stderr);
+//      result = response.idcode;
+//
+//   } while(false);
+//
+//   if (device != nullptr) {
+//      libusb_close(device);
+//      device = nullptr;
+//   }
+//
+//   libusb_exit(nullptr);
+//   return errorMessage;
+//}
 
 /**
  * Download XSVF data to opened device

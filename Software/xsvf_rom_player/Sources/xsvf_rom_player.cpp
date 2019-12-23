@@ -9,9 +9,9 @@
  *      Author: podonoghue
  ============================================================================
  */
+#include <old_XSVF_Data.h>
 #include "hardware.h"
 #include "xsvfPlayer.h"
-#include "XSVF_Data.h"
 
 // Allow access to USBDM methods
 using namespace USBDM;

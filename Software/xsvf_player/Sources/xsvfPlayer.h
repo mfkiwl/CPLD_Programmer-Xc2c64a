@@ -142,6 +142,17 @@ protected:
     * Assumes in DR_Shift or IR_Shift state
     *
     * @param size             Number of bits to shift
+    * @param tdi_value        Buffer for TDI value to shift in
+    * @param tdo_value        Buffer for TDO value shifted out
+    * @param exit_shift_state Whether to exit IR/DR_Shift at end of shift
+    */
+   void shiftInOut(unsigned size, uint8_t *tdi_value, uint8_t *tdo_value, bool exit_shift_state);
+
+   /**
+    * Shift in value
+    * Assumes in DR_Shift or IR_Shift state
+    *
+    * @param size             Number of bits to shift
     * @param tdi_value        TDI value to shift in
     * @param exit_shift_state Whether to exit IR/DR_Shift at end of shift
     */

@@ -22,6 +22,7 @@ enum UsbCommand : uint32_t {
    UsbCommand_CheckVref,      //! Check for target Vref
    UsbCommand_XSVF,           //! Start XSVF download
    UsbCommand_XSVF_data,      //! Transfer XSVF block
+   UsbCommand_XSVF_execute,   //! Execute short XSVF block
 };
 
 /**
@@ -100,6 +101,9 @@ struct ResponseMessage {
    union {
       struct {
          uint32_t idcode;
+      };
+      struct {
+         uint32_t result;
       };
    };
 };
