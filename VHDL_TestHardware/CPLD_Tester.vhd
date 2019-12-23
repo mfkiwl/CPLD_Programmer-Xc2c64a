@@ -12,7 +12,6 @@ architecture Behavioral of CPLD_Tester is
 
 signal toggle         : std_logic;
 signal counter        : integer range 0 to 100;
-signal value          : std_logic_vector (31 downto 0);
 
 begin
 
@@ -20,23 +19,23 @@ begin
    
    toggle <= not toggle when rising_edge(clock) and (counter = 0);
 
-   leds <= value when rising_edge(clock);
-   
-   process(counter) 
+   process(clock)
    begin
-   -- Stagger LED output changes to avoid noise problems (Vdd ?)
-   case counter is
-      when 1 =>
-         value(31 downto 25) <= (others=>toggle);
-      when 2 =>
-         value(24 downto 15) <= (others=>toggle);
-      when 3 =>
-         value(16 downto 9)  <= (others=>toggle);
-      when 4 =>
-         value(8 downto 0)   <= (others=>toggle);
-      when others =>
-         null;
-   end case;
+   if rising_edge(clock) then
+      -- Stagger LED output changes to avoid noise problems (Vdd ?)
+      case counter is
+         when 1 =>
+            leds(31 downto 24) <= (others=>toggle);
+         when 2 =>
+            leds(23 downto 16) <= (others=>toggle);
+         when 3 =>
+            leds(15 downto 8)  <= (others=>toggle);
+         when 4 =>
+            leds(7 downto 0)   <= (others=>toggle);
+         when others =>
+            null;
+      end case;
+    end if;
    end process;
    
 end Behavioral;
