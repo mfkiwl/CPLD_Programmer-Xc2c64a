@@ -5,7 +5,7 @@ set XILINX=C:\Apps\Xilinx\14.7\ISE_DS\settings64.bat C:\Apps\Xilinx\14.7\ISE_DS\
 rem Get file name and append ".jed" if needed
 set IMPACT=%XILINX%\impact.exe
 set JED_FILE=%~f1
-IF "%JED_FILE%"=="" (set JED_FILE=test)
+IF "%JED_FILE%"=="" (set JED_FILE=cpld_tester)
 set XSVF_FILE=%~n1
 IF "%XSVF_FILE%"=="" (set XSVF_FILE=%JED_FILE%)
 IF "%~x1"=="" (set JED_FILE=%JED_FILE%.jed)
@@ -22,7 +22,7 @@ if not exist "%JED_FILE%" (
 rem Create Impact command file
 echo setMode -bs                                     >  %SCRATCH_FILE%
 echo addDevice -p 1 -file "%JED_FILE%"               >> %SCRATCH_FILE%
-echo setCable -port xsvf -file "%XSVF_FILE%"          >> %SCRATCH_FILE%
+echo setCable -port svf -file "%XSVF_FILE%"         >> %SCRATCH_FILE%
 echo readidcode -p 1                                 >> %SCRATCH_FILE%
 echo program -e -v -p 1                              >> %SCRATCH_FILE%
 echo closeCable                                      >> %SCRATCH_FILE%
@@ -30,3 +30,5 @@ echo quit                                            >> %SCRATCH_FILE%
 
 rem Run command
 %IMPACT% -batch %SCRATCH_FILE%
+
+pause
