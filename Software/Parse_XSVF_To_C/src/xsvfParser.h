@@ -11,6 +11,7 @@
 #ifndef SOURCES_XSVFPLAYER_H_
 #define SOURCES_XSVFPLAYER_H_
 
+#include <string>
 #include "JtagTables.h"
 
 /// XSVF Command codes
@@ -59,8 +60,12 @@ inline Xstate &operator++ (Xstate& d) {
    return d;
 }
 
-class XsvfPlayer {
+class XsvfParser {
 protected:
+
+   FILE *fp_input  = nullptr;
+   FILE *fp_output = nullptr;
+   std::string fileName;
 
    /// Maximum number of bits to shift in/out in a single command
    static constexpr unsigned MAX_BITS  = 2048;
@@ -69,7 +74,7 @@ protected:
    static constexpr unsigned MAX_BYTES = (MAX_BITS+7)/8;
 
    /// Maximum string length
-   static constexpr unsigned MAX_STRING  = 100;
+   static constexpr unsigned MAX_STRING  = 1000;
 
    // Current JTAG state
    Xstate      currentState = Reset;
@@ -102,7 +107,7 @@ protected:
    char        string_buffer[MAX_STRING] = {};
 
    // Size of xsvf_data
-   unsigned   xsvf_data_size;
+   unsigned   xsvf_data_size = 0;
 
    // Error message
    const char *error = nullptr;
@@ -238,7 +243,7 @@ protected:
     *
     * @return Byte obtained
     */
-   virtual uint8_t get() = 0;
+   uint8_t get();
 
    /**
     * Obtain a 1 byte integer from XSVF input
@@ -279,7 +284,7 @@ protected:
 
    /**
     * Get null terminated string from XSVF input into string buffer.
-    * Silently truncates strings that exceed buffer size.
+    * Aborts on string that exceed the buffer size.
     *
     *  @return Number of character in string (including '\0')
     */
@@ -287,10 +292,8 @@ protected:
       char *cp = string_buffer;
       char ch;
       do {
+         assert(cp<(string_buffer+sizeof(string_buffer)-1));
          ch = get();
-         if (cp<(string_buffer+sizeof(string_buffer)-1)) {
-            *cp++ = ch;
-         }
       } while (ch != '\0');
       *cp++ = '\0';
       return cp-string_buffer;
@@ -302,7 +305,7 @@ protected:
     * @return false => Sequence not complete
     * @return false => Sequence completed (XCOMPLETE or no bytes left)
     */
-   bool play();
+   bool parse();
 
 public:
    /**
@@ -311,7 +314,7 @@ public:
     * @return true  XSVF sequence completed without error
     * @return false Error detected during XSVF sequence
     */
-   bool playAll();
+   bool parseAll();
 
    /**
     * Get error string
@@ -335,43 +338,11 @@ public:
    /**
     * Constructor
     *
-    * @param xsvf_data_size   Size of XSVF data
+    * @param fileName   Name of input file
     */
-   XsvfPlayer(unsigned xsvf_data_size) : xsvf_data_size(xsvf_data_size) {
-   }
+   XsvfParser(const char *fileName);
 
-   virtual ~XsvfPlayer() {}
-};
-
-class XsvfPlayer_Array : public XsvfPlayer {
-
-   // XSVF Data buffer
-   const uint8_t *xsvf_data;
-
-   /**
-    * Get single byte from XSVF input
-    *
-    * @return Byte obtained
-    */
-   virtual uint8_t get() {
-      if (byteCounter>xsvf_data_size) {
-         return XCOMPLETE;
-      }
-      return xsvf_data[byteCounter++];
-   }
-
-public:
-   /**
-    * Constructor
-    * Create a XSVF player based on an array
-    *
-    * @param xsvf_data_size   Size of XSVF data
-    * @param xsvf_data        Data array for XSVF sequence to play
-    */
-   XsvfPlayer_Array(unsigned xsvf_data_size, const uint8_t *xsvf_data) : XsvfPlayer(xsvf_data_size), xsvf_data(xsvf_data) {
-   }
-
-   ~XsvfPlayer_Array(){}
+   virtual ~XsvfParser();
 };
 
 #endif /* SOURCES_XSVFPLAYER_H_ */

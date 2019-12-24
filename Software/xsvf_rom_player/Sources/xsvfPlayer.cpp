@@ -100,22 +100,28 @@ const char *XsvfPlayer::getXstateName(Xstate state) {
  * @param size	Size of buffer
  * @param buff	Buffer to print
  */
-void XsvfPlayer::printBits(const char* title, unsigned size, const uint8_t *buff) {
+void XsvfPlayer::printBits(const char* title, unsigned numBits, const uint8_t *buff) {
    (void)title;
    (void)buff;
-   unsigned index = 0;
-   size = (size+7)/8;
+   unsigned size = (numBits+7)/8;
+   unsigned index = 8*size;
    bool doHeader = true;
+   unsigned byteCount = 0;
    while(size-->0) {
       if (doHeader) {
-         console.setWidth(4).setPadding(Padding_LeadingZeroes);
-         console.WRITE(title).WRITE("=").WRITE(index,Radix_16).WRITE(":");
+         console.setWidth(4).setPadding(Padding_LeadingSpaces);
+         console.
+            WRITE("/* ").
+            WRITE(title, 10).WRITE(" ").
+			WRITE((index>numBits)?numBits:index).
+			WRITE(":*/ ");
       }
-      index+= 8;
+      index -= 8;
       console.setWidth(2).setPadding(Padding_LeadingZeroes);
-      console.WRITE(*buff++,Radix_16);
-      doHeader = (index%256) == 0;
+      console.WRITE("0x").WRITE(*buff++, Radix_16).WRITE(",");
+      doHeader = (++byteCount == 8);
       if (doHeader) {
+         byteCount = 0;
          console.WRITELN();
       }
    }
@@ -124,7 +130,7 @@ void XsvfPlayer::printBits(const char* title, unsigned size, const uint8_t *buff
 }
 
 /**
- * Shift in value
+ * Shift out value
  * Assumes in DR_Shift or IR_Shift state
  *
  * @param size             Number of bits to shift
@@ -135,6 +141,7 @@ void XsvfPlayer::printBits(const char* title, unsigned size, const uint8_t *buff
 void XsvfPlayer::shiftOut(unsigned size, bool tdi_value, uint8_t *tdo_value, bool exit_shift_state) {
 
    usbdm_assert((currentState == IR_Shift) || (currentState == DR_Shift), "Illegal state for shift operation");
+   console.WRITE("-Shift(").WRITE(size).WRITE(")");
 
    unsigned sizeInBytes = (size+7)/8;
 
@@ -174,13 +181,62 @@ void XsvfPlayer::shiftOut(unsigned size, bool tdi_value, uint8_t *tdo_value, boo
  * Assumes in DR_Shift or IR_Shift state
  *
  * @param size             Number of bits to shift
+ * @param tdi_value        Buffer for TDI value to shift in
+ * @param tdo_value        Buffer for TDO value shifted out
+ * @param exit_shift_state Whether to exit IR/DR_Shift at end of shift
+ */
+void XsvfPlayer::shiftInOut(unsigned size, uint8_t *tdi_value, uint8_t *tdo_value, bool exit_shift_state) {
+
+   usbdm_assert((currentState == IR_Shift) || (currentState == DR_Shift), "Illegal state for shift operation");
+   console.WRITE("-Shift(").WRITE(size).WRITE(")");
+
+   unsigned sizeInBytes = (size+7)/8;
+
+   // Start at Least Significant bit
+   uint8_t mask = 0b1;
+
+   // Start at Least Significant byte
+   tdo_value += sizeInBytes-1;
+
+   JtagInterface::setTMS(0);
+   while(size-->0) {
+      if (mask == 0b1) {
+         *tdo_value = 0;
+      }
+      if (size == 0) {
+         // Last bit - move to
+         JtagInterface::setTMS(exit_shift_state);
+      }
+      JtagInterface::setTDI(*tdi_value&mask);
+      JtagInterface::clockTCK();
+      if (JtagInterface::getTDO()) {
+         *tdo_value |= mask;
+      }
+      mask <<= 1;
+      if (mask == 0) {
+         mask = 0b1;
+         tdi_value--;
+         tdo_value--;
+      }
+   }
+   if (exit_shift_state) {
+      currentState = (currentState==IR_Shift)?IR_Exit1:DR_Exit1;
+   }
+}
+
+/**
+ * Shift in value
+ * Assumes in DR_Shift or IR_Shift state
+ *
+ * @param size             Number of bits to shift
  * @param tdi_value        TDI value to shift in
  * @param exit_shift_state Whether to exit IR/DR_Shift at end of shift
  */
 void XsvfPlayer::shiftIn(unsigned size, uint8_t *tdi_value, bool exit_shift_state) {
 
    usbdm_assert((currentState == IR_Shift) || (currentState == DR_Shift), "Illegal state for shift operation");
-
+   console.WRITE("-Shift(").WRITE(size).WRITE(")");
+   
    unsigned sizeInBytes = (size+7)/8;
 
    // Start at Least Significant bit
@@ -224,6 +280,7 @@ void XsvfPlayer::shiftIn(unsigned size, uint8_t *tdi_value, bool exit_shift_stat
 bool XsvfPlayer::shiftIn(unsigned size, uint8_t *tdi_value, uint8_t *tdo_value, uint8_t *tdo_mask, bool exit_shift_state) {
 
    usbdm_assert((currentState == IR_Shift) || (currentState == DR_Shift), "Illegal state for shift operation");
+   console.WRITE("-Shift(").WRITE(size).WRITE(")");
 
    unsigned sizeInBytes = (size+7)/8;
 
@@ -278,6 +335,7 @@ bool XsvfPlayer::shiftIn(unsigned size, uint8_t *tdi_value, uint8_t *tdo_value, 
 bool XsvfPlayer::shiftIn(unsigned size, uint8_t *tdi_value, uint8_t *tdo_value, bool exit_shift_state) {
 
    usbdm_assert((currentState == IR_Shift) || (currentState == DR_Shift), "Illegal state for shift operation");
+   console.WRITE("-Shift(").WRITE(size).WRITE(")");
 
    unsigned sizeInBytes = (size+7)/8;
 
@@ -332,11 +390,10 @@ Xstate XsvfPlayer::calculateNextState(bool tms) {
  * Move to new state.
  * This outputs signals on TMS, TDO, TCLK to change physical state
  *
- * @param to State to move to
+ * @param to            State to move to
+ * @param isXSTATE      Special formatting for XSTATE
  */
-void XsvfPlayer::moveTo(Xstate to) {
-   console.WRITE("moveTo(").WRITE(getXstateName(to)).WRITELN(")");
-
+void XsvfPlayer::moveTo(Xstate to, bool isXSTATE) {
    if (to == Reset) {
       // Force SM to reset state
       // TMS=1, 5*TCK
@@ -346,8 +403,9 @@ void XsvfPlayer::moveTo(Xstate to) {
       JtagInterface::clockTCK();
       JtagInterface::clockTCK();
       JtagInterface::clockTCK();
-      //         console.WRITELN("->{??,1}->{??,1}->{??,1}->{??,1}->{Reset,1}");
       currentState = Reset;
+      console.WRITE(" // *** Reset ***");
+      return;
    }
    if (currentState == to) {
       // Do nothing
@@ -360,6 +418,16 @@ void XsvfPlayer::moveTo(Xstate to) {
       JtagInterface::setTMS(tms);
       JtagInterface::clockTCK();
       currentState = calculateNextState(tms);
+      if (isXSTATE) {
+         // Suppress reporting single transitions
+         isXSTATE = false;
+         if (currentState != to) {
+            console.WRITE(" // -").WRITE(getXstateName(currentState));
+         }
+      }
+      else {
+         console.WRITE("-").WRITE(getXstateName(currentState));
+      }
    } while(currentState != to);
 }
 
@@ -396,15 +464,12 @@ void XsvfPlayer::printTransition(Xstate from, Xstate to) {
  * @param count   Number if bits (rounded up to multiple of 8)
  * @param buff    Buffer for data
  */
-void XsvfPlayer::getBits(unsigned count, uint8_t buff[MAX_BYTES], const char* title) {
+void XsvfPlayer::getBits(unsigned count, uint8_t buff[MAX_BYTES]) {
    unsigned byteCount = (count+7)/8;
    usbdm_assert(byteCount <= MAX_BYTES, "");
    unsigned index = 0;
    while(byteCount-->0) {
       buff[index++] = get();
-   }
-   if (title != nullptr) {
-      printBits(title, count, buff);
    }
 }
 
@@ -412,18 +477,17 @@ void XsvfPlayer::getBits(unsigned count, uint8_t buff[MAX_BYTES], const char* ti
  * Play a single XSVF command on hardware
  *
  * @return false => Sequence not complete
- * @return false => Sequence completes
+ * @return false => Sequence completed (XCOMPLETE or no bytes left)
  */
 bool XsvfPlayer::play() {
    uint32_t value;
    XsvfCommand command = (XsvfCommand)get1Byte();
 
-   //console.WRITELN(getCommandName(command));
-   console.WRITELN(getXstateName(currentState)).WRITE(":");
+   console.WRITE("/* ").WRITE(getXstateName(currentState), 15).WRITE(" */ ");
 
    switch(command) {
       case XCOMPLETE   :
-         console.WRITELN("XCOMPLETE");
+         console.WRITELN("XCOMPLETE,");
          return true;
 
       case XREPEAT :
@@ -435,7 +499,7 @@ bool XsvfPlayer::play() {
           * NOT IMPLEMENTED - IGNORED
           */
          repeat_count = get1Byte();
-         console.WRITE("XREPEAT(").WRITE(repeat_count).WRITELN(")");
+         console.WRITE("XREPEAT, ").WRITE(repeat_count).WRITELN(",");
          break;
 
       case XSETSDRMASKS :
@@ -445,8 +509,8 @@ bool XsvfPlayer::play() {
           * NOT IMPLEMENTED - ERROR
           */
          error = "XSETSDRMASKS not supported";
+         console.WRITELN("XSETSDRMASKS not supported");
          return true;
-         break;
 
       case XSDRINC :
          /*
@@ -456,6 +520,8 @@ bool XsvfPlayer::play() {
           * NOT IMPLEMENTED - ERROR
           */
          error = "XSDRINC not supported";
+         console.WRITELN("XSDRINC not supported");
+         return true;
          break;
 
       case XRUNTEST :
@@ -475,7 +541,7 @@ bool XsvfPlayer::play() {
           * If no prior XRUNTEST command exists, then the XSVF interpreter assumes an initial XRUNTEST number of zero.
           */
          run_test_time = get4Bytes();
-         console.WRITE("XRUNTEST(").WRITE(run_test_time).WRITELN(" cycle or ms)");
+         console.WRITE("XRUNTEST, BYTES32(").WRITE(run_test_time).WRITELN("), // cycle/ms");
          break;
 
       case XSDRSIZE :
@@ -485,7 +551,7 @@ bool XsvfPlayer::play() {
           * Specifies the length of all XSDR/XSDRTDO records that follow.
           */
          xsdr_size = get4Bytes();
-         console.WRITE("XSDRSIZE(").WRITE(xsdr_size).WRITELN(")");
+         console.WRITE("XSDRSIZE, BYTES32(").WRITE(xsdr_size).WRITELN("),");
          break;
 
       case XTDOMASK :
@@ -494,8 +560,9 @@ bool XsvfPlayer::play() {
           *
           * Set TDO mask
           */
-         console.WRITE("XTDOMASK(").WRITE(xsdr_size).WRITELN(")");
-         getBits(xsdr_size, tdo_mask, "tdo_mask");
+         console.WRITELN("XTDOMASK,");
+         getBits(xsdr_size, tdo_mask);
+         printBits("tdo_mask", xsdr_size, tdo_mask);
          break;
 
       case XSTATE :
@@ -509,8 +576,9 @@ bool XsvfPlayer::play() {
           */
       {
          Xstate state = static_cast<Xstate>(get1Byte());
-         console.WRITE("XSTATE(").WRITE( getXstateName(state)).WRITELN(")");
-         moveTo(state);
+         console.WRITE("XSTATE, ").WRITE( getXstateName(state)).WRITE(",");
+         moveTo(state, true);
+         console.WRITELN();
       }
       break;
 
@@ -521,8 +589,9 @@ bool XsvfPlayer::play() {
           * Set the XSIR end state to Run-Test/Idle or Pause-IR.
           * The default is Run-Test/Idle.
           */
-         endir_state = get1Byte()?IR_Pause:Idle;
-         console.WRITE("XENDIR(").WRITE( getXstateName(endir_state)).WRITELN(")");
+         value = get1Byte();
+         endir_state = value?IR_Pause:Idle;
+         console.WRITE("XENDIR, ").WRITE(value?"Ex_IR_Pause":"Ex_Idle").WRITELN(",");
          break;
 
       case XENDDR :
@@ -532,8 +601,9 @@ bool XsvfPlayer::play() {
           * Set the XSDR and XSDRTDO end state to Run-Test/Idle or Pause-DR.
           * The default is Run-Test/Idle.
           */
-         enddr_state = get1Byte()?DR_Pause:Idle;
-         console.WRITE("XENDDR(").WRITE( getXstateName(enddr_state)).WRITELN(")");
+         value = get1Byte();
+         enddr_state = value?DR_Pause:Idle;
+         console.WRITE("XENDDR, ").WRITE(value?"Ex_DR_Pause":"Ex_Idle").WRITELN(",");
          break;
 
       case XCOMMENT :
@@ -542,8 +612,13 @@ bool XsvfPlayer::play() {
           *
           * The XCOMMENT command specifies an arbitrary length character string that ends with a zero byte.
           */
-         console.WRITE("XCOMMENT(").WRITE(getString()).WRITELN(")");
-         break;
+      {
+         console.WRITELN("XCOMMENT").
+               WRITELN("/* ").
+               WRITELN(getString()).
+               WRITELN(" */");
+      }
+      break;
 
       case XWAIT :
          /*
@@ -560,10 +635,15 @@ bool XsvfPlayer::play() {
          // Time to spend in wait_state
          uint32_t    wait_time  = get4Bytes();
 
-         console.WRITE("XWAIT(").WRITE(getXstateName(wait_state)).WRITE(", ").WRITE(getXstateName(end_state)).WRITE(", ").WRITE(wait_time).WRITELN(")");
+         console.
+            WRITE("XWAIT, ").WRITE(getXstateName(wait_state)).WRITE(", ").
+            WRITE(getXstateName(end_state)).WRITE(", BYTES32(").
+            WRITE(wait_time).WRITE("), // ");
          moveTo(wait_state);
+         console.WRITE("-Wait(").WRITE(wait_time).WRITE(")");
          JtagInterface::waitUS(wait_time);
          moveTo(end_state);
+         console.WRITELN();
       }
       break;
 
@@ -576,19 +656,47 @@ bool XsvfPlayer::play() {
           * last specified XENDIR state.
           */
          value = get1Byte();
-         console.WRITE("XSIR(").WRITE(value).WRITE(") -> ").WRITELN(getXstateName(endir_state));
-         getBits(value, tdi_value, "tdi_value");
+         console.WRITE("XSIR, ").WRITE(value).WRITE(", // ");
+         getBits(value, tdi_value);
          moveTo(IR_Shift);
-         shiftIn(value, tdi_value, true);
+         shiftInOut(value, tdi_value, tdo_value, true);
+
+//         shiftIn(value, tdi_value, true);
          if (run_test_time != 0) {
             moveTo(Idle);
             JtagInterface::waitFor(run_test_time);
+            console.WRITE("-Wait(").WRITE(run_test_time).WRITE(")");
          }
          else {
             moveTo(endir_state);
             if (endir_state == IR_Pause) {
                usbdm_assert((currentState == IR_Pause), "Illegal state");
             }
+         }
+         console.WRITELN();
+         if (value == 8) {
+            bool doTrailer = true;
+            console.WRITE("/* tdi_value     8:*/ ");
+            switch(tdi_value[0]) {
+               case PROGRAM_COMMAND : console.WRITE("PROGRAM_COMMAND,");      break;
+               case IDCODE_COMMAND  : console.WRITE("IDCODE_COMMAND,");       break;
+               case BYPASS_COMMAND  : console.WRITE("BYPASS_COMMAND,");       break;
+               case ENABLE_COMMAND  : console.WRITE("ENABLE_COMMAND,");       break;
+               case ERASE_COMMAND   : console.WRITE("ERASE_COMMAND,");        break;
+               case INIT_COMMAND    : console.WRITE("INIT_COMMAND,");         break;
+               case CONLD_COMMAND   : console.WRITE("CONLD_COMMAND,");        break;
+               case VERIFY_COMMAND  : console.WRITE("VERIFY_COMMAND,");       break;
+               default              :
+                  console.WRITE("0x").WRITE(tdi_value[0], Radix_16).WRITELN(",");
+                  doTrailer = false;
+                  break;
+            }
+            if (doTrailer) {
+               console.WRITE("// 0x").WRITE(tdi_value[0], Radix_16).WRITELN();
+            }
+         }
+         else {
+            printBits("tdi_value", value, tdi_value);
          }
          break;
 
@@ -601,18 +709,41 @@ bool XsvfPlayer::play() {
           * last specified XENDIR state.
           */
          value = get2Bytes();
-         console.WRITE("XSIR2(").WRITE(value).WRITELN(")");
-         getBits(value, tdi_value, "tdi_value");
+         console.WRITE("XSIR2, ").WRITE(value).WRITE(", // ");
+         getBits(value, tdi_value);
          moveTo(IR_Shift);
          shiftIn(value, tdi_value, true);
          if (run_test_time != 0) {
             moveTo(Idle);
             JtagInterface::waitFor(run_test_time);
+            console.WRITE("-Wait(").WRITE(run_test_time).WRITE(")");
          }
          else {
             moveTo(endir_state);
          }
+         console.WRITELN();
+         printBits("tdi_value", value, tdi_value);
          break;
+
+      case XSDR_TDOCAP:
+         /*
+          * XSDR_TDO_CAPTURE length<1 byte> TDIValue<"length" bits>
+          *
+          * Shift in the fixed TDI value while capturing the TDO values.
+          * Length is as specified.
+          * Go to the last specified XENDIR state.
+          */
+         value = get1Byte();
+         console.WRITE("XSDR_TDOCAP, ").WRITE(value).WRITE(", // ");
+         getBits(value, tdi_value);
+         moveTo(DR_Shift);
+         shiftOut(value, tdi_value, tdo_value, true);
+         moveTo(endir_state);
+         console.WRITELN();
+         printBits("tdi_value", value, tdi_value);
+         console.WRITE("/");
+         printBits("tdo_value", value, tdo_value);
+      break;
 
       case XSDR :
          /*
@@ -622,19 +753,20 @@ bool XsvfPlayer::play() {
           * XSDRTDO instruction against the TDO value that was shifted out (use the TDOMask that was
           * generated by the last XTDOMASK instruction). Length comes from the XSDRSIZE instruction.
           */
-         console.WRITE("XSDR(").WRITE(xsdr_size).WRITELN(")");
-         getBits(xsdr_size, tdi_value, "tdi_value");
-
+         console.WRITE("XSDR, // ");
+         getBits(xsdr_size, tdi_value);
          moveTo(DR_Shift);
          shiftIn(xsdr_size, tdi_value, tdo_value, tdo_mask, true);
          if (run_test_time != 0) {
             moveTo(Idle);
             JtagInterface::waitFor(run_test_time);
+            console.WRITE("-Wait(").WRITE(run_test_time).WRITE(")");
          }
          else {
             moveTo(endir_state);
          }
-
+         console.WRITELN();
+         printBits("tdi_value", xsdr_size, tdi_value);
          break;
 
       case XSDRTDO :
@@ -653,9 +785,9 @@ bool XsvfPlayer::play() {
           * The TDOExpected Value is used in all successive XSDR instructions until the next XSDR
           * instruction is given.
           */
-         console.WRITE("XSDRTDO(").WRITE(xsdr_size).WRITELN(")");
-         getBits(xsdr_size, tdi_value, "tdi_value");
-         getBits(xsdr_size, tdo_value, "tdo_value");
+         console.WRITE("XSDRTDO, // ");
+         getBits(xsdr_size, tdi_value);
+         getBits(xsdr_size, tdo_value);
          moveTo(DR_Shift);
          if (!shiftIn(xsdr_size, tdi_value, tdo_value, tdo_mask, true)) {
             error = "Unexpected TDO value";
@@ -664,10 +796,14 @@ bool XsvfPlayer::play() {
          if (run_test_time != 0) {
             moveTo(Idle);
             JtagInterface::waitFor(run_test_time);
+            console.WRITE("-Wait(").WRITE(run_test_time).WRITE(")");
          }
          else {
             moveTo(enddr_state);
          }
+         console.WRITELN();
+         printBits("tdi_value", xsdr_size, tdi_value);
+         printBits("tdo_value", xsdr_size, tdo_value);
          break;
 
       case XSDRB :
@@ -677,10 +813,12 @@ bool XsvfPlayer::play() {
           * Go to the shift-DR state and shift in the TDI value. Continue to stay in the shift-DR state at the end
           * of the operation. No comparison of TDO value with the last specified TDOExpected is performed.
           */
-         console.WRITE("XSDRB(").WRITE(xsdr_size).WRITELN(")");
-         getBits(xsdr_size, tdi_value, "tdi_value");
+         console.WRITE("XSDRB, // ");
+         getBits(xsdr_size, tdi_value);
          moveTo(DR_Shift);
          shiftIn(xsdr_size, tdi_value, false);
+         console.WRITELN();
+         printBits("tdi_value", xsdr_size, tdi_value);
          break;
 
       case XSDRC :
@@ -690,9 +828,11 @@ bool XsvfPlayer::play() {
           * Shift in the TDI value. Continue to stay in the shift-DR state at the end of the operation. No
           * comparison of TDO value with the last specified TDOExpected is performed.
           */
-         console.WRITE("XSDRC(").WRITE(xsdr_size).WRITELN(")");
-         getBits(xsdr_size, tdi_value, "tdi_value");
+         console.WRITE("XSDRC, // ");
+         getBits(xsdr_size, tdi_value);
          shiftIn(xsdr_size, tdi_value, false);
+         console.WRITELN();
+         printBits("tdi_value", xsdr_size, tdi_value);
          break;
 
       case XSDRE :
@@ -702,11 +842,13 @@ bool XsvfPlayer::play() {
           * Shift in the TDI value. At the end of the operation, go to the XENDDR state. No comparison of
           * TDO value with the last specified TDOExpected is performed.
           */
-         console.WRITE("XSDRE(").WRITE(xsdr_size).WRITELN(")");
+         console.WRITE("XSDRE, // ");
          usbdm_assert(currentState==DR_Shift, "In wrong state");
-         getBits(xsdr_size, tdi_value, "tdi_value");
+         getBits(xsdr_size, tdi_value);
          shiftIn(xsdr_size, tdi_value, true);
          moveTo(enddr_state);
+         console.WRITELN();
+         printBits("tdi_value", xsdr_size, tdi_value);
          break;
 
       case XSDRTDOB :
@@ -720,14 +862,16 @@ bool XsvfPlayer::play() {
           * TDOExpected, the programming is stopped with an error message. At the end of the
           * operations, continue to stay in the SHIFT-DR state.
           */
-         console.WRITE("XSDRTDOB(").WRITE(xsdr_size).WRITELN(")");
-         getBits(xsdr_size, tdi_value, "tdi_value");
-         getBits(xsdr_size, tdo_value, "tdo_value");
+         console.WRITE("XSDRTDOB, // ");
+         getBits(xsdr_size, tdi_value);
+         getBits(xsdr_size, tdo_value);
          moveTo(DR_Shift);
          if (!shiftIn(xsdr_size, tdi_value, tdo_value, false)) {
             error = "TDO not matched";
             return true;
          }
+         printBits("tdi_value", xsdr_size, tdi_value);
+         printBits("tdo_value", xsdr_size, tdo_value);
          break;
 
       case XSDRTDOC :
@@ -740,32 +884,17 @@ bool XsvfPlayer::play() {
           * If the TDO value does not match TDOExpected, stop the programming operation with an error
           * message. At the end of the operation, continue to stay in the SHIFT-DR state.
           */
-         console.WRITE("XSDRTDOC(").WRITE(xsdr_size).WRITELN(")");
-         getBits(xsdr_size, tdi_value, "tdi_value");
-         getBits(xsdr_size, tdo_value, "tdo_value");
+         console.WRITE("XSDRTDOC, // ");
+         getBits(xsdr_size, tdi_value);
+         getBits(xsdr_size, tdo_value);
          usbdm_assert(currentState==DR_Shift, "In wrong state");
          if (!shiftIn(xsdr_size, tdi_value, tdo_value, false)) {
             error = "TDO not matched";
             return true;
          }
+         printBits("tdi_value", xsdr_size, tdi_value);
+         printBits("tdo_value", xsdr_size, tdo_value);
          break;
-
-      case XSDR_TDO_CAPTURE:
-         /*
-          * XSDR_TDO_CAPTURE <length> TDIValue<1 bits>
-          *
-          * Shift in the fixed TDI value while capturing the TDO values.
-          * Length is as specified.
-          * Go to the last specified XENDIR state.
-          */
-      {
-         uint8_t size      = get1Byte();
-         uint8_t tdiValue  = get1Byte();
-         console.WRITE("XSDR_TDO_CAPTURE(").WRITE(size).WRITE(", ").WRITE(tdiValue).WRITELN(")");
-         moveTo(DR_Shift);
-         shiftOut(size, tdiValue, tdo_value, true);
-      }
-      break;
 
       case XSDRTDOE :
          /*
@@ -777,15 +906,17 @@ bool XsvfPlayer::play() {
           * If the TDO value does not match the TDOExpected, stop the programming operations with an
           * error message. At the end of the operation, go to the XENDDR state.
           */
-         console.WRITE("XSDRTDOE(").WRITE(xsdr_size).WRITELN(")");
-         getBits(xsdr_size, tdi_value, "tdi_value");
-         getBits(xsdr_size, tdo_value, "tdo_value");
+         console.WRITE("XSDRTDOE, // ");
+         getBits(xsdr_size, tdi_value);
+         getBits(xsdr_size, tdo_value);
          usbdm_assert(currentState==DR_Shift, "In wrong state");
          if (!shiftIn(xsdr_size, tdi_value, tdo_value, true)) {
             error = "TDO not matched";
             return true;
          }
          moveTo(enddr_state);
+         printBits("tdi_value", xsdr_size, tdi_value);
+         printBits("tdo_value", xsdr_size, tdo_value);
          break;
 
       default :
@@ -798,23 +929,22 @@ bool XsvfPlayer::play() {
 /**
  * Play XSVF sequence
  *
- * @return true  No errors detected during programming (programming not verified!)
- * @return false Error detected during programming
+ * @return true  XSVF sequence completed without error
+ * @return false Error detected during XSVF sequence
  */
 bool XsvfPlayer::playAll() {
 
    bool complete = false;
    JtagInterface::enable();
 
-   moveTo(Reset);
    while (!complete) {
       complete = play();
    }
    JtagInterface::disable();
    const char *errorMessage = getError();
-   console.WRITE("Processed ").WRITE(byteCounter).WRITELN(" bytes");
+   console.WRITE("// Processed ").WRITE(byteCounter).WRITELN(" bytes");
    if (errorMessage != nullptr) {
-      console.WRITE("Error =  ").WRITELN(errorMessage);
+      console.WRITE("// Error =  ").WRITELN(errorMessage);
       return false;
    }
    return true;

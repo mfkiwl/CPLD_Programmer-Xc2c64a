@@ -12,7 +12,6 @@
 #define SOURCES_XSVFPLAYER_H_
 
 #include "JtagTables.h"
-#include "JtagInterface.h"
 
 /// XSVF Command codes
 enum XsvfCommand {
@@ -24,12 +23,12 @@ enum XsvfCommand {
    XREPEAT      = 0x07,
    XSDRSIZE     = 0x08,
    XSDRTDO      = 0x09,
-   XSETSDRMASKS = 0x0a,
-   XSDRINC      = 0x0b,
-   XSDRB        = 0x0c,
-   XSDRC        = 0x0d,
-   XSDRE        = 0x0e,
-   XSDRTDOB     = 0x0f,
+   XSETSDRMASKS = 0x0A,
+   XSDRINC      = 0x0B,
+   XSDRB        = 0x0C,
+   XSDRC        = 0x0D,
+   XSDRE        = 0x0E,
+   XSDRTDOB     = 0x0F,
    XSDRTDOC     = 0x10,
    XSDRTDOE     = 0x11,
    XSTATE       = 0x12,
@@ -39,8 +38,20 @@ enum XsvfCommand {
    XCOMMENT     = 0x16,
    XWAIT        = 0x17,
 
-   XSDR_TDO_CAPTURE = 0xF0, // XSDR_TDO_CAPTURE <size-in-bits> <tdi-value>
+   XSDR_TDOCAP = 0xF0, // XSDR_TDO_CAPTURE <size-in-bits> <tdi-value>
 };
+
+static constexpr uint8_t Ex_Idle         = 0x00;
+static constexpr uint8_t Ex_DR_Pause     = 0x01;
+static constexpr uint8_t Ex_IR_Pause     = 0x01;
+static constexpr uint8_t IDCODE_COMMAND  = 0x01;
+static constexpr uint8_t BYPASS_COMMAND  = 0xFF;
+static constexpr uint8_t ENABLE_COMMAND  = 0xE8;
+static constexpr uint8_t ERASE_COMMAND   = 0xED;
+static constexpr uint8_t INIT_COMMAND    = 0xF0;
+static constexpr uint8_t CONLD_COMMAND   = 0xC0;
+static constexpr uint8_t VERIFY_COMMAND  = 0xEE;
+static constexpr uint8_t PROGRAM_COMMAND = 0xEA;
 
 /// Used for iterating states
 inline Xstate &operator++ (Xstate& d) {
@@ -81,7 +92,7 @@ protected:
    // TDI Buffer [xsdr_size] - Data to shift in
    uint8_t     tdi_value[MAX_BYTES];
 
-   // TDO Buffer [xsdr_size] - TDO value to check
+   // TDO Buffer [xsdr_size] - TDO value to check / collect
    uint8_t     tdo_mask[MAX_BYTES];
 
    // TDO Buffer [xsdr_size] - Mask applied when checking TDO
@@ -124,7 +135,18 @@ protected:
     * @param size Size of buffer
     * @param buff Buffer to print
     */
-   static void printBits(const char* title, unsigned size, const uint8_t *buff);
+   void printBits(const char* title, unsigned size, const uint8_t *buff);
+
+   /**
+    * Shift in value
+    * Assumes in DR_Shift or IR_Shift state
+    *
+    * @param size             Number of bits to shift
+    * @param tdi_value        Buffer for TDI value to shift in
+    * @param tdo_value        Buffer for TDO value shifted out
+    * @param exit_shift_state Whether to exit IR/DR_Shift at end of shift
+    */
+   void shiftInOut(unsigned size, uint8_t *tdi_value, uint8_t *tdo_value, bool exit_shift_state);
 
    /**
     * Shift in value
@@ -192,7 +214,7 @@ protected:
     *
     * @param to State to move to
     */
-   void moveTo(Xstate to);
+   void moveTo(Xstate to, bool isXSTATE=false);
 
    /**
     * Print path leading from 'from' to 'to'
@@ -200,7 +222,7 @@ protected:
     * @param from Starting state
     * @param to   Ending state
     */
-   static void printTransition(Xstate from, Xstate to);
+   void printTransition(Xstate from, Xstate to);
 
    /**
     * Get bits from  XSVF input
@@ -209,7 +231,7 @@ protected:
     * @param count   Number if bits (rounded up to multiple of 8)
     * @param buff    Buffer for data
     */
-   void getBits(unsigned count, uint8_t buff[MAX_BYTES], const char* title = nullptr);
+   void getBits(unsigned count, uint8_t buff[MAX_BYTES]);
 
    /**
     * Get single byte from XSVF input
@@ -256,12 +278,12 @@ protected:
    }
 
    /**
-    * Get null terminated string from XSVF input
+    * Get null terminated string from XSVF input into string buffer.
     * Silently truncates strings that exceed buffer size.
     *
-    *  @return null-terminated C string
+    *  @return Number of character in string (including '\0')
     */
-   const char *getString() {
+   unsigned getString() {
       char *cp = string_buffer;
       char ch;
       do {
@@ -269,16 +291,16 @@ protected:
          if (cp<(string_buffer+sizeof(string_buffer)-1)) {
             *cp++ = ch;
          }
-      } while (ch != 0);
+      } while (ch != '\0');
       *cp++ = '\0';
-      return string_buffer;
+      return cp-string_buffer;
    }
 
    /**
     * Play a single XSVF command on hardware
     *
     * @return false => Sequence not complete
-    * @return false => Sequence completes
+    * @return false => Sequence completed (XCOMPLETE or no bytes left)
     */
    bool play();
 
@@ -286,8 +308,8 @@ public:
    /**
     * Play XSVF sequence
     *
-    * @return true  No errors detected during programming (programming not verified!)
-    * @return false Error detected during programming
+    * @return true  XSVF sequence completed without error
+    * @return false Error detected during XSVF sequence
     */
    bool playAll();
 
@@ -351,6 +373,5 @@ public:
 
    ~XsvfPlayer_Array(){}
 };
-
 
 #endif /* SOURCES_XSVFPLAYER_H_ */

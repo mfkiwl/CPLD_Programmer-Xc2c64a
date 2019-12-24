@@ -9,14 +9,18 @@
  *      Author: podonoghue
  ============================================================================
  */
-#include <old_XSVF_Data.h>
+#include "cpld_tester_xsvf.h"
 #include "hardware.h"
 #include "xsvfPlayer.h"
+#include "JtagInterface.h"
 
 // Allow access to USBDM methods
 using namespace USBDM;
 
 using StatusLED = GpioD<7>;
+
+// Create player
+XsvfPlayer_Array xsvf{sizeof(cpld_tester_xsvf), cpld_tester_xsvf};
 
 int main() {
 
@@ -25,8 +29,7 @@ int main() {
          PinDriveMode_PushPull,
          PinSlewRate_Slow);
 
-   waitMS(1000);
-   XsvfPlayer_Array xsvf{sizeof(xsvf_data), xsvf_data};
+   waitMS(100);
 
    unsigned blinkDelay;
 
@@ -44,12 +47,12 @@ int main() {
    if (success) {
       // Success - Slow blinking
       blinkDelay = 500;
-      console.writeln("Programming successful");
+      console.writeln("Sequence completed");
    }
    else {
       // Failure - Fast blinking
       blinkDelay = 50;
-      console.writeln("Programming failed");
+      console.writeln("Sequence failed");
    }
 
    for(;;) {
