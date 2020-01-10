@@ -168,7 +168,7 @@ OutputEnabled7_OutputMedium2=4
 OutputEnabled7_OutputMedium3=0
 OutputEnabled7_OutputMedium4=0
 OutputDefault7=0
-PageOptions7=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=9.58|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=A4|PaperIndex=9
+PageOptions7=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=9.90|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=A4|PaperIndex=9
 Configuration7_Name1=OutputConfigurationParameter1
 Configuration7_Item1=Record=Pcb3DPrintView|ResX=150|ResY=150|ViewX=15748032|ViewY=7874016|LookAtX=11443493|LookAtY=11943307|LookAtZ=0|UpX=0|UpY=1|UpZ=0|FOV=0|QuatX=0|QuatY=0|QuatZ=0|QuatW=1|Zoom=5.06729983784641E-5|UnitsPercent=True|UnitsDPI=True|LockResAspect=True|ViewConfigType=.config_3d|CustomCamera=False|ViewFromTop=True|ScreenWidth=0|ScreenHeight=0|ViewConfig=
 OutputType8=PDF3D
@@ -195,10 +195,10 @@ OutputPathMediaValue2=
 OutputPathOutputer2=[Output Type]
 OutputPathOutputerPrefix2=
 OutputPathOutputerValue2=
-OutputFileName2=CPLD_Programmer.PDF
+OutputFileName2=CPLD_Programmer_V2
 OutputFileNameMulti2=
 UseOutputNameForMulti2=0
-OutputFileNameSpecial2==ProjectName
+OutputFileNameSpecial2=
 OpenOutput2=1
 PromptOverwrite2=1
 PublishMethod2=0
@@ -238,9 +238,9 @@ MarkNetLabels3=1
 MarkPortsId3=1
 WebOutputMediumType3=FS
 OutputDirectory3=C:\Peter\Development\USBDM\PCB\USBDM_JS16_SOIC20[Minimal]
-OutputFilePath4=C:\Users\podonoghue\Documents\Development\CPLD_Programmer\Hardware\Project Outputs for CPLD_Programmer\
-ReleaseManaged4=1
-OutputBasePath4=Project Outputs for CPLD_Programmer
+OutputFilePath4=C:\Users\podonoghue\Documents\Development\CPLD_Programmer\Hardware\CPLD_Programmer_V2 \
+ReleaseManaged4=0
+OutputBasePath4=CPLD_Programmer_V2\
 OutputPathMedia4=
 OutputPathMediaValue4=
 OutputPathOutputer4=
@@ -257,10 +257,10 @@ RelativeOutputPath2=C:\Users\podonoghue\Documents\Development\CPLD_Programmer\Ha
 OpenOutputs2=1
 RelativeOutputPath3=
 OpenOutputs3=1
-RelativeOutputPath4=C:\Users\podonoghue\Documents\Development\CPLD_Programmer\Hardware\Project Outputs for CPLD_Programmer\
+RelativeOutputPath4=C:\Users\podonoghue\Documents\Development\CPLD_Programmer\Hardware\CPLD_Programmer_V2 \
 OpenOutputs4=0
 AddToProject4=1
-TimestampFolder4=0
+TimestampFolder4=1
 UseOutputName4=0
 OpenODBOutput4=0
 OpenGerberOutput4=0
