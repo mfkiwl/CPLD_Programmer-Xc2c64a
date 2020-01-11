@@ -1,10 +1,10 @@
 /*! \file
-    \brief Bootloader for Kinetis devices
+    \brief PC Application for XSVF player on Kinetis devices
 
     XsvfLoader.cpp
 
     \verbatim
-    Copyright (C) 20019 Peter O'Donoghue
+    Copyright (C) 2019 Peter O'Donoghue
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -103,6 +103,9 @@ libusb_device_handle *XsvfLoader::findDevice() {
 
 /**
  * Check target Vref is present
+ * - This will open the device.
+ * - Check Vdd is present on the CPLD
+ * - Close the device
  *
  * @return nullptr   => success
  * @return !=nullptr => failed, error message
@@ -167,6 +170,9 @@ const char *XsvfLoader::checkTargetVref() {
 
 /**
  * Read IDCODE from device
+ * - This will open the device.
+ * - Read IDCODE from CPLD
+ * - Close the device
  *
  * @param idcode  IDCODE read from target
  *
@@ -304,15 +310,16 @@ const char *XsvfLoader::readIdcode(uint32_t &idcode) {
 //}
 
 /**
- * Download XSVF data to opened device
+ * Send one block of XSVF data for execution on opened device
+ * This is one block in a sequence.
+ * XSVF commands may straddle block boundaries.
  *
- * @param xsvf_size
- * @param xsvf_data
+ * @param message Information to send to device
  *
  * @return nullptr   => success
  * @return !=nullptr => failed, error message
  */
-const char *XsvfLoader::downloadXsvfBlock(unsigned xsvf_size, uint8_t *xsvf_data) {
+const char *XsvfLoader::sendXsvfBlock(unsigned xsvf_size, uint8_t *xsvf_data) {
    int rc = 0;
 
    UsbSendXsvfBlockMessage message = {
@@ -350,7 +357,8 @@ const char *XsvfLoader::downloadXsvfBlock(unsigned xsvf_size, uint8_t *xsvf_data
 }
 
 /**
- * Download XSVF data to device
+ * Send XSVF data for execution on opened device
+ * This will be an entire XSVF sequence.
  *
  * @param xsvf_size
  * @param xsvf_data
@@ -358,14 +366,14 @@ const char *XsvfLoader::downloadXsvfBlock(unsigned xsvf_size, uint8_t *xsvf_data
  * @return nullptr   => success
  * @return !=nullptr => failed, error message
  */
-const char *XsvfLoader::downloadXsvf(unsigned xsvf_size, uint8_t *xsvf_data) {
+const char *XsvfLoader::sendXsvf(unsigned xsvf_size, uint8_t *xsvf_data) {
 
    // OK for empty image
    if (xsvf_size==0) {
       return nullptr;
    }
 
-   fprintf(stderr, "downloadXsvf - Sending header for SXVF Data (%d bytes)]\n", xsvf_size);
+   fprintf(stderr, "sendXsvf - Sending header for SXVF Data (%d bytes)]\n", xsvf_size);
 
    UsbStartXsvfMessage command = {
          /* command      */ UsbCommand_XSVF,
@@ -379,7 +387,7 @@ const char *XsvfLoader::downloadXsvf(unsigned xsvf_size, uint8_t *xsvf_data) {
       return libusb_error_name(rc);
    }
    if ((unsigned)bytesSent != sizeof(command)) {
-      return "downloadXsvf - Incomplete transmission";
+      return "sendXsvf - Incomplete transmission";
    }
 
    SimpleResponseMessage response = {};
@@ -390,10 +398,10 @@ const char *XsvfLoader::downloadXsvf(unsigned xsvf_size, uint8_t *xsvf_data) {
       return libusb_error_name(rc);
    }
    if ((unsigned)bytesReceived < sizeof(response)) {
-      return "downloadXsvf - Incomplete reception";
+      return "sendXsvf - Incomplete reception";
    }
    if (response.status != UsbCommandStatus_OK) {
-      return "downloadXsvf - Operation failed on device";
+      return "sendXsvf - Operation failed on device";
    }
 
    // Maximum size of data to write
@@ -408,34 +416,35 @@ const char *XsvfLoader::downloadXsvf(unsigned xsvf_size, uint8_t *xsvf_data) {
       if (splitBlockSize>maxSplitBlockSize) {
          splitBlockSize = maxSplitBlockSize;
       }
-      fprintf(stderr, "downloadXsvf - Sending splitBlock [0x%06X..0x%06X]\n",
+      fprintf(stderr, "sendXsvf - Sending splitBlock [0x%06X..0x%06X]\n",
             offset, offset+maxSplitBlockSize-1);
       fflush(stderr);
 
-      errrorMessage = downloadXsvfBlock(splitBlockSize, xsvf_data+offset);
+      errrorMessage = sendXsvfBlock(splitBlockSize, xsvf_data+offset);
       if (errrorMessage != nullptr) {
          break;
       }
       offset          += splitBlockSize;
       bytesToProgram  -= splitBlockSize;
    }
-   fprintf(stderr, "downloadXsvf - Sent %d bytes\n", offset);
+   fprintf(stderr, "sendXsvf - Sent %d bytes\n", offset);
    fflush(stderr);
 
    return errrorMessage;
 }
 
 /**
- * Download XSVF data to device
+ * Execute XSVF sequence on device.
+ * - This will open the device.
+ * - Execute sequence
+ * - Close the device
  *
- * @param xsvf_size
- * @param xsvf_data
+ * @param xsvf The XSVF sequence to execute
  *
  * @return nullptr   => success
  * @return !=nullptr => failed, error message
  */
-const char *XsvfLoader::sendSxvfFile(unsigned xsvf_size, uint8_t *xsvf_data) {
-
+const char *XsvfLoader::executeXsvf(Xsvf &xsvf) {
    const char *errorMessage = nullptr;
 
    int rc = libusb_init(NULL);
@@ -448,7 +457,7 @@ const char *XsvfLoader::sendSxvfFile(unsigned xsvf_size, uint8_t *xsvf_data) {
          errorMessage = "Programmer not found";
          break;
       }
-      errorMessage = downloadXsvf(xsvf_size, xsvf_data);
+      errorMessage = sendXsvf(xsvf.getSize(), xsvf.getData());
       if (errorMessage != nullptr) {
          break;
       }

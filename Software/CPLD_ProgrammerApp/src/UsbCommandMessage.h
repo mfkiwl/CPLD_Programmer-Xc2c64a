@@ -47,7 +47,7 @@ static inline const char *getCommandName(UsbCommand command) {
    static const char *names[] = {
          "UsbCommand_Nop",
          "Command_Identify",
-         "UsbCommand_Status",
+         "UsbCommand_CheckVref",
          "UsbCommand_XSVF",
          "UsbCommand_XSVF_data",
    };

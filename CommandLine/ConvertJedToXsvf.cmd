@@ -22,7 +22,7 @@ if not exist "%JED_FILE%" (
 rem Create Impact command file
 echo setMode -bs                                     >  %SCRATCH_FILE%
 echo addDevice -p 1 -file "%JED_FILE%"               >> %SCRATCH_FILE%
-echo setCable -port svf -file "%XSVF_FILE%"         >> %SCRATCH_FILE%
+echo setCable -port svf -file "%XSVF_FILE%"          >> %SCRATCH_FILE%
 echo readidcode -p 1                                 >> %SCRATCH_FILE%
 echo program -e -v -p 1                              >> %SCRATCH_FILE%
 echo closeCable                                      >> %SCRATCH_FILE%

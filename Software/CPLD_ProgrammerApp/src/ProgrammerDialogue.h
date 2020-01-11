@@ -10,6 +10,8 @@
 
 #include "ProgrammerDialogueSkeleton.h"
 #include "XsvfLoader.h"
+#include "Xsvf.h"
+#include "DeviceInformation.h"
 
 class ProgrammerDialogue : public ProgrammerDialogueSkeleton {
 private:
@@ -18,8 +20,14 @@ private:
    ProgrammerDialogue& operator=(const ProgrammerDialogue &other) = delete;
    ProgrammerDialogue& operator=(ProgrammerDialogue &&other) = delete;
 
-   uint8_t     xsvf_data[40000];
-   unsigned    xsvf_size = 0;
+   Xsvf        xsvf;
+   time_t      xsvf_file_modified_time = 0;
+   wxString    xsvf_fileName;
+   wxString    xsvf_filePath;
+
+   const DeviceInformation *deviceInformation = nullptr;
+
+   const char *confirmDevice();
 
 public:
    ProgrammerDialogue();
@@ -35,17 +43,22 @@ protected:
    const char *getDeviceName(uint32_t idcode);
 
    /**
-    * Load XSVF file
+    * Load Programming file - Either .jed or .xsvf
     *
-    * @param filePath
+    * @param filePath   Path to file (including file name)
+    * @param fileName   File name portion only e.g. xxx.jed
     *
-    * @return
+    * @return True  => File successfully loaded
+    * @return False => File load failed
     */
-   bool loadXsvfFile(wxString filepath);
+   bool loadProgrammingFile(wxString filePath, wxString fileName);
 
    virtual void onLoadFile(wxCommandEvent &event) override;
    virtual void onConfirmId( wxCommandEvent& event ) override;
    virtual void onProgramDevice(wxCommandEvent &event) override;
+
+   bool fileIsCurrent();
+
 };
 
 #endif /* PROGRAMMERDIALOGUE_H_ */

@@ -12,6 +12,10 @@
 #include "wx/msgdlg.h"
 
 #include "XsvfLoader.h"
+#include "JedecFile.h"
+#include "Xsvf.h"
+#include "XsvfWriter.h"
+#include "DeviceMapFile.h"
 
 ProgrammerDialogue::ProgrammerDialogue() : ProgrammerDialogueSkeleton(nullptr) {
 }
@@ -19,39 +23,146 @@ ProgrammerDialogue::ProgrammerDialogue() : ProgrammerDialogueSkeleton(nullptr) {
 ProgrammerDialogue::~ProgrammerDialogue() {
 }
 
-/**
- * Load XSVF file
- *
- * @param filePath
- *
- * @return
- */
-bool ProgrammerDialogue::loadXsvfFile(wxString filePath) {
-   wxFile file;
-   if (file.Open(filePath, wxFile::read)) {
-      wxFileOffset size = file.Length();
-      if (size > sizeof(xsvf_data)) {
-         wxMessageBox("File is unexpectedly large", "Failed to load file");
-         xsvf_size = 0;
-         return false;
-      }
-      file.Read(xsvf_data, size);
-      xsvf_size = (unsigned)size;
+bool isSuffix(const char *name, const char *suffix) {
+   unsigned sName   = strlen(name);
+   unsigned sSuffix = strlen(suffix);
+
+   if (sSuffix > sName) {
+      return false;
    }
-   else {
+   bool found = true;
+   do {
+      if (name[--sName] != suffix[--sSuffix]) {
+         found = false;
+         break;
+      }
+   } while (sSuffix>0);
+   return found;
+}
+
+const char *createXsvfFromJedec(const char *jedec_filepath, XsvfWriter &xsvfWriter) {
+
+   JedecFile jedecFile;
+
+   const char *msg = jedecFile.loadFile(jedec_filepath);
+   if (msg != nullptr) {
+      fprintf(stderr, "Failed to load file '%s', reason = %s\n", jedec_filepath, msg);
+      fflush(stderr);
+      return msg;
+   }
+
+//   jedecFile.report();
+//   jedecFile.jedecPrint();
+
+//   fprintf(stderr, "Loaded file '%s'\n", jedec_filepath);
+//   fflush(stderr);
+
+   const DeviceInformation *deviceInformation = DeviceInformation::findDevice(jedecFile.getDeviceName());
+
+//   jedecFile.report();
+
+   if (deviceInformation == nullptr) {
+      fprintf(stderr, "Failed to get device information for %s\n", jedecFile.getDeviceName());
+      fflush(stderr);
+      return "Unknown device type";
+   }
+   DeviceMapFile deviceMapFile(*deviceInformation);
+   msg = deviceMapFile.loadFile(jedecFile.getFuseLimit());
+   if (msg != nullptr) {
+      fprintf(stderr, "Failed to load device map file '%s', reason = %s", jedec_filepath, msg);
+      fflush(stderr);
+      return "Failed to load device map file";
+   }
+//   deviceMapFile.printMap();
+
+   jedecFile.rearrangeProgrammingData(deviceMapFile);
+//   jedecFile.printProgrammingData();
+
+   xsvfWriter.clear();
+   xsvfWriter.doPreamble();
+   xsvfWriter.confirmIdcode(*deviceInformation);
+   xsvfWriter.doErase();
+   xsvfWriter.program(jedecFile, *deviceInformation);
+   xsvfWriter.verify(jedecFile, *deviceInformation);
+   xsvfWriter.doPostamble();
+   return nullptr;
+}
+
+/**
+ * Load Programming file - Either .jed or .xsvf
+ *
+ * @param filePath   Path to file (including file name)
+ * @param fileName   File name portion only e.g. abc.jed
+ *
+ * @return True  => File successfully loaded
+ * @return False => File load failed
+ */
+bool ProgrammerDialogue::loadProgrammingFile(wxString filePath, wxString fileName) {
+
+   wxFile file;
+   const char *msg = nullptr;
+
+//   fprintf(stderr, "Loading %s\n", (const char*)filePath.c_str());
+//   fprintf(stderr, "Loading %s\n", (const char*)fileName.c_str());
+   fflush(stderr);
+
+   xsvf.clear();
+
+   do {
+      if (isSuffix(fileName.c_str(), ".xsvf")) {
+         msg = xsvf.readFile(filePath.c_str());
+      }
+      else if (isSuffix(fileName.c_str(), ".jed")) {
+         XsvfWriter xsvfWriter;
+         msg = createXsvfFromJedec(filePath.c_str(), xsvfWriter);
+         if (msg == nullptr) {
+            xsvf = xsvfWriter.getXsvf();
+         }
+      }
+      else {
+         msg = "File type not recognized";
+      }
+      if (msg != nullptr) {
+         continue;
+      }
+   } while (false);
+
+   if (msg != nullptr) {
+      xsvf_file_modified_time = 0;
+      xsvf_filePath = "";
+      xsvf_fileName = "";
+
       loadedFile_static->SetLabel("-- No file loaded --");
       programDevice_button->Enable(false);
-      wxMessageBox("", "Failed to load file");
+
+      wxMessageBox(msg, "Failed to load file");
+      return false;
    }
-   file.Close();
-   return true;
+   else {
+      // Get file modification time
+      xsvf_file_modified_time = wxFileModificationTime(filePath);
+      xsvf_filePath = filePath;
+      xsvf_fileName = fileName;
+      wxDateTime time(xsvf_file_modified_time);
+      time.FormatISOCombined(':');
+      loadedFile_static->SetLabel(wxString::Format("%s (%s)", fileName, time.FormatISOCombined(' ')));
+      programDevice_button->Enable(true);
+      return true;
+   }
+}
+
+bool ProgrammerDialogue::fileIsCurrent() {
+   // Get file modification time
+   long file_modified_time = wxFileModificationTime(xsvf_filePath);
+   return (file_modified_time <= xsvf_file_modified_time);
 }
 
 void ProgrammerDialogue::onLoadFile(wxCommandEvent &event) {
    wxString caption  = _("Select Binary File to Load");
    wxString wildcard = _(
-         "Compressed SVF (*.xsvf)|*.xsvf|"
+         "Programming Files(*.jed;*.xsvf)|*.jed;*.xsvf|"
          "Jedec Files(*.jed)|*.jed|"
+         "Compressed SVF (*.xsvf)|*.xsvf|"
          "All Files|*");
    wxString defaultFilename  = wxEmptyString;
    wxString currentDirectory = wxEmptyString;
@@ -63,16 +174,11 @@ void ProgrammerDialogue::onLoadFile(wxCommandEvent &event) {
    }
    wxString filePath = openFileDialog.GetPath();
    wxString fileName = openFileDialog.GetFilename();
-   if (loadXsvfFile(filePath)) {
-      loadedFile_static->SetLabel(wxString::Format("%s (%i bytes)", fileName, xsvf_size));
-      programDevice_button->Enable(true);
-      programAction_static->SetLabel("");
-      idcode_static->SetLabel("");
-   }
-   else {
-      loadedFile_static->SetLabel("-- No file loaded --");
-      programDevice_button->Enable(false);
-   }
+
+   programAction_static->SetLabel("");
+   idcode_static->SetLabel("");
+
+   loadProgrammingFile(filePath, fileName);
 }
 
 /**
@@ -106,11 +212,15 @@ const char *ProgrammerDialogue::getDeviceName(uint32_t idcode) {
    return name;
 }
 
-void ProgrammerDialogue::onConfirmId( wxCommandEvent& event ) {
+const char *ProgrammerDialogue::confirmDevice() {
    XsvfLoader loader;
    uint32_t idcode;
 
-   const char *res = nullptr;
+   const char *res   = nullptr;
+   deviceInformation = nullptr;
+
+   fprintf(stderr, "onConfirmId\n");
+   fflush(stderr);
    do {
       res = loader.checkTargetVref();
       if (res != nullptr) {
@@ -120,35 +230,62 @@ void ProgrammerDialogue::onConfirmId( wxCommandEvent& event ) {
       if (res != nullptr) {
          break;
       }
+      deviceInformation = DeviceInformation::findDevice(idcode);
+      if (deviceInformation == nullptr) {
+         res = "Unknown device";
+      }
    } while (false);
 
    if (res != nullptr) {
-      wxMessageBox(res, "Failed to read IDCODE from device");
-      idcode_static->SetLabel("Failed to read IDCODE");
+      fprintf(stderr, "confirmDevice - %s\n", res);
+      fflush(stderr);
+      idcode_static->SetLabel("Failed to identify device");
+      return "Failed to identify device";
    }
    else {
-      idcode_static->SetLabel(wxString::Format("%s (IDCODE = 0x%08X)", getDeviceName(idcode), idcode));
+      fprintf(stderr, "confirmDevice - %s (IDCODE = 0x%08X)\n", deviceInformation->getName(), idcode);
+      fflush(stderr);
+      idcode_static->SetLabel(wxString::Format("%s (IDCODE = 0x%08X)", deviceInformation->getName(), idcode));
+      return nullptr;
+   }
+}
+
+void ProgrammerDialogue::onConfirmId( wxCommandEvent& event ) {
+
+   const char *msg = confirmDevice();
+   if (msg != nullptr) {
+      wxMessageBox(msg, "Failed to identify device");
    }
 }
 
 void ProgrammerDialogue::onProgramDevice(wxCommandEvent &event) {
    programAction_static->SetLabel("Busy");
+
+   if (!fileIsCurrent() && !loadProgrammingFile(xsvf_filePath, xsvf_fileName)) {
+      // File reload failed
+      return;
+   }
+
    XsvfLoader loader;
-   const char *res = nullptr;
+   const char *msg = nullptr;
    do {
-      res = loader.checkTargetVref();
-      if (res != nullptr) {
+      msg = loader.checkTargetVref();
+      if (msg != nullptr) {
          break;
       }
-
-      res = loader.sendSxvfFile(xsvf_size, xsvf_data);
-      if (res != nullptr) {
+      msg = confirmDevice();
+      if (msg != nullptr) {
+         break;
+      }
+      onConfirmId(event);
+      msg = loader.executeXsvf(xsvf);
+      if (msg != nullptr) {
          break;
       }
    } while (false);
 
-   if (res != nullptr) {
-      wxMessageBox(res, "Failed to program device");
+   if (msg != nullptr) {
+      wxMessageBox(msg, "Failed to program device");
       programAction_static->SetLabel("Programming Failed");
    }
    else {

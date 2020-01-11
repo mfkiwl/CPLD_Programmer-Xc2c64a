@@ -50,6 +50,7 @@
 									<listOptionValue builtIn="false" value="__WXMSW__"/>
 									<listOptionValue builtIn="false" value="UNICODE"/>
 								</option>
+								<option id="gnu.c.compiler.option.dialect.std.275840803" superClass="gnu.c.compiler.option.dialect.std" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.629969868" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.mingw.exe.debug.149824600" name="MinGW C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.mingw.exe.debug"/>
@@ -114,6 +115,7 @@
 									<listOptionValue builtIn="false" value="__WXMSW__"/>
 									<listOptionValue builtIn="false" value="UNICODE"/>
 								</option>
+								<option id="gnu.cpp.compiler.option.dialect.std.728455883" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.498319040" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.release.74868839" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.release">
