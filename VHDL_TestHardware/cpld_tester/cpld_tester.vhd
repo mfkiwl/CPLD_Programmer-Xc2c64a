@@ -3,12 +3,12 @@ use IEEE.std_logic_1164.ALL;
 
 use IEEE.NUMERIC_STD.ALL;
 
-entity CPLD_Tester is
+entity cpld_tester is
     Port ( clock : in   std_logic;
            leds  : out  std_logic_vector (31 downto 0));
-end CPLD_Tester;
+end cpld_tester;
 
-architecture Behavioral of CPLD_Tester is
+architecture Behavioral of cpld_tester is
 
 signal toggle         : std_logic;
 signal counter        : integer range 0 to 100;
@@ -39,4 +39,3 @@ begin
    end process;
    
 end Behavioral;
-
