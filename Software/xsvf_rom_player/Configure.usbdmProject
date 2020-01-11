@@ -5,7 +5,7 @@
 -->
 
 <section name="USBDM">
-   <item key="$$DeviceInfo_Device_Variant"                 value="MK20DX128VLH5" />
+   <item key="$$DeviceInfo_Device_Variant"                 value="MK20DX128VLF5" />
    <item key="$$DeviceInfo_SubFamily"                      value="MK20D5" />
    <item key="$$Hardware_Source_Filename"                  value="MK20D5.usbdmHardware" />
    <item key="$signal$PTA0_descriptionSetting"             value="SWD_CLK" />

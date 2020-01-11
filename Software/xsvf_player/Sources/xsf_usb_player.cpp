@@ -18,7 +18,21 @@
 // Allow access to USBDM methods
 using namespace USBDM;
 
-using StatusLED = GpioD<7>;
+/**
+ * Report command to console
+ *
+ * @param message Command message to describe
+ */
+static void writeCommandMessage(UsbCommandMessage &message) {
+   console.write(getCommandName(message.command));
+   if (message.byteLength>0) {
+   }
+   else {
+   }
+   console.writeln();
+}
+
+using ProgrammerBusyLed = GpioD<7>;
 
 bool execute(unsigned xsvd_size, uint8_t *xsvf_data, uint32_t &result) {
 
@@ -276,6 +290,7 @@ private:
          return false;
       }
       if (command.command != UsbCommand_XSVF_data) {
+         console.writeln(getCommandName(command.command));
          error = "Unexpected USB packet type";
          return false;
       }
@@ -330,110 +345,146 @@ public:
    }
 };
 
-/**
- * Report command to console
- *
- * @param message Command message to describe
- */
-static void writeCommandMessage(UsbCommandMessage &message) {
-   console.WRITE(getCommandName(message.command));
-   if (message.byteLength>0) {
+   static UsbCommandMessage command;
+
+enum UsbState {UsbStartUp, UsbIdle, UsbWaiting};
+
+void pollUsb() {
+
+   static UsbState usbState = UsbStartUp;
+
+   static auto cb = [](const UsbImplementation::UserEvent) {
+      // Restart transfers on reset etc.
+      usbState = UsbIdle;
+      return E_NO_ERROR;
+   };
+
+   if (usbState == UsbStartUp) {
+      // 1st time - Initialise hardware
+      ProgrammerBusyLed::setOutput(
+            PinDriveStrength_High,
+            PinDriveMode_PushPull,
+            PinSlewRate_Slow);
+
+      // Start USB
+      UsbImplementation::initialise();
+      UsbImplementation::setUserCallback(cb);
+      checkError();
+      usbState = UsbIdle;
+      return;
    }
-   else {
+   // Check for USB connection
+   if (!UsbImplementation::isConfigured()) {
+      // No connection
+      return;
    }
-   console.WRITELN();
+
+   int size;
+
+   if (usbState != UsbWaiting) {
+      // UsbIdle
+      // Set up to receive a message
+      Usb0::startReceiveBulkData(sizeof(command), (uint8_t *)&command);
+      usbState = UsbWaiting;
+      return;
+   }
+
+   // UsbWaiting
+
+   // Check if we have received a message
+   size = Usb0::pollReceiveBulkData();
+   if (size < 0) {
+      // No message - USB still ready
+      return;
+   }
+
+   // *****************************
+   // We have a message to process
+   // *****************************
+
+   // Default to Failed small response
+   ResponseMessage    response;
+   response.status     = UsbCommandStatus_Failed;
+   response.byteLength = 0;
+   unsigned responseSize = sizeof(SimpleResponseMessage);
+
+   bool noVref = !JtagInterface::checkVref();
+   if (noVref) {
+      console.writeln("No target Vref");
+   }
+   do {
+      if (size < (int)sizeof(command.command)) {
+         // Empty message?
+         console.writeln("Empty command");
+         continue;
+      }
+      writeCommandMessage(command);
+
+      switch(command.command) {
+         default:
+            console.write("Unexpected command: ").writeln(command.command);
+            continue;
+
+         case UsbCommand_Nop:
+            response.status = UsbCommandStatus_OK;
+            continue;
+
+         case UsbCommand_Identify:
+            if (noVref) {
+               continue;
+            }
+            if (!readIdcode(response.idcode)) {
+               console.writeln("Failed read IDCODE");
+               continue;
+            }
+            response.status      = UsbCommandStatus_OK;
+            response.byteLength  = 4;
+            responseSize         = sizeof(ResponseIdentifyMessage);
+            console.write("IDCODE = 0x").writeln(response.idcode, Radix_16);
+            continue;
+
+         case UsbCommand_CheckVref:
+            if (noVref) {
+               continue;
+            }
+            response.status      = UsbCommandStatus_OK;
+            console.writeln("Target Vref present");
+            continue;
+
+         case UsbCommand_XSVF_execute:
+            if (noVref) {
+               continue;
+            }
+            if (!execute(command.byteLength, command.data, response.result)) {
+               continue;
+            }
+            response.status      = UsbCommandStatus_OK;
+            response.byteLength  = 4;
+            responseSize         = sizeof(ResponseIdentifyMessage);
+            console.write("Result = 0x").writeln(response.result, Radix_16);
+            continue;
+
+         case UsbCommand_XSVF:
+            if (noVref) {
+               continue;
+            }
+            if (!XsvfPlayer_USB::doReceiveXsvf(command.xsvfSize)) {
+               continue;
+            }
+            response.status      = UsbCommandStatus_OK;
+            continue;
+      }
+   } while (false);
+   Usb0::sendBulkData(responseSize, (uint8_t *)&response, 1000);
+   usbState = UsbIdle;
 }
 
 int main() {
 
    console.writeln("Starting");
 
-   StatusLED::setOutput(
-         PinDriveStrength_High,
-         PinDriveMode_PushPull,
-         PinSlewRate_Slow);
-
-   // Start USB
-   UsbImplementation::initialise();
-   checkError();
-
-   for(;;) {
-      // Wait for USB connection
-      while(!UsbImplementation::isConfigured()) {
-         __WFI();
-      }
-      UsbCommandMessage command;
-      ResponseMessage   response;
-      for(;;) {
-         uint16_t size = sizeof(command);
-         ErrorCode rc = Usb0::receiveBulkData(size, (uint8_t *)&command);
-         if (rc != E_NO_ERROR) {
-            continue;
-         }
-         writeCommandMessage(command);
-
-         // Default to OK small response
-         unsigned responseSize = sizeof(SimpleResponseMessage);
-         response.byteLength   = 0;
-         response.status       = UsbCommandStatus_OK;
-
-         switch(command.command) {
-            default:
-               response.status = UsbCommandStatus_Failed;
-               console.write("Unexpected command: ").writeln(command.command);
-               break;
-            case UsbCommand_Nop:
-               break;
-            case UsbCommand_Identify:
-               if (!JtagInterface::checkVref()) {
-                  response.status = UsbCommandStatus_Failed;
-                  console.writeln("No target Vref");
-                  break;
-               }
-               if (!readIdcode(response.idcode)) {
-                  response.status = UsbCommandStatus_Failed;
-                  break;
-               }
-               response.byteLength = 4;
-               responseSize        = sizeof(ResponseIdentifyMessage);
-               console.write("IDCODE = 0x").writeln(response.idcode, Radix_16);
-               break;
-            case UsbCommand_CheckVref:
-               if (!JtagInterface::checkVref()) {
-                  response.status = UsbCommandStatus_Failed;
-                  console.writeln("No target Vref");
-                  break;
-               }
-               console.writeln("Target Vref present");
-               break;
-            case UsbCommand_XSVF_execute:
-               if (!JtagInterface::checkVref()) {
-                  response.status = UsbCommandStatus_Failed;
-                  console.writeln("No target Vref");
-                  break;
-               }
-               if (!execute(command.byteLength, command.data, response.result)) {
-                  response.status = UsbCommandStatus_Failed;
-                  break;
-               }
-               response.byteLength = 4;
-               responseSize        = sizeof(ResponseIdentifyMessage);
-               console.write("Result = 0x").writeln(response.result, Radix_16);
-               break;
-
-            case UsbCommand_XSVF:
-               if (!JtagInterface::checkVref()) {
-                  response.status = UsbCommandStatus_Failed;
-                  console.writeln("No target Vref");
-                  break;
-               }
-               if (!XsvfPlayer_USB::doReceiveXsvf(command.xsvfSize)) {
-                  response.status = UsbCommandStatus_Failed;
-               }
-               break;
-         }
-         Usb0::sendBulkData(responseSize, (uint8_t *)&response, 1000);
-      }
+	for(;;) {
+	pollUsb();
    }
    return 0;
 }

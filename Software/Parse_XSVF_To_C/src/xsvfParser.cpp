@@ -20,7 +20,7 @@
  *
  * @return Pointer to static string
  */
-const char *XsvfParser::getCommandName(XsvfCommand command) {
+const char *XsvfParser::getXCommandName(XsvfCommand command) {
    static const char* commands[] = {
          "XCOMPLETE",     // 0x00
          "XTDOMASK",      // 0x01
@@ -116,6 +116,41 @@ void XsvfParser::printBits(const char* title, unsigned numBits, const uint8_t *b
 }
 
 /**
+ * Print buffer contents in binary
+ *
+ * @param title Title to prefix each line
+ * @param size Size of buffer
+ * @param buff Buffer to print
+ */
+void XsvfParser::printBitsAsComment(const char* title, unsigned numBits, const uint8_t *buff) {
+   unsigned size = (numBits+7)/8;
+   unsigned index = 0;
+   bool doHeader = true;
+   unsigned byteCount = 0;
+   const uint8_t *buffPtr = buff+size;
+   while (buffPtr>=buff) {
+      if (doHeader) {
+         fprintf(fp_output, "   // %-10s %4d: ", title, (index>numBits)?numBits:index);
+      }
+      uint8_t value = *--buffPtr;
+      for (unsigned sub=0; sub<8; sub++) {
+         if (index++ >= numBits) {
+            break;
+         }
+         fprintf(fp_output, "%1d", value&0b1);
+         value >>= 1;
+      }
+      fprintf(fp_output, " ");
+      doHeader = (++byteCount == 8);
+      if (doHeader) {
+         byteCount = 0;
+         fprintf(fp_output, "\n");
+      }
+   }
+   fprintf(fp_output, "\n");
+}
+
+/**
  * Shift out value
  * Assumes in DR_Shift or IR_Shift state
  *
@@ -135,7 +170,7 @@ void XsvfParser::shiftOut(unsigned size, bool tdi_value, uint8_t *tdo_value, boo
    uint8_t mask = 0b1;
 
    // Start at Least Significant byte
-   tdo_value += sizeInBytes-1;
+   tdo_value  += sizeInBytes-1;
 
    while(size-->0) {
       if (mask == 0b1) {
@@ -152,6 +187,7 @@ void XsvfParser::shiftOut(unsigned size, bool tdi_value, uint8_t *tdo_value, boo
    }
    if (exit_shift_state) {
       currentState = (currentState==IR_Shift)?IR_Exit1:DR_Exit1;
+      fprintf(fp_output, (currentState==IR_Shift)?"-IR_Exit1":"-DR_Exit1");
    }
 }
 
@@ -168,6 +204,7 @@ void XsvfParser::shiftIn(unsigned size, uint8_t *tdi_value, bool exit_shift_stat
    fprintf(fp_output, "-Shift(%d)", size);
    if (exit_shift_state) {
       currentState = (currentState==IR_Shift)?IR_Exit1:DR_Exit1;
+      fprintf(fp_output, (currentState==IR_Shift)?"-IR_Exit1":"-DR_Exit1");
    }
 }
 
@@ -190,6 +227,7 @@ bool XsvfParser::shiftIn(unsigned size, uint8_t *tdi_value, uint8_t *tdo_value, 
    fprintf(fp_output, "-Shift(%d)", size);
    if (exit_shift_state) {
       currentState = (currentState==IR_Shift)?IR_Exit1:DR_Exit1;
+      fprintf(fp_output, (currentState==IR_Shift)?"-IR_Exit1":"-DR_Exit1");
    }
    return true;
 }
@@ -212,6 +250,7 @@ bool XsvfParser::shiftIn(unsigned size, uint8_t *tdi_value, uint8_t *tdo_value, 
    fprintf(fp_output, "-Shift(%d)", size);
    if (exit_shift_state) {
       currentState = (currentState==IR_Shift)?IR_Exit1:DR_Exit1;
+      fprintf(fp_output, (currentState==IR_Shift)?"-IR_Exit1":"-DR_Exit1");
    }
    return true;
 }
@@ -295,19 +334,6 @@ void XsvfParser::printTransition(Xstate from, Xstate to) {
 }
 
 /**
- * Get single byte from XSVF input
- *
- * @return Byte obtained
- */
-uint8_t XsvfParser::get() {
-   if (byteCounter>xsvf_data_size) {
-      return XCOMPLETE;
-   }
-   byteCounter++;
-   return fgetc(fp_input);
-}
-
-/**
  * Get bits from  XSVF input
  *
  * @param title   Title for debug
@@ -338,6 +364,9 @@ bool XsvfParser::parse() {
 
    switch(command) {
       case XCOMPLETE   :
+         /*
+          * End of sequence
+          */
          fprintf(fp_output, " XCOMPLETE,\n");
          return true;
 
@@ -622,6 +651,7 @@ bool XsvfParser::parse() {
             moveTo(enddr_state);
          }
          fprintf(fp_output, "\n");
+//         printBitsAsComment("tdi_value", xsdr_size, tdi_value);
          printBits("tdi_value", xsdr_size, tdi_value);
          printBits("tdo_value", xsdr_size, tdo_value);
          break;
@@ -746,24 +776,12 @@ bool XsvfParser::parse() {
  * @return true  XSVF sequence completed without error
  * @return false Error detected during XSVF sequence
  */
-bool XsvfParser::parseAll() {
-   std::string inputName(fileName);
-   inputName += ".xsvf";
-
+bool XsvfParser::parseAll(unsigned xsvf_data_size) {
    std::string cppName(fileName);
    cppName += "_xsvf.cpp";
 
    std::string cppHeaderName(fileName);
    cppHeaderName += "_xsvf.h";
-
-   fp_input = fopen(inputName.c_str(), "rb");
-   if (fp_input == nullptr) {
-      fprintf(stderr, "%s doesn't exist\n", inputName.c_str());
-      return false;
-   }
-   fseek(fp_input, 0L, SEEK_END);
-   xsvf_data_size = ftell(fp_input);
-   rewind(fp_input);
 
    fp_output = fopen(cppName.c_str(), "wt");
    if (fp_output == nullptr) {
@@ -828,7 +846,7 @@ bool XsvfParser::parseAll() {
          "   XWAIT        = 0x17,         \n"
          "};                              \n"
          "\n"
-         "#define BYTES32(x) (0xFF&((x)>>24)),(0xFF&((x)>>16)),(0xFF&((x)>>8)),(0xFF&(x))\n"
+         "#define BYTES32(x) ((uint8_t)((x)>>24)),((uint8_t)((x)>>16)),((uint8_t)((x)>>8)),((uint8_t)(x))\n"
          "\n"
          "static constexpr uint8_t Ex_Idle         = 0x00;\n"
          "static constexpr uint8_t Ex_DR_Pause     = 0x01;\n"
@@ -859,22 +877,22 @@ bool XsvfParser::parseAll() {
       fprintf(fp_output, "// Error = %s", errorMessage);
    }
    // Move to EOF
-   get();
-   if (!feof(fp_input)) {
-      fprintf(fp_output, "// Not at end-of-file !!\n");
-   }
    fprintf(fp_output, trailer);
 
    return false;
 }
 
+
 /**
- * Constructor
+ * Get single byte from XSVF input
+ *
+ * @return Byte obtained
  */
-XsvfParser::XsvfParser(const char *fileName) : fileName(fileName) {
+uint8_t XsvfParser_File::get() {
+   if (byteCounter>xsvf_data_size) {
+      return XCOMPLETE;
+   }
+   byteCounter++;
+   return fgetc(fp_input);
 }
 
-XsvfParser::~XsvfParser() {
-   fclose(fp_input);
-   fclose(fp_output);
-}

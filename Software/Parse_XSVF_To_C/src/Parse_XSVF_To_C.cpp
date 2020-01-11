@@ -77,7 +77,7 @@ int main(int argc, const char *argv[]) {
    if (argc>1) {
       filename = argv[1];
    }
-   XsvfParser xsvf(filename);
+   XsvfParser_File xsvf(filename);
    xsvf.parseAll();
    return 0;
 }

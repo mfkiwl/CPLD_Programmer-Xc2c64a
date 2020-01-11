@@ -3,7 +3,6 @@
  *
  *   Wrapper for JTAG pins being used
  */
-
 #ifndef SOURCES_JTAGINTERFACE_H_
 #define SOURCES_JTAGINTERFACE_H_
 
@@ -13,17 +12,22 @@ class JtagInterface {
 
 private:
    using Jtag = USBDM::GpioBField<3,0>;
-   using Tms  = USBDM::GpioB<0>;
-   using Tdi  = USBDM::GpioB<1>;
-   using Tdo  = USBDM::GpioB<2>;
-   using Tck  = USBDM::GpioB<3>;
+   using Tms  = Jtag::Bit<0>;
+   using Tdi  = Jtag::Bit<1>;
+   using Tdo  = Jtag::Bit<2>;
+   using Tck  = Jtag::Bit<3>;
+
    using Adc  = USBDM::Adc0;
    using Vref = Adc::Channel<15>;
 
-   static constexpr unsigned TMS_MASK = 0b0001;
-   static constexpr unsigned TDI_MASK = 0b0010;
-   static constexpr unsigned TDO_MASK = 0b0100;
-   static constexpr unsigned TCK_MASK = 0b1000;
+   static constexpr unsigned TMS_MASK = (1<<(Tms::BITNUM-Jtag::RIGHT));
+   static constexpr unsigned TDI_MASK = (1<<(Tdi::BITNUM-Jtag::RIGHT));
+   static constexpr unsigned TDO_MASK = (1<<(Tdo::BITNUM-Jtag::RIGHT));
+   static constexpr unsigned TCK_MASK = (1<<(Tck::BITNUM-Jtag::RIGHT));
+
+   static_assert ((Jtag::LEFT-Jtag::RIGHT) == 3);
+
+   static constexpr USBDM::AdcResolution adcResolution = USBDM::AdcResolution_8bit_se;
 
 public:
    /**
@@ -57,8 +61,8 @@ public:
    static bool checkVref() {
       using namespace USBDM;
 
-      Adc::configure(AdcResolution_10bit_se, AdcClockSource_Bus);
-      return Vref::readAnalogue()>(Adc::getSingleEndedMaximum(AdcResolution_10bit_se) * 0.8);
+      Adc::configure(adcResolution, AdcClockSource_Bus);
+      return Vref::readAnalogue()>(Adc::getSingleEndedMaximum(adcResolution) * 0.8);
    }
 
    /**

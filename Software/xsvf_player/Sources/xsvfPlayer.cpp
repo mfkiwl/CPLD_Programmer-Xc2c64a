@@ -25,7 +25,7 @@ using namespace USBDM;
  *
  * @return Pointer to static string
  */
-const char *XsvfPlayer::getCommandName(XsvfCommand command) {
+const char *XsvfPlayer::getXCommandName(XsvfCommand command) {
    static const char* commands[] = {
          "XCOMPLETE",     // 0x00
          "XTDOMASK",      // 0x01
@@ -149,7 +149,8 @@ void XsvfPlayer::shiftOut(unsigned size, bool tdi_value, uint8_t *tdo_value, boo
    uint8_t mask = 0b1;
 
    // Start at Least Significant byte
-   tdo_value += sizeInBytes-1;
+   tdo_value  += sizeInBytes-1;
+   bitCounter  = 0;
 
    JtagInterface::setTMS(0);
    while(size-->0) {
@@ -160,6 +161,7 @@ void XsvfPlayer::shiftOut(unsigned size, bool tdi_value, uint8_t *tdo_value, boo
          // Last bit - move to
          JtagInterface::setTMS(exit_shift_state);
       }
+      bitCounter++;
       JtagInterface::setTDI(tdi_value);
       JtagInterface::clockTCK();
       if (JtagInterface::getTDO()) {
@@ -196,7 +198,8 @@ void XsvfPlayer::shiftInOut(unsigned size, uint8_t *tdi_value, uint8_t *tdo_valu
    uint8_t mask = 0b1;
 
    // Start at Least Significant byte
-   tdo_value += sizeInBytes-1;
+   tdo_value  += sizeInBytes-1;
+   bitCounter  = 0;
 
    JtagInterface::setTMS(0);
    while(size-->0) {
@@ -207,6 +210,7 @@ void XsvfPlayer::shiftInOut(unsigned size, uint8_t *tdi_value, uint8_t *tdo_valu
          // Last bit - move to
          JtagInterface::setTMS(exit_shift_state);
       }
+      bitCounter++;
       JtagInterface::setTDI(*tdi_value&mask);
       JtagInterface::clockTCK();
       if (JtagInterface::getTDO()) {
@@ -243,7 +247,8 @@ void XsvfPlayer::shiftIn(unsigned size, uint8_t *tdi_value, bool exit_shift_stat
    uint8_t mask = 0b1;
 
    // Start at Least Significant byte
-   tdi_value += sizeInBytes-1;
+   tdi_value  += sizeInBytes-1;
+   bitCounter  = 0;
 
    JtagInterface::setTMS(0);
    while(size-->0) {
@@ -251,6 +256,7 @@ void XsvfPlayer::shiftIn(unsigned size, uint8_t *tdi_value, bool exit_shift_stat
          // Last bit - move to
          JtagInterface::setTMS(exit_shift_state);
       }
+      bitCounter++;
       JtagInterface::setTDI(*tdi_value&mask);
       JtagInterface::clockTCK();
       mask <<= 1;
@@ -283,6 +289,7 @@ bool XsvfPlayer::shiftIn(unsigned size, uint8_t *tdi_value, uint8_t *tdo_value, 
    console.WRITE("-Shift(").WRITE(size).WRITE(")");
 
    unsigned sizeInBytes = (size+7)/8;
+   bitCounter = 0;
 
    // Start at Least Significant bit
    uint8_t mask = 0b1;
@@ -298,6 +305,7 @@ bool XsvfPlayer::shiftIn(unsigned size, uint8_t *tdi_value, uint8_t *tdo_value, 
          // Last bit - move to
          JtagInterface::setTMS(exit_shift_state);
       }
+      bitCounter++;
       JtagInterface::setTDI(*tdi_value&mask);
       JtagInterface::clockTCK();
       if (*tdo_mask&mask) {
@@ -343,8 +351,9 @@ bool XsvfPlayer::shiftIn(unsigned size, uint8_t *tdi_value, uint8_t *tdo_value, 
    uint8_t mask = 0b1;
 
    // Start at Least Significant byte
-   tdi_value += sizeInBytes-1;
-   tdo_value += sizeInBytes-1;
+   tdi_value  += sizeInBytes-1;
+   tdo_value  += sizeInBytes-1;
+   bitCounter  = 0;
 
    JtagInterface::setTMS(0);
    while(size-->0) {
@@ -352,6 +361,7 @@ bool XsvfPlayer::shiftIn(unsigned size, uint8_t *tdi_value, uint8_t *tdo_value, 
          // Last bit - move to
          JtagInterface::setTMS(exit_shift_state);
       }
+      bitCounter++;
       JtagInterface::setTDI(*tdi_value&mask);
       JtagInterface::clockTCK();
 
@@ -487,6 +497,9 @@ bool XsvfPlayer::play() {
 
    switch(command) {
       case XCOMPLETE   :
+         /*
+          * End of sequence
+          */
          console.WRITELN("XCOMPLETE,");
          return true;
 
@@ -791,6 +804,7 @@ bool XsvfPlayer::play() {
          moveTo(DR_Shift);
          if (!shiftIn(xsdr_size, tdi_value, tdo_value, tdo_mask, true)) {
             error = "Unexpected TDO value";
+            console.WRITE("bitCount = ").WRITELN(bitCounter);
             return true;
          }
          if (run_test_time != 0) {

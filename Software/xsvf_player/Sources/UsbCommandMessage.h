@@ -11,6 +11,7 @@
 #include <stdint.h>
 
 static constexpr uint16_t HW_LOGIC_BOARD_V2 = 1;
+static constexpr uint16_t HW_LOGIC_BOARD_V3 = 2;
 static constexpr uint16_t BOOTLOADER_V1     = 1;
 
 /**
@@ -23,6 +24,7 @@ enum UsbCommand : uint32_t {
    UsbCommand_XSVF,           //! Start XSVF download
    UsbCommand_XSVF_data,      //! Transfer XSVF block
    UsbCommand_XSVF_execute,   //! Execute short XSVF block
+   UsbCommand_Unknown,
 };
 
 /**
@@ -48,9 +50,11 @@ static inline const char *getCommandName(UsbCommand command) {
    static const char *names[] = {
          "UsbCommand_Nop",
          "Command_Identify",
-         "UsbCommand_Status",
+         "UsbCommand_CheckVref",
          "UsbCommand_XSVF",
          "UsbCommand_XSVF_data",
+         "UsbCommand_XSVF_execute",
+         "UsbCommand_Unknown",
    };
    const char *name = "Unknown";
    if (command < (sizeof(names)/sizeof(names[0]))) {
@@ -75,7 +79,7 @@ struct SimpleCommandMessage {
 struct XsvfBlockCommandMessage {
    UsbCommand         command;       // Status
    uint32_t           byteLength;    // Size of data
-   uint8_t            data[1024];    // Data
+   uint8_t            data[MAX_MESSAGE_DATA];    // Data
 };
 
 /**
