@@ -21,7 +21,8 @@
          Description="$(var.ProductName) Installer"
          Comments="$(var.ProductName) Package"
          Manufacturer="$(var.Manufacturer)"
-         InstallerVersion='100' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
+         InstallerVersion='200' Languages='1033' Compressed='yes' SummaryCodepage='1252'
+         Platform="x64" />
 
       <Media Id='1' Cabinet='Sample.cab' EmbedCab='yes' DiskPrompt="Source Folder" />
 
@@ -42,10 +43,10 @@
       <!--====================================================== -->
       <!--           Directory structure                         -->
       <Directory Id='TARGETDIR' Name='SourceDir'>
-         <Directory Id='ProgramFilesFolder' Name='PFiles'>
+         <Directory Id='ProgramFiles64Folder' Name='PFiles'>
             <Directory Id='MANUFACTURER_FOLDER' Name="$(var.Manufacturer)">
                <Directory Id='INSTALLDIR' Name="$(var.ProductName)">
-                  <Component Id='C.ProductKey' Guid='9b0f3c3b-309f-433d-b6ba-8c9999906ff7'>
+                  <Component Id='C.ProductKey' Guid='9b0f3c3b-309f-433d-b6ba-8c9999906ff7' Win64="yes">
                      <RegistryValue Root='HKLM' Key="Software\$(var.Manufacturer)\$(var.ProductName)"
                                     Type='string' Name='InstallationDirectory' Value="[INSTALLDIR]" KeyPath='yes' />
                   </Component>
@@ -67,7 +68,7 @@
       <!--======================================================-->
       <!-- Program Menu Folder -->
       <DirectoryRef Id="ProgramMenuFolder">
-         <Component Id="C.ProgramMenuFolder" Guid="*">
+         <Component Id="C.ProgramMenuFolder" Guid="*" Win64="yes">
             <CreateFolder Directory='D.ProgramMenuDir'/>
             <RemoveFolder Directory='D.ProgramMenuDir' Id="RemoveProgramMenuDir" On='uninstall' />
             <RegistryValue Root='HKMU' Key="Software\$(var.Manufacturer)\$(var.ProductName)"
@@ -78,7 +79,7 @@
       <!--====================================================== -->
       <!--         Application Components & shortcuts            -->
       <DirectoryRef Id='INSTALLDIR'>
-         <Component Id="C.CPLD_Programmer" Guid='7cd26bbb-b0ff-4934-8b90-8d48319ec302'>
+         <Component Id="C.CPLD_Programmer" Guid='7cd26bbb-b0ff-4934-8b90-8d48319ec302' Win64="yes">
             <File Id='F.CPLD_Programmer' DiskId='1' Source='CPLD_ProgrammerApp.exe' KeyPath="yes">
                <Shortcut Id="Sc.CPLD_Programmer" 
                   Name="CPLD Programmer"
@@ -89,7 +90,7 @@
          </Component>
       </DirectoryRef>
       <DirectoryRef Id='INSTALLDIR'>
-         <Component Id="C.KinetisBootloader" Guid='323a93ee-c3d4-4ab7-b0e4-c5664a25a48c'>
+         <Component Id="C.KinetisBootloader" Guid='323a93ee-c3d4-4ab7-b0e4-c5664a25a48c' Win64="yes">
             <File Id='F.KinetisBootloader' DiskId='1' Source='KinetisBootloaderApp.exe' KeyPath="yes">
                <Shortcut Id="Sc.KinetisBootloader" 
                   Name="Kinetis Bootloader"
