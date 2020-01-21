@@ -3,6 +3,7 @@
 #CDEFS     = -DLOG
 #MODULE    = module
 #TARGET    = BUILDDIR
+#ARCH      = i386/x86_64
 
 # Makefiles in subdirs used to collect targets (default 'module.mk')
 MODULE ?= module
@@ -13,7 +14,7 @@ TARGET ?= $(BUILDDIR)
 TARGET_DLL=$(LIB_PREFIX)$(TARGET)$(LIB_SUFFIX)
 TARGET_EXE=$(TARGET)$(EXE_SUFFIX)
 
-include ../Common.mk
+include ../Common-$(ARCH).mk
 
 VPATH      := src $(BUILDDIR) 
 SOURCEDIRS := src
