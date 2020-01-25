@@ -5,13 +5,13 @@
  *      Author: podonoghue
  ============================================================================
  */
+#include "XsvfParser.h"
+
 #include <stdio.h>
 #include <stdint.h>
 #include <assert.h>
 #include <string.h>
 #include <string>
-
-#include "xsvfParser.h"
 
 /**
  * Get command name as string

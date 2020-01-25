@@ -20,6 +20,9 @@ int main(int argc, const char *args[]) {
 
    FILE *fp = fopen(filename, "rb");
 
+   if (fp ==nullptr) {
+      fprintf(stderr, "Failed to open file %s\n", filename);
+   }
    fseek(fp, 0L, SEEK_END);
    unsigned long size = ftell(fp);
 
@@ -30,6 +33,7 @@ int main(int argc, const char *args[]) {
          " *\n"
          " * Derived from %s\n"
          " */ \n"
+         "#include <stdint.h>\n"
          "#include \"XSVF_Data2.h\" \n"
          " \n"
          "const uint8_t xsvf_data2[%lu] = {", filename, size);

@@ -7,7 +7,6 @@
 //============================================================================
 #include "JedecFile.h"
 #include "DeviceMapFile.h"
-#include "mapfile_xc2c.h"
 #include "XsvfParser.h"
 #include "XsvfWriter.h"
 
@@ -39,7 +38,7 @@ const char *createXsvfFromJedec(const char *jedec_filename, XsvfWriter &xsvfWrit
 
    xsvfWriter.clear();
    xsvfWriter.doPreamble();
-   xsvfWriter.confirmIdcode(deviceInformation->getIdcode(), deviceInformation->getIdcodeMask());
+   xsvfWriter.confirmIdcode(*deviceInformation);
    xsvfWriter.doErase();
    xsvfWriter.program(jedecFile, *deviceInformation);
    xsvfWriter.verify(jedecFile, *deviceInformation);
@@ -52,6 +51,7 @@ int main(int argc, const char *args[]) {
    JedecFile jedecFile;
 
    const char *jedec_filename = "cpld_tester.jed";
+   const char *xsvf_filename  = "cpld_tester";
 
    XsvfWriter xsvfWriter;
    createXsvfFromJedec(jedec_filename, xsvfWriter);
@@ -59,7 +59,7 @@ int main(int argc, const char *args[]) {
    Xsvf xsvf(xsvfWriter.getXsvf());
    xsvf.writeFile("xxx.xsvf");
 
-   XsvfParser_Array xsvfParser("xxx", xsvf.getSize(), xsvf.getData());
+   XsvfParser_Array xsvfParser(xsvf_filename, xsvf.getSize(), xsvf.getData());
    xsvfParser.parseAll();
 
    return 0;

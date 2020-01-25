@@ -13,7 +13,6 @@
 #include <string.h>
 #include <string>
 
-
 /**
  * Get command name as string
  *

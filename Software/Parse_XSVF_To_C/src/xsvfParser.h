@@ -12,6 +12,7 @@
 #define SOURCES_XSVFPARSER_H_
 
 #include <string>
+#include <cassert>
 #include "JtagTables.h"
 
 /// XSVF Command codes
@@ -301,7 +302,7 @@ protected:
     * @param size Size of buffer
     * @param buff Buffer to print
     */
-   static void printBits(const char* title, unsigned size, const uint8_t *buff);
+   void printBits(const char* title, unsigned size, const uint8_t *buff);
 
    /**
     * Print path leading from 'from' to 'to'
@@ -309,7 +310,7 @@ protected:
     * @param from Starting state
     * @param to   Ending state
     */
-   static void printTransition(Xstate from, Xstate to);
+   void printTransition(Xstate from, Xstate to);
 
    void printBitsAsComment(const char* title, unsigned numBits, const uint8_t *buff);
 
@@ -497,6 +498,9 @@ public:
    XsvfParser(const char *fileName) : fileName(fileName){
    }
 
+   /**
+    * Destructor
+    */
    virtual ~XsvfParser() {
       fclose(fp_output);
    }

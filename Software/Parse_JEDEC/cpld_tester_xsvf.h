@@ -10,6 +10,6 @@
 
 #include <stdint.h>
 
-extern const uint8_t cpld_tester_xsvf[22928];
+extern const uint8_t cpld_tester_xsvf[22525];
 
 #endif /* SOURCES_cpld_tester_xsvf_H_ */
