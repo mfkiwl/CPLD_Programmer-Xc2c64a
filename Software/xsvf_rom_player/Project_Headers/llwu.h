@@ -114,7 +114,9 @@ enum LlwuPin : uint32_t {
 #endif
 
    // Mapped pins
-   LlwuPin_Ptb0         = LlwuPin_5,    //!< Mapped pin PTB0
+   LlwuPin_Ptd0         = LlwuPin_12,   //!< Mapped pin PTD0
+   LlwuPin_Ptd2         = LlwuPin_13,   //!< Mapped pin PTD2
+   LlwuPin_Ptd6         = LlwuPin_15,   //!< Mapped pin PTD6
 
 };
 

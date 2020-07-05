@@ -24,7 +24,7 @@
          InstallerVersion='200' Languages='1033' Compressed='yes' SummaryCodepage='1252'
          Platform="x64" />
 
-      <Media Id='1' Cabinet='Sample.cab' EmbedCab='yes' DiskPrompt="Source Folder" />
+      <Media Id='1' Cabinet='disk1.cab' EmbedCab='yes' DiskPrompt="Source Folder" />
 
       <MajorUpgrade
          AllowDowngrades="no"

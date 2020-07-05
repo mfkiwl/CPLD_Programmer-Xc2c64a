@@ -17,21 +17,25 @@
 // Allow access to USBDM methods
 using namespace USBDM;
 
-using StatusLED = GpioD<7>;
+using PassLED = GpioD<6>;
+using FailLED = GpioD<7>;
 
 // Create player
 XsvfPlayer_Array xsvf{sizeof(cpld_tester_xsvf), cpld_tester_xsvf};
 
 int main() {
 
-   StatusLED::setOutput(
+   PassLED::setOutput(
+         PinDriveStrength_High,
+         PinDriveMode_PushPull,
+         PinSlewRate_Slow);
+
+   FailLED::setOutput(
          PinDriveStrength_High,
          PinDriveMode_PushPull,
          PinSlewRate_Slow);
 
    waitMS(100);
-
-   unsigned blinkDelay;
 
    console.writeln("Waiting for Vref");
    while (!JtagInterface::checkVref()) {
@@ -40,24 +44,26 @@ int main() {
    waitMS(100);
    console.writeln("Vref present - programming");
 
-   StatusLED::on();
+   FailLED::on();
    bool success = xsvf.playAll();
-   StatusLED::off();
+   FailLED::off();
 
    if (success) {
       // Success - Slow blinking
-      blinkDelay = 500;
       console.writeln("Sequence completed");
+      for(;;) {
+         PassLED::toggle();
+         waitMS(500);
+      }
    }
    else {
       // Failure - Fast blinking
-      blinkDelay = 50;
       console.writeln("Sequence failed");
+      for(;;) {
+         FailLED::toggle();
+         waitMS(50);
+      }
    }
 
-   for(;;) {
-      StatusLED::toggle();
-      waitMS(blinkDelay);
-   }
    return 0;
 }

@@ -1501,14 +1501,14 @@ public:
          /*   5: ADC0_SE5b            = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
          /*   6: ADC0_SE6b            = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
          /*   7: ADC0_SE7b            = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
-         /*   8: ADC0_SE8             = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
+         /*   8: ADC0_SE8             = PTB0 (p27)                     */  { PortBInfo,  GPIOB_BasePtr,  0,       PORT_PCR_MUX(0)|defaultPcrValue  },
          /*   9: ADC0_SE9             = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
          /*  10: --                   = --                             */  { NoPortInfo, 0,         INVALID_PCR,  0 },
          /*  11: --                   = --                             */  { NoPortInfo, 0,         INVALID_PCR,  0 },
          /*  12: ADC0_SE12            = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
          /*  13: ADC0_SE13            = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
          /*  14: ADC0_SE14            = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
-         /*  15: ADC0_SE15            = PTC1 (p34)                     */  { PortCInfo,  GPIOC_BasePtr,  1,       PORT_PCR_MUX(0)|defaultPcrValue  },
+         /*  15: ADC0_SE15            = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
          /*  16: --                   = --                             */  { NoPortInfo, 0,         INVALID_PCR,  0 },
          /*  17: --                   = --                             */  { NoPortInfo, 0,         INVALID_PCR,  0 },
          /*  18: --                   = --                             */  { NoPortInfo, 0,         INVALID_PCR,  0 },
@@ -1526,11 +1526,11 @@ public:
     */
    static void initPCRs(uint32_t pcrValue=defaultPcrValue) {
 #ifdef PCC_PCCn_CGC_MASK
-      PCC->PCC_PORTC = PCC_PCCn_CGC_MASK;
+      PCC->PCC_PORTB = PCC_PCCn_CGC_MASK;
 #else
-      enablePortClocks(PORTC_CLOCK_MASK);
+      enablePortClocks(PORTB_CLOCK_MASK);
 #endif
-      PORTC->GPCLR = pcrValue|PORT_PCR_MUX(0)|PORT_GPCLR_GPWE(0x0002UL);
+      PORTB->GPCLR = pcrValue|PORT_PCR_MUX(0)|PORT_GPCLR_GPWE(0x0001UL);
    }
 
    /**
@@ -1538,11 +1538,11 @@ public:
     */
    static void clearPCRs() {
 #ifdef PCC_PCCn_CGC_MASK
-      PCC->PCC_PORTC = PCC_PCCn_CGC_MASK;
+      PCC->PCC_PORTB = PCC_PCCn_CGC_MASK;
 #else
-      enablePortClocks(PORTC_CLOCK_MASK);
+      enablePortClocks(PORTB_CLOCK_MASK);
 #endif
-      PORTC->GPCLR = PORT_PCR_MUX(0)|PORT_GPCLR_GPWE(0x2U);
+      PORTB->GPCLR = PORT_PCR_MUX(0)|PORT_GPCLR_GPWE(0x1U);
    }
 
 #define USBDM_ADC0_INFODP_IS_DEFINED
@@ -3372,17 +3372,17 @@ public:
          /*   2: --                   = --                             */  { NoPortInfo, 0,         INVALID_PCR,  0 },
          /*   3: LLWU_P3              = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
          /*   4: LLWU_P4              = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
-         /*   5: LLWU_P5              = PTB0 (p27)                     */  { PortBInfo,  GPIOB_BasePtr,  0,       PORT_PCR_MUX(1)|defaultPcrValue  },
+         /*   5: LLWU_P5              = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
          /*   6: LLWU_P6              = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
          /*   7: LLWU_P7              = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
          /*   8: LLWU_P8              = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
          /*   9: LLWU_P9              = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
          /*  10: LLWU_P10             = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
          /*  11: LLWU_P11             = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
-         /*  12: LLWU_P12             = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
-         /*  13: LLWU_P13             = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
+         /*  12: LLWU_P12             = PTD0 (p41)                     */  { PortDInfo,  GPIOD_BasePtr,  0,       PORT_PCR_MUX(1)|defaultPcrValue  },
+         /*  13: LLWU_P13             = PTD2 (p43)                     */  { PortDInfo,  GPIOD_BasePtr,  2,       PORT_PCR_MUX(1)|defaultPcrValue  },
          /*  14: LLWU_P14             = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
-         /*  15: LLWU_P15             = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
+         /*  15: LLWU_P15             = PTD6 (p47)                     */  { PortDInfo,  GPIOD_BasePtr,  6,       PORT_PCR_MUX(1)|defaultPcrValue  },
    };
 
    /**
@@ -3392,11 +3392,11 @@ public:
     */
    static void initPCRs(uint32_t pcrValue=defaultPcrValue) {
 #ifdef PCC_PCCn_CGC_MASK
-      PCC->PCC_PORTB = PCC_PCCn_CGC_MASK;
+      PCC->PCC_PORTD = PCC_PCCn_CGC_MASK;
 #else
-      enablePortClocks(PORTB_CLOCK_MASK);
+      enablePortClocks(PORTD_CLOCK_MASK);
 #endif
-      PORTB->GPCLR = pcrValue|PORT_PCR_MUX(1)|PORT_GPCLR_GPWE(0x0001UL);
+      PORTD->GPCLR = pcrValue|PORT_PCR_MUX(1)|PORT_GPCLR_GPWE(0x0045UL);
    }
 
    /**
@@ -3404,11 +3404,11 @@ public:
     */
    static void clearPCRs() {
 #ifdef PCC_PCCn_CGC_MASK
-      PCC->PCC_PORTB = PCC_PCCn_CGC_MASK;
+      PCC->PCC_PORTD = PCC_PCCn_CGC_MASK;
 #else
-      enablePortClocks(PORTB_CLOCK_MASK);
+      enablePortClocks(PORTD_CLOCK_MASK);
 #endif
-      PORTB->GPCLR = PORT_PCR_MUX(0)|PORT_GPCLR_GPWE(0x1U);
+      PORTD->GPCLR = PORT_PCR_MUX(0)|PORT_GPCLR_GPWE(0x45U);
    }
 
 };
@@ -4250,7 +4250,7 @@ public:
    static constexpr PinInfo  info[] = {
 
          //      Signal                 Pin                                  portInfo    gpioAddress     gpioBit  PCR value
-         /*   0: TSI0_CH0             = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
+         /*   0: TSI0_CH0             = PTB0 (p27)                     */  { PortBInfo,  GPIOB_BasePtr,  0,       PORT_PCR_MUX(0)|defaultPcrValue  },
          /*   1: TSI0_CH1             = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
          /*   2: TSI0_CH2             = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
          /*   3: TSI0_CH3             = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
@@ -4264,7 +4264,7 @@ public:
          /*  11: TSI0_CH11            = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
          /*  12: TSI0_CH12            = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
          /*  13: TSI0_CH13            = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
-         /*  14: TSI0_CH14            = PTC1 (p34)                     */  { PortCInfo,  GPIOC_BasePtr,  1,       PORT_PCR_MUX(0)|defaultPcrValue  },
+         /*  14: TSI0_CH14            = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
          /*  15: TSI0_CH15            = --                             */  { NoPortInfo, 0,         UNMAPPED_PCR, 0 },
    };
 
@@ -4275,11 +4275,11 @@ public:
     */
    static void initPCRs(uint32_t pcrValue=defaultPcrValue) {
 #ifdef PCC_PCCn_CGC_MASK
-      PCC->PCC_PORTC = PCC_PCCn_CGC_MASK;
+      PCC->PCC_PORTB = PCC_PCCn_CGC_MASK;
 #else
-      enablePortClocks(PORTC_CLOCK_MASK);
+      enablePortClocks(PORTB_CLOCK_MASK);
 #endif
-      PORTC->GPCLR = pcrValue|PORT_PCR_MUX(0)|PORT_GPCLR_GPWE(0x0002UL);
+      PORTB->GPCLR = pcrValue|PORT_PCR_MUX(0)|PORT_GPCLR_GPWE(0x0001UL);
    }
 
    /**
@@ -4287,11 +4287,11 @@ public:
     */
    static void clearPCRs() {
 #ifdef PCC_PCCn_CGC_MASK
-      PCC->PCC_PORTC = PCC_PCCn_CGC_MASK;
+      PCC->PCC_PORTB = PCC_PCCn_CGC_MASK;
 #else
-      enablePortClocks(PORTC_CLOCK_MASK);
+      enablePortClocks(PORTB_CLOCK_MASK);
 #endif
-      PORTC->GPCLR = PORT_PCR_MUX(0)|PORT_GPCLR_GPWE(0x2U);
+      PORTB->GPCLR = PORT_PCR_MUX(0)|PORT_GPCLR_GPWE(0x1U);
    }
 
 };
@@ -5008,7 +5008,7 @@ namespace USBDM {
  */
 using Adc_p8               = const USBDM::Adc0::Channel<19>;
 using Adc_p7               = const USBDM::Adc0::Channel<0>;
-using Adc_p34              = const USBDM::Adc0::Channel<15>;
+using Adc_p27              = const USBDM::Adc0::Channel<8>;
 /** 
  * End group ADC_Group
  * @}
@@ -5018,10 +5018,12 @@ using Adc_p34              = const USBDM::Adc0::Channel<15>;
  * @brief Abstraction for Digital Input/Output
  * @{
  */
-using Gpio_p27             = const USBDM::GpioB<0>;
-using Gpio_p28             = const USBDM::GpioB<1>;
-using Gpio_p29             = const USBDM::GpioB<2>;
-using Gpio_p30             = const USBDM::GpioB<3>;
+using Gpio_p41             = const USBDM::GpioD<0>;
+using Gpio_p42             = const USBDM::GpioD<1>;
+using Gpio_p43             = const USBDM::GpioD<2>;
+using Gpio_p44             = const USBDM::GpioD<3>;
+using Gpio_p47             = const USBDM::GpioD<6>;
+using Gpio_p48             = const USBDM::GpioD<7>;
 /** 
  * End group GPIO_Group
  * @}
@@ -5051,28 +5053,28 @@ using Gpio_p30             = const USBDM::GpioB<3>;
  *  PTA4                     | -                                           | p21                       | -       
  *  PTA18                    | EXTAL0                                      | p24                       | Crystal       
  *  PTA19                    | XTAL0                                       | p25                       | Crystal       
- *  PTB0                     | GPIOB_0/LLWU_P5                             | p27                       | TMS       
- *  PTB1                     | GPIOB_1                                     | p28                       | TDI       
- *  PTB2                     | GPIOB_2                                     | p29                       | TDO       
- *  PTB3                     | GPIOB_3                                     | p30                       | TCK       
+ *  PTB0                     | ADC0_SE8/TSI0_CH0                           | p27                       | Vref       
+ *  PTB1                     | -                                           | p28                       | -       
+ *  PTB2                     | -                                           | p29                       | -       
+ *  PTB3                     | -                                           | p30                       | -       
  *  PTB16                    | -                                           | p31                       | -       
  *  PTB17                    | -                                           | p32                       | -       
  *  PTC0                     | -                                           | p33                       | -       
- *  PTC1                     | ADC0_SE15/TSI0_CH14                         | p34                       | Vref       
+ *  PTC1                     | -                                           | p34                       | -       
  *  PTC2                     | -                                           | p35                       | -       
  *  PTC3                     | -                                           | p36                       | -       
  *  PTC4                     | -                                           | p37                       | -       
  *  PTC5                     | -                                           | p38                       | -       
  *  PTC6                     | -                                           | p39                       | -       
  *  PTC7                     | -                                           | p40                       | -       
- *  PTD0                     | -                                           | p41                       | -       
- *  PTD1                     | -                                           | p42                       | -       
- *  PTD2                     | -                                           | p43                       | -       
- *  PTD3                     | -                                           | p44                       | -       
+ *  PTD0                     | GPIOD_0/LLWU_P12                            | p41                       | TMS       
+ *  PTD1                     | GPIOD_1                                     | p42                       | TDI       
+ *  PTD2                     | GPIOD_2/LLWU_P13                            | p43                       | TDO       
+ *  PTD3                     | GPIOD_3                                     | p44                       | TCK       
  *  PTD4                     | -                                           | p45                       | -       
  *  PTD5                     | -                                           | p46                       | -       
- *  PTD6                     | -                                           | p47                       | -       
- *  PTD7                     | -                                           | p48                       | -       
+ *  PTD6                     | GPIOD_6/LLWU_P15                            | p47                       | Pass LED       
+ *  PTD7                     | GPIOD_7                                     | p48                       | Fail LED       
  *  RESET_b                  | RESET_b                                     | p26                       | Reset       
  *  USB0_DM                  | USB0_DM                                     | p4                        | USB_DM       
  *  USB0_DP                  | USB0_DP                                     | p3                        | USB_DP       
@@ -5121,44 +5123,46 @@ using Gpio_p30             = const USBDM::GpioB<3>;
  *  PTA18                    | EXTAL0                                      | p24                       | Crystal       
  *  PTA19                    | XTAL0                                       | p25                       | Crystal       
  *  RESET_b                  | RESET_b                                     | p26                       | Reset       
- *  PTB0                     | GPIOB_0/LLWU_P5                             | p27                       | TMS       
- *  PTB1                     | GPIOB_1                                     | p28                       | TDI       
- *  PTB2                     | GPIOB_2                                     | p29                       | TDO       
- *  PTB3                     | GPIOB_3                                     | p30                       | TCK       
+ *  PTB0                     | ADC0_SE8/TSI0_CH0                           | p27                       | Vref       
+ *  PTB1                     | -                                           | p28                       | -       
+ *  PTB2                     | -                                           | p29                       | -       
+ *  PTB3                     | -                                           | p30                       | -       
  *  PTB16                    | -                                           | p31                       | -       
  *  PTB17                    | -                                           | p32                       | -       
  *  PTC0                     | -                                           | p33                       | -       
- *  PTC1                     | ADC0_SE15/TSI0_CH14                         | p34                       | Vref       
+ *  PTC1                     | -                                           | p34                       | -       
  *  PTC2                     | -                                           | p35                       | -       
  *  PTC3                     | -                                           | p36                       | -       
  *  PTC4                     | -                                           | p37                       | -       
  *  PTC5                     | -                                           | p38                       | -       
  *  PTC6                     | -                                           | p39                       | -       
  *  PTC7                     | -                                           | p40                       | -       
- *  PTD0                     | -                                           | p41                       | -       
- *  PTD1                     | -                                           | p42                       | -       
- *  PTD2                     | -                                           | p43                       | -       
- *  PTD3                     | -                                           | p44                       | -       
+ *  PTD0                     | GPIOD_0/LLWU_P12                            | p41                       | TMS       
+ *  PTD1                     | GPIOD_1                                     | p42                       | TDI       
+ *  PTD2                     | GPIOD_2/LLWU_P13                            | p43                       | TDO       
+ *  PTD3                     | GPIOD_3                                     | p44                       | TCK       
  *  PTD4                     | -                                           | p45                       | -       
  *  PTD5                     | -                                           | p46                       | -       
- *  PTD6                     | -                                           | p47                       | -       
- *  PTD7                     | -                                           | p48                       | -       
+ *  PTD6                     | GPIOD_6/LLWU_P15                            | p47                       | Pass LED       
+ *  PTD7                     | GPIOD_7                                     | p48                       | Fail LED       
  *
  *
  * @section PinsByFunction Pins by Function
  *
  *    Pin Name               |   Functions                                 |  Location                 |  Description  
  *  ------------------------ | --------------------------------------------|---------------------------| ------------- 
- *  PTD7                     | -                                           | p48                       | -       
+ *  PTD5                     | -                                           | p46                       | -       
  *  ADC0_DM0                 | ADC0_DM0/ADC0_SE19                          | p8                        | -       
  *  ADC0_DP0                 | ADC0_DP0/ADC0_SE0                           | p7                        | -       
- *  PTC1                     | ADC0_SE15/TSI0_CH14                         | p34                       | Vref       
+ *  PTB0                     | ADC0_SE8/TSI0_CH0                           | p27                       | Vref       
  *  PTA18                    | EXTAL0                                      | p24                       | Crystal       
  *  EXTAL32                  | EXTAL32                                     | p15                       | -       
- *  PTB0                     | GPIOB_0/LLWU_P5                             | p27                       | TMS       
- *  PTB1                     | GPIOB_1                                     | p28                       | TDI       
- *  PTB2                     | GPIOB_2                                     | p29                       | TDO       
- *  PTB3                     | GPIOB_3                                     | p30                       | TCK       
+ *  PTD0                     | GPIOD_0/LLWU_P12                            | p41                       | TMS       
+ *  PTD1                     | GPIOD_1                                     | p42                       | TDI       
+ *  PTD2                     | GPIOD_2/LLWU_P13                            | p43                       | TDO       
+ *  PTD3                     | GPIOD_3                                     | p44                       | TCK       
+ *  PTD6                     | GPIOD_6/LLWU_P15                            | p47                       | Pass LED       
+ *  PTD7                     | GPIOD_7                                     | p48                       | Fail LED       
  *  PTA0                     | JTAG_TCLK/SWD_CLK                           | p17                       | SWD_CLK       
  *  PTA3                     | JTAG_TMS/SWD_DIO                            | p20                       | SWD_DIO       
  *  RESET_b                  | RESET_b                                     | p26                       | Reset       
