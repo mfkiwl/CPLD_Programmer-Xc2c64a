@@ -48,7 +48,8 @@ private:
    XsvfLoader& operator=(const XsvfLoader &other) = delete;
    XsvfLoader& operator=(XsvfLoader &&other) = delete;
 
-   libusb_device_handle *device = nullptr;
+   libusb_context *libusbContext = nullptr;
+   libusb_device_handle *deviceHandle = nullptr;
 
    /**
     * Locate USB device to program
@@ -56,7 +57,7 @@ private:
     * @return nullptr   => Failed
     * @return !=nullptr => LIBUSB device handle
     */
-   static libusb_device_handle *findDevice();
+   libusb_device_handle *findDevice();
 
    /**
     * Send one block of XSVF data for execution on opened device

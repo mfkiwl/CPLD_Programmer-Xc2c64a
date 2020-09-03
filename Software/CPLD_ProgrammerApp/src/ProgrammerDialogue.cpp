@@ -240,7 +240,7 @@ const char *ProgrammerDialogue::confirmDevice() {
       fprintf(stderr, "confirmDevice - %s\n", res);
       fflush(stderr);
       idcode_static->SetLabel("Failed to identify device");
-      return "Failed to identify device";
+      return res;
    }
    else {
       fprintf(stderr, "confirmDevice - %s (IDCODE = 0x%08X)\n", deviceInformation->getName(), idcode);
@@ -254,7 +254,7 @@ void ProgrammerDialogue::onConfirmId( wxCommandEvent& event ) {
 
    const char *msg = confirmDevice();
    if (msg != nullptr) {
-      wxMessageBox(msg, "Failed to identify device");
+      wxMessageBox(msg, "Failed to identify device", wxOK | wxCENTRE | wxICON_ERROR);
    }
 }
 

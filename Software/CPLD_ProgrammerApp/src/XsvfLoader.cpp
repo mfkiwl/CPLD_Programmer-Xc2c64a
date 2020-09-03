@@ -4,7 +4,7 @@
     XsvfLoader.cpp
 
     \verbatim
-    Copyright (C) 2019 Peter O'Donoghue
+    Copyright (C) 2020 Peter O'Donoghue
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -48,55 +48,56 @@ XsvfLoader::~XsvfLoader() {
 
 /**
  * Locate USB device to program
+ * Assumes libusb has been initialised.
  *
  * @return nullptr   => failed
  * @return !=nullptr => LIBUSB device handle
  */
 libusb_device_handle *XsvfLoader::findDevice() {
 
-   libusb_device **devs;
-   int rc;
-
-   ssize_t cnt = libusb_get_device_list(NULL, &devs);
-   if (cnt <= 0){
-      return nullptr;
-   }
-
    libusb_device_handle *device = nullptr;
-   libusb_device *dev;
-   unsigned i=0;
-   while ((dev = devs[i++]) != NULL) {
-      struct libusb_device_descriptor desc;
-      rc = libusb_get_device_descriptor(dev, &desc);
-      if (rc < 0) {
-         fprintf(stderr, "findDevice - Failed to get device descriptor");
-         return nullptr;
+   libusb_device **deviceList = nullptr;
+   ssize_t deviceCount = 0;
+   int rc = 0;
+
+   do {
+      deviceCount = libusb_get_device_list(libusbContext, &deviceList);
+      if (deviceCount <= 0){
+         fprintf(stderr, "No suitable devices found\n");
+         continue;
       }
-      //      fprintf(stderr, "%04x:%04x (bus %d, device %d)\n",
-      //            desc.idVendor, desc.idProduct,
-      //            libusb_get_bus_number(dev), libusb_get_device_address(dev));
-      if ((desc.idVendor == VENDOR_ID) && (desc.idProduct == PRODUCT_ID)) {
-         rc = libusb_open(dev, &device);
-         break;
+      // Reserve device
+      device = libusb_open_device_with_vid_pid(libusbContext, VENDOR_ID, PRODUCT_ID);
+      if (device == nullptr) {
+         fprintf(stderr, "Device failed to open\n");
+         continue;
       }
-   }
-   if (device != nullptr) {
+      // Find out if kernel driver is attached
+      if(libusb_kernel_driver_active(device, 0) == 1) {
+         fprintf(stderr, "Kernel Driver Active\n");
+         // Detach it
+         if(libusb_detach_kernel_driver(device, 0) == 0) {
+            fprintf(stderr, "Kernel Driver Detached!\n");
+         }
+      }
       rc = libusb_set_configuration(device, 1);
       if (rc < 0) {
-         libusb_close(device);
-         device = nullptr;
+         fprintf(stderr, "Set configuration failed - %s\n", libusb_error_name(rc));
+         continue;
       }
       rc = libusb_claim_interface(device, 0);
       if (rc < 0) {
-         libusb_close(device);
-         device = nullptr;
+         fprintf(stderr, "Claim interface failed - %s\n", libusb_error_name(rc));
+         continue;
       }
-   }
-   if (cnt > 0) {
-      libusb_free_device_list(devs, 1);
-   }
-   if (device == nullptr) {
-      fprintf(stderr, "findDevice - Device failed to open\n");
+   } while (false);
+
+   // We can now free the list
+   libusb_free_device_list(deviceList, true);
+
+   if (rc < 0) {
+      libusb_close(device);
+      device = nullptr;
    }
    return device;
 }
@@ -113,13 +114,13 @@ libusb_device_handle *XsvfLoader::findDevice() {
 const char *XsvfLoader::checkTargetVref() {
    const char *errorMessage = nullptr;
 
-   int rc = libusb_init(NULL);
+   int rc = libusb_init(&libusbContext);
    if (rc < 0) {
       return "sendSxvfFile - Libusb failed initialisation";
    }
    do {
-      device = findDevice();
-      if (device == nullptr) {
+      deviceHandle = findDevice();
+      if (deviceHandle == nullptr) {
          errorMessage = "Programmer not found";
          break;
       }
@@ -130,7 +131,7 @@ const char *XsvfLoader::checkTargetVref() {
       };
 
       int bytesSent = 0;
-      int rc = libusb_bulk_transfer(device, EP_OUT, (uint8_t*)&command, sizeof(command), &bytesSent, 10000);
+      int rc = libusb_bulk_transfer(deviceHandle, EP_OUT, (uint8_t*)&command, sizeof(command), &bytesSent, 1000);
       if (rc < 0) {
          errorMessage = libusb_error_name(rc);
          break;
@@ -143,7 +144,7 @@ const char *XsvfLoader::checkTargetVref() {
       SimpleResponseMessage response = {};
 
       int bytesReceived = 0;
-      rc = libusb_bulk_transfer(device, EP_IN, (uint8_t*)&response, sizeof(response), &bytesReceived, 10000);
+      rc = libusb_bulk_transfer(deviceHandle, EP_IN, (uint8_t*)&response, sizeof(response), &bytesReceived, 1000);
       if (rc < 0) {
          errorMessage = libusb_error_name(rc);
          break;
@@ -159,12 +160,12 @@ const char *XsvfLoader::checkTargetVref() {
 
    } while(false);
 
-   if (device != nullptr) {
-      libusb_close(device);
-      device = nullptr;
+   if (deviceHandle != nullptr) {
+      libusb_close(deviceHandle);
+      deviceHandle = nullptr;
    }
 
-   libusb_exit(nullptr);
+   libusb_exit(libusbContext);
    return errorMessage;
 }
 
@@ -182,13 +183,13 @@ const char *XsvfLoader::checkTargetVref() {
 const char *XsvfLoader::readIdcode(uint32_t &idcode) {
    const char *errorMessage = nullptr;
 
-   int rc = libusb_init(NULL);
+   int rc = libusb_init(&libusbContext);
    if (rc < 0) {
       return "readIdcode - Libusb failed initialisation";
    }
    do {
-      device = findDevice();
-      if (device == nullptr) {
+      deviceHandle = findDevice();
+      if (deviceHandle == nullptr) {
          errorMessage = "Programmer not found";
          break;
       }
@@ -199,7 +200,7 @@ const char *XsvfLoader::readIdcode(uint32_t &idcode) {
       };
 
       int bytesSent = 0;
-      int rc = libusb_bulk_transfer(device, EP_OUT, (uint8_t*)&command, sizeof(command), &bytesSent, 10000);
+      int rc = libusb_bulk_transfer(deviceHandle, EP_OUT, (uint8_t*)&command, sizeof(command), &bytesSent, 1000);
       if (rc < 0) {
          errorMessage = libusb_error_name(rc);
          break;
@@ -212,7 +213,7 @@ const char *XsvfLoader::readIdcode(uint32_t &idcode) {
       ResponseIdentifyMessage response = {};
 
       int bytesReceived = 0;
-      rc = libusb_bulk_transfer(device, EP_IN, (uint8_t*)&response, sizeof(response), &bytesReceived, 10000);
+      rc = libusb_bulk_transfer(deviceHandle, EP_IN, (uint8_t*)&response, sizeof(response), &bytesReceived, 1000);
       if (rc < 0) {
          errorMessage = libusb_error_name(rc);
          break;
@@ -231,12 +232,12 @@ const char *XsvfLoader::readIdcode(uint32_t &idcode) {
 
    } while(false);
 
-   if (device != nullptr) {
-      libusb_close(device);
-      device = nullptr;
+   if (deviceHandle != nullptr) {
+      libusb_close(deviceHandle);
+      deviceHandle = nullptr;
    }
 
-   libusb_exit(nullptr);
+   libusb_exit(libusbContext);
    return errorMessage;
 }
 
@@ -251,13 +252,13 @@ const char *XsvfLoader::readIdcode(uint32_t &idcode) {
 //const char *XsvfLoader::executeXsvf(uint32_t &result) {
 //   const char *errorMessage = nullptr;
 //
-//   int rc = libusb_init(NULL);
+//   int rc = libusb_init(&libusbContext);
 //   if (rc < 0) {
 //      return "sendSxvfFile - Libusb failed initialisation";
 //   }
 //   do {
-//      device = findDevice();
-//      if (device == nullptr) {
+//      deviceHandle = findDevice();
+//      if (deviceHandle == nullptr) {
 //         errorMessage = "Programmer not found";
 //         break;
 //      }
@@ -268,7 +269,7 @@ const char *XsvfLoader::readIdcode(uint32_t &idcode) {
 //      };
 //
 //      int bytesSent = 0;
-//      int rc = libusb_bulk_transfer(device, EP_OUT, (uint8_t*)&command, sizeof(command), &bytesSent, 10000);
+//      int rc = libusb_bulk_transfer(deviceHandle, EP_OUT, (uint8_t*)&command, sizeof(command), &bytesSent, 1000);
 //      if (rc < 0) {
 //         errorMessage = libusb_error_name(rc);
 //         break;
@@ -281,7 +282,7 @@ const char *XsvfLoader::readIdcode(uint32_t &idcode) {
 //      ResponseIdentifyMessage response = {};
 //
 //      int bytesReceived = 0;
-//      rc = libusb_bulk_transfer(device, EP_IN, (uint8_t*)&response, sizeof(response), &bytesReceived, 10000);
+//      rc = libusb_bulk_transfer(deviceHandle, EP_IN, (uint8_t*)&response, sizeof(response), &bytesReceived, 1000);
 //      if (rc < 0) {
 //         errorMessage = libusb_error_name(rc);
 //         break;
@@ -300,12 +301,12 @@ const char *XsvfLoader::readIdcode(uint32_t &idcode) {
 //
 //   } while(false);
 //
-//   if (device != nullptr) {
-//      libusb_close(device);
-//      device = nullptr;
+//   if (deviceHandle != nullptr) {
+//      libusb_close(deviceHandle);
+//      deviceHandle = nullptr;
 //   }
 //
-//   libusb_exit(nullptr);
+//   libusb_exit(libusbContext);
 //   return errorMessage;
 //}
 
@@ -332,7 +333,7 @@ const char *XsvfLoader::sendXsvfBlock(unsigned xsvf_size, uint8_t *xsvf_data) {
    }
    int bytesSent   = 0;
    int bytesToSend = sizeof(SimpleCommandMessage)+message.byteLength;
-   rc = libusb_bulk_transfer(device, EP_OUT, (uint8_t*)&message, bytesToSend, &bytesSent, 10000);
+   rc = libusb_bulk_transfer(deviceHandle, EP_OUT, (uint8_t*)&message, bytesToSend, &bytesSent, 1000);
    if (rc < 0) {
       return libusb_error_name(rc);
    }
@@ -342,7 +343,7 @@ const char *XsvfLoader::sendXsvfBlock(unsigned xsvf_size, uint8_t *xsvf_data) {
    SimpleResponseMessage response = {};
 
    int bytesReceived = 0;
-   rc = libusb_bulk_transfer(device, EP_IN, (uint8_t*)&response, sizeof(response), &bytesReceived, 10000);
+   rc = libusb_bulk_transfer(deviceHandle, EP_IN, (uint8_t*)&response, sizeof(response), &bytesReceived, 1000);
    if (rc < 0) {
       return libusb_error_name(rc);
    }
@@ -377,12 +378,12 @@ const char *XsvfLoader::sendXsvf(unsigned xsvf_size, uint8_t *xsvf_data) {
 
    UsbStartXsvfMessage command = {
          /* command      */ UsbCommand_XSVF,
-         /* byteLength   */ sizeof(command.xsvfSize),
-         /* xsvfSize     */ xsvf_size,
+         /* byteLength   */ (uint32_t)sizeof(command.xsvfSize),
+         /* xsvfSize     */ (uint32_t)xsvf_size,
    };
 
    int bytesSent = 0;
-   int rc = libusb_bulk_transfer(device, EP_OUT, (uint8_t*)&command, sizeof(command), &bytesSent, 10000);
+   int rc = libusb_bulk_transfer(deviceHandle, EP_OUT, (uint8_t*)&command, sizeof(command), &bytesSent, 1000);
    if (rc < 0) {
       return libusb_error_name(rc);
    }
@@ -393,7 +394,7 @@ const char *XsvfLoader::sendXsvf(unsigned xsvf_size, uint8_t *xsvf_data) {
    SimpleResponseMessage response = {};
 
    int bytesReceived = 0;
-   rc = libusb_bulk_transfer(device, EP_IN, (uint8_t*)&response, sizeof(response), &bytesReceived, 10000);
+   rc = libusb_bulk_transfer(deviceHandle, EP_IN, (uint8_t*)&response, sizeof(response), &bytesReceived, 1000);
    if (rc < 0) {
       return libusb_error_name(rc);
    }
@@ -447,13 +448,13 @@ const char *XsvfLoader::sendXsvf(unsigned xsvf_size, uint8_t *xsvf_data) {
 const char *XsvfLoader::executeXsvf(Xsvf &xsvf) {
    const char *errorMessage = nullptr;
 
-   int rc = libusb_init(NULL);
+   int rc = libusb_init(&libusbContext);
    if (rc < 0) {
       return "sendSxvfFile - Libusb failed initialisation";
    }
    do {
-      device = findDevice();
-      if (device == nullptr) {
+      deviceHandle = findDevice();
+      if (deviceHandle == nullptr) {
          errorMessage = "Programmer not found";
          break;
       }
@@ -463,12 +464,12 @@ const char *XsvfLoader::executeXsvf(Xsvf &xsvf) {
       }
    } while(false);
 
-   if (device != nullptr) {
-      libusb_close(device);
-      device = nullptr;
+   if (deviceHandle != nullptr) {
+      libusb_close(deviceHandle);
+      deviceHandle = nullptr;
    }
 
-   libusb_exit(nullptr);
+   libusb_exit(libusbContext);
 
    return errorMessage;
 }

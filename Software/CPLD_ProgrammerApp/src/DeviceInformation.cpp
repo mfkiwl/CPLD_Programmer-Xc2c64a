@@ -36,7 +36,7 @@ const DeviceInformation *DeviceInformation::findDevice(const char *deviceName) {
       if (info->block_num == 0) {
          break;
       }
-      if (strnicmp(deviceName, info->name, info->name_length) == 0) {
+      if (strncasecmp(deviceName, info->name, info->name_length) == 0) {
          return info;
       }
    }
