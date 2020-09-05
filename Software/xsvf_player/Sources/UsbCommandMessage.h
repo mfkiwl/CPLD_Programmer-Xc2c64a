@@ -1,5 +1,5 @@
 /*
- * CommandMessage.h
+ * UsbCommandMessage.h
  *
  *  Created on: 9 Dec 2019
  *      Author: podonoghue
@@ -12,7 +12,22 @@
 
 static constexpr uint16_t HW_LOGIC_BOARD_V2 = 1;
 static constexpr uint16_t HW_LOGIC_BOARD_V3 = 2;
+static constexpr uint16_t HW_LOGIC_BOARD_V4 = 3;
 static constexpr uint16_t BOOTLOADER_V1     = 1;
+
+template<int version>
+constexpr const char *getHardwareVersion() {
+   if constexpr(version == HW_LOGIC_BOARD_V2) {
+      return "Dig-Logic 2";
+   }
+   if constexpr(version == HW_LOGIC_BOARD_V3) {
+      return "Dig-Logic 3";
+   }
+   if constexpr(version == HW_LOGIC_BOARD_V4) {
+      return "Dig-Logic 4";
+   }
+   return "Unknown";
+}
 
 /**
  * Commands available

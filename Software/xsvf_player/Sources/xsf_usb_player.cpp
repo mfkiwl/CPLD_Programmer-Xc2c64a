@@ -313,6 +313,9 @@ private:
          }
       }
       byteCounter++;
+      if ((byteCounter % 1000) == 0) {
+         ProgrammerBusyLed::toggle();
+      }
       return command.data[blockByteCounter++];
    }
 
@@ -349,12 +352,17 @@ public:
 
 enum UsbState {UsbStartUp, UsbIdle, UsbWaiting};
 
+/**
+ * Poll USB interface for activity
+ *
+ * If active the return may be very much delayed e.g. programming of a device.
+ */
 void pollUsb() {
 
    static UsbState usbState = UsbStartUp;
 
    static auto cb = [](const UsbImplementation::UserEvent) {
-      // Restart transfers on reset etc.
+      // Restart USB transfers on reset etc.
       usbState = UsbIdle;
       return E_NO_ERROR;
    };
@@ -435,6 +443,10 @@ void pollUsb() {
             }
             if (!readIdcode(response.idcode)) {
                console.writeln("Failed read IDCODE");
+               continue;
+            }
+            if (response.idcode == 0xFFFFFFFF) {
+               console.writeln("Failed read IDCODE (no device?)");
                continue;
             }
             response.status      = UsbCommandStatus_OK;

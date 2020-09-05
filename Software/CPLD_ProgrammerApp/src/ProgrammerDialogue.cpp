@@ -285,7 +285,7 @@ void ProgrammerDialogue::onProgramDevice(wxCommandEvent &event) {
    } while (false);
 
    if (msg != nullptr) {
-      wxMessageBox(msg, "Failed to program device");
+      wxMessageBox(msg, "Failed to program device", wxOK | wxCENTRE | wxICON_ERROR);
       programAction_static->SetLabel("Programming Failed");
    }
    else {

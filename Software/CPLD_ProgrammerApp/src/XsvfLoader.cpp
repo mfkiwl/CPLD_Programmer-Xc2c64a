@@ -154,7 +154,7 @@ const char *XsvfLoader::checkTargetVref() {
          break;
       }
       if (response.status != UsbCommandStatus_OK) {
-         errorMessage = "checkTargetVref - No Vref on device";
+         errorMessage = "No Vdd on device";
          break;
       }
 

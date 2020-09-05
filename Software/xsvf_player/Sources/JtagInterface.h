@@ -11,6 +11,7 @@
 class JtagInterface {
 
 private:
+   /** Hardware used for JTAG Interface */
    using Jtag = USBDM::GpioBField<3,0>;
    using Tms  = Jtag::Bit<0>;
    using Tdi  = Jtag::Bit<1>;
@@ -60,7 +61,9 @@ public:
     */
    static bool checkVref() {
       using namespace USBDM;
-
+      while (Adc0::isBusy()) {
+         __asm__("nop");
+      }
       Adc::configure(adcResolution, AdcClockSource_Bus);
       return Vref::readAnalogue()>(Adc::getSingleEndedMaximum(adcResolution) * 0.8);
    }

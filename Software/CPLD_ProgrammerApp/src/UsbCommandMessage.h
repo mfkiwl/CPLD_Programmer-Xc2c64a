@@ -1,5 +1,5 @@
 /*
- * CommandMessage.h
+ * UsbCommandMessage.h
  *
  *  Created on: 9 Dec 2019
  *      Author: podonoghue
@@ -11,6 +11,8 @@
 #include <stdint.h>
 
 static constexpr uint16_t HW_LOGIC_BOARD_V2 = 1;
+static constexpr uint16_t HW_LOGIC_BOARD_V3 = 2;
+static constexpr uint16_t HW_LOGIC_BOARD_V4 = 3;
 static constexpr uint16_t BOOTLOADER_V1     = 1;
 
 /**
@@ -28,8 +30,8 @@ enum UsbCommand : uint32_t {
  * Result of command
  */
 enum UsbCommandStatus : uint32_t {
-   UsbCommandStatus_OK,    //!< Status_OK
-   UsbCommandStatus_Failed,//!< Status_Failed
+   UsbCommandStatus_OK,          //!< OK result
+   UsbCommandStatus_Failed,      //!< Failed
 };
 
 static constexpr unsigned MAX_MESSAGE_DATA = 1024;
