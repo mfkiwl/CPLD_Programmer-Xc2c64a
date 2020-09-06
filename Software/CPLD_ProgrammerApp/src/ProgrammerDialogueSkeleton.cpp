@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Oct 26 2018)
+// C++ code generated with wxFormBuilder (version 3.9.0 Sep  6 2020)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
@@ -31,24 +31,24 @@ ProgrammerDialogueSkeleton::ProgrammerDialogueSkeleton( wxWindow* parent, wxWind
 	sbSizer1->Add( loadedFile_static, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
 
-	bSizer1->Add( sbSizer1, 1, wxEXPAND, 5 );
+	bSizer1->Add( sbSizer1, 1, wxALL|wxEXPAND, 5 );
 
-	wxStaticBoxSizer* sbSizer31;
-	sbSizer31 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, wxT("Connect to Device") ), wxHORIZONTAL );
+	wxStaticBoxSizer* sbSizer2;
+	sbSizer2 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, wxT("Connect to Device") ), wxHORIZONTAL );
 
-	confirmId_button = new wxButton( sbSizer31->GetStaticBox(), wxID_ANY, wxT("Confirm Device"), wxDefaultPosition, wxSize( 120,-1 ), 0 );
+	confirmId_button = new wxButton( sbSizer2->GetStaticBox(), wxID_ANY, wxT("Confirm Device"), wxDefaultPosition, wxSize( 120,-1 ), 0 );
 	confirmId_button->SetToolTip( wxT("Read IDCODE from device to confirm connection") );
 
-	sbSizer31->Add( confirmId_button, 0, wxALL|wxEXPAND, 5 );
+	sbSizer2->Add( confirmId_button, 0, wxALL|wxEXPAND, 5 );
 
-	idcode_static = new wxStaticText( sbSizer31->GetStaticBox(), wxID_ANY, wxT("No device detected"), wxDefaultPosition, wxDefaultSize, 0 );
+	idcode_static = new wxStaticText( sbSizer2->GetStaticBox(), wxID_ANY, wxT("No device detected"), wxDefaultPosition, wxDefaultSize, 0 );
 	idcode_static->Wrap( -1 );
 	idcode_static->SetToolTip( wxT("Last device identified") );
 
-	sbSizer31->Add( idcode_static, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	sbSizer2->Add( idcode_static, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
 
-	bSizer1->Add( sbSizer31, 1, wxEXPAND, 5 );
+	bSizer1->Add( sbSizer2, 1, wxALL|wxEXPAND, 5 );
 
 	wxStaticBoxSizer* sbSizer3;
 	sbSizer3 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, wxT("Programming") ), wxHORIZONTAL );
@@ -66,7 +66,7 @@ ProgrammerDialogueSkeleton::ProgrammerDialogueSkeleton( wxWindow* parent, wxWind
 	sbSizer3->Add( programAction_static, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
 
-	bSizer1->Add( sbSizer3, 1, wxEXPAND, 5 );
+	bSizer1->Add( sbSizer3, 1, wxALL|wxEXPAND, 5 );
 
 
 	this->SetSizer( bSizer1 );

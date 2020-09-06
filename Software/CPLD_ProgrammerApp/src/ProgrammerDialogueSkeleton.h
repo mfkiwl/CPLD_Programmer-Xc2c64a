@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Oct 26 2018)
+// C++ code generated with wxFormBuilder (version 3.9.0 Sep  6 2020)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
@@ -9,12 +9,12 @@
 
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
+#include <wx/button.h>
 #include <wx/string.h>
 #include <wx/bitmap.h>
 #include <wx/image.h>
 #include <wx/icon.h>
 #include <wx/gdicmn.h>
-#include <wx/button.h>
 #include <wx/font.h>
 #include <wx/colour.h>
 #include <wx/settings.h>
@@ -24,6 +24,7 @@
 #include <wx/dialog.h>
 
 ///////////////////////////////////////////////////////////////////////////
+
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class ProgrammerDialogueSkeleton
@@ -48,7 +49,7 @@ class ProgrammerDialogueSkeleton : public wxDialog
 
 	public:
 
-		ProgrammerDialogueSkeleton( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("CPLD Programmer"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 446,254 ), long style = wxDEFAULT_DIALOG_STYLE );
+		ProgrammerDialogueSkeleton( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("CPLD Programmer"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 534,287 ), long style = wxDEFAULT_DIALOG_STYLE );
 		~ProgrammerDialogueSkeleton();
 
 };
