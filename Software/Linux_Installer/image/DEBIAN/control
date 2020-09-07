@@ -1,0 +1,12 @@
+Version: 1.0.0
+Source: cpldprogrammer
+Section: contrib/devel
+Architecture: amd64
+Priority: optional
+Maintainer: P O'Donoghue <1848579+podonoghue@users.noreply.github.com>
+Homepage: http://www.wxformbuilder.org
+Package: cpldprogrammer
+Depends: libwxbase3.0-0v5,libwxgtk3.0-gtk3-0v5,libc6
+Description: Single device CPLD programmer.
+ Only supports Xilinx XC2C64A.
+ Intended for undergraduate lab use.
