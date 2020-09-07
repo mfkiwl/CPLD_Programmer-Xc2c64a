@@ -13,6 +13,11 @@
 #include "DeviceMapFile.h"
 #include "DeviceInformation.h"
 
+#if (linux == 1)
+/** Path to read-only data files on Linux */
+static const char *LINUX_DATA_PATH = "/usr/share/cpldprogrammer/";
+#endif
+
 /**
  * Constructor
  *
@@ -34,7 +39,13 @@ const char *DeviceMapFile::loadFile(unsigned fuseLimit) {
    fuse_limit = fuseLimit;
    fuse_map = (unsigned*) malloc(fuse_limit);
 
-   FILE *fp = fopen(deviceInformation.getMapfilename(), "rb");
+   FILE *fp = nullptr;
+#if (linux == 1)
+   std::string path = std::string(LINUX_DATA_PATH).append(deviceInformation.getMapfilename());
+   fp = fopen(path.c_str(), "rb");
+#else
+   fp = fopen(deviceInformation.getMapfilename(), "rb");
+#endif
    if (fp == nullptr) {
       return "Failed to open file";
    }

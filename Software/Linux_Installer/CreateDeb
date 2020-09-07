@@ -40,11 +40,13 @@ makeDebFile() {
    ${CP} -r "${SOURCE_DIRECTORY}/image/." ${DUMMY_ROOT}   
    ${CP} -r "${SOURCE_DIRECTORY}/../PackageFiles/bin/x86_64-linux-gnu/CPLD_ProgrammerApp" "${DUMMY_ROOT}/usr/bin/cpldprogrammer"   
 
+   # Fix permissions
    find ${DUMMY_ROOT}   -type d -exec chmod 755 {} \;
    find ${DUMMY_ROOT}   -type f ! -executable -exec chmod 644 {} \;
    find ${DUMMY_ROOT}   -type f -name \*.so\* -exec chmod 644 {} \; -exec strip {} \;
    find ${DUMMY_ROOT}   -type f -executable -exec chmod 755 {} \; -exec strip {} \;
-   
+   find ${DUMMY_ROOT}   -type f -name \*.map\* -exec chmod 644 {} \;
+      
    echo fakeroot dpkg-deb --build ${DUMMY_ROOT}
    fakeroot dpkg-deb --build ${DUMMY_ROOT}
 
