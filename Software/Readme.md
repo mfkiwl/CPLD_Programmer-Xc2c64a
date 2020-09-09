@@ -1,4 +1,4 @@
-# Software
+# CPLD_Programmer Software
 
 Projects:  
 * __CPLD_ProgrammerApp__  Windows application for CPLD programmer
