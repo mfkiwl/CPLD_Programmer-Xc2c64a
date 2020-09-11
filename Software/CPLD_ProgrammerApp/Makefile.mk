@@ -1,4 +1,4 @@
-include ../Common-$(ARCH).mk
+include ../Common.mk
 
 TARGET = CPLD_ProgrammerApp
 MODULE = module

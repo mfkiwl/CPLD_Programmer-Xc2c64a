@@ -15,6 +15,7 @@ SOURCE_DIRECTORY=.
 DATE=`date +"%Y%m%d%H%M%S"`
 
 PACKAGE_NAME="cpldprogrammer"
+APP_NAME="cpldprogrammer"
 
 #======================================================
 # Create DEB file
@@ -38,6 +39,9 @@ makeDebFile() {
    
    # Shared document files
    SHARED_DOC_DIR="${DUMMY_ROOT}/usr/share/doc/${PACKAGE_NAME}"
+   
+   BIN_DIR="${DUMMY_ROOT}/usr/bin"
+   LIB_DIR="${DUMMY_ROOT}/usr/lib/${ARCH}-linux-gnu/${PACKAGE_NAME}"
 
    if [[ -e ${DUMMY_ROOT} ]]; then
       ${RM} -R ${DUMMY_ROOT}
@@ -45,7 +49,7 @@ makeDebFile() {
    
    ${MKDIR} ${DUMMY_ROOT}
    ${CP} -r "${SOURCE_DIRECTORY}/image/." ${DUMMY_ROOT}   
-   ${CP} -r "${SOURCE_DIRECTORY}/../PackageFiles/bin/x86_64-linux-gnu/CPLD_ProgrammerApp" "${DUMMY_ROOT}/usr/bin/${PACKAGE_NAME}"   
+   ${CP} -rp "${SOURCE_DIRECTORY}/../PackageFiles/bin/${ARCH}-linux-gnu/CPLD_ProgrammerApp" "${BIN_DIR}/${APP_NAME}"   
 
    ${MKDIR} ${SHARED_DOC_DIR}
    ${GZIP} -n -9 -k -c "${SOURCE_DIRECTORY}/../PackageFiles"/changelog >${SHARED_DOC_DIR}/changelog.gz
