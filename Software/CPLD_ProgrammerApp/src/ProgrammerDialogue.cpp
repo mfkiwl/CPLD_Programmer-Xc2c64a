@@ -164,14 +164,16 @@ void ProgrammerDialogue::onLoadFile(wxCommandEvent &event) {
          "Jedec Files(*.jed)|*.jed|"
          "Compressed SVF (*.xsvf)|*.xsvf|"
          "All Files|*");
-   wxString defaultFilename  = wxEmptyString;
-   wxString currentDirectory = wxEmptyString;
    wxFileDialog openFileDialog(this, caption, currentDirectory, defaultFilename, wildcard, wxFD_OPEN);
    int getCancelOK = openFileDialog.ShowModal();
    if (getCancelOK != wxID_OK) {
       // Ignore
       return;
    }
+   // Save for next time
+   currentDirectory = openFileDialog.GetDirectory();
+   defaultFilename  = openFileDialog.GetFilename();
+
    wxString filePath = openFileDialog.GetPath();
    wxString fileName = openFileDialog.GetFilename();
 

@@ -25,6 +25,12 @@ private:
    wxString    xsvf_fileName;
    wxString    xsvf_filePath;
 
+   // Last file opened
+   wxString defaultFilename;
+
+   // Last directory used
+   wxString currentDirectory;
+
    const DeviceInformation *deviceInformation = nullptr;
 
    const char *confirmDevice();
